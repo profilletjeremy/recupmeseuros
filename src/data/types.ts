@@ -30,7 +30,20 @@ export const PROFILE_LABELS: Record<ProfileType, string> = {
 
 // ─── Réponses questionnaire ───
 export const QuestionnaireAnswers = z.object({
-  profiles: z.array(ProfileType).min(1),
+  profiles: z.array(ProfileType),
+
+  // ─── Découverte (remplace la sélection manuelle de profils) ───
+  est_salarie: z.boolean().optional(),
+  est_retraite: z.boolean().optional(),
+  est_micro_entrepreneur_flag: z.boolean().optional(),
+  est_bailleur: z.boolean().optional(),
+  a_revenus_financiers: z.boolean().optional(),
+  a_enfants: z.boolean().optional(),
+  est_premiere_declaration_flag: z.boolean().optional(),
+  est_proprietaire: z.boolean().optional(),
+  est_locataire_flag: z.boolean().optional(),
+  est_aidant: z.boolean().optional(),
+  est_handicap: z.boolean().optional(),
 
   // Localisation fiscale
   residence_country: z.enum(["france", "etranger"]).optional(),

@@ -22,6 +22,51 @@ export interface Question {
 }
 
 export const QUESTIONS: Question[] = [
+  // ═══ DÉCOUVERTE — Remplace la sélection manuelle de profils ═══
+  {
+    id: "decouverte_revenus",
+    section: "Vos revenus",
+    sectionIcon: "💶",
+    text: "Quels types de revenus avez-vous perçus en 2025 ?",
+    subtext: "Cochez tout ce qui s'applique. On adapte le questionnaire en fonction.",
+    type: "multi_boolean",
+    field: "decouverte_revenus_group",
+    fields: [
+      { field: "est_salarie", label: "Salaires (CDI, CDD, intérim...)" },
+      { field: "est_retraite", label: "Pensions de retraite ou d'invalidité" },
+      { field: "est_micro_entrepreneur_flag", label: "Micro-entreprise / indépendant" },
+      { field: "est_bailleur", label: "Revenus locatifs (je loue un bien)" },
+      { field: "a_revenus_financiers", label: "Revenus financiers (dividendes, intérêts, plus-values...)" },
+    ],
+  },
+  {
+    id: "decouverte_famille",
+    section: "Votre famille",
+    sectionIcon: "👨‍👩‍👧‍👦",
+    text: "Votre situation familiale",
+    subtext: "Cochez ce qui correspond à votre situation.",
+    type: "multi_boolean",
+    field: "decouverte_famille_group",
+    fields: [
+      { field: "a_enfants", label: "J'ai des enfants à charge" },
+      { field: "est_premiere_declaration_flag", label: "C'est ma première déclaration (18-25 ans)" },
+    ],
+  },
+  {
+    id: "decouverte_logement",
+    section: "Votre situation",
+    sectionIcon: "🏠",
+    text: "Votre logement et votre situation personnelle",
+    type: "multi_boolean",
+    field: "decouverte_logement_group",
+    fields: [
+      { field: "est_proprietaire", label: "Propriétaire de ma résidence principale" },
+      { field: "est_locataire_flag", label: "Locataire" },
+      { field: "est_aidant", label: "J'aide un proche en situation de dépendance" },
+      { field: "est_handicap", label: "En situation de handicap ou perte d'autonomie" },
+    ],
+  },
+
   // ─── Localisation fiscale ───
   {
     id: "residence_country",
@@ -212,7 +257,7 @@ export const QUESTIONS: Question[] = [
       { field: "garde_garderie", label: "Garderie périscolaire" },
       { field: "garde_centre_loisirs", label: "Centre de loisirs" },
     ],
-    showIf: (_a, profiles) => profiles.includes("parent"),
+    showIf: (a) => !!a.a_enfants,
     tooltip: "L'enfant doit avoir moins de 6 ans au 1er janvier 2025 (né après le 01/01/2019).",
   },
   {
@@ -286,7 +331,7 @@ export const QUESTIONS: Question[] = [
     text: "Avez-vous payé une cotisation syndicale en 2025 ?",
     type: "boolean",
     field: "cotisation_syndicale",
-    showIf: (_a, profiles) => profiles.includes("salarie") || profiles.includes("retraite"),
+    showIf: (a) => !!a.est_salarie || !!a.est_retraite,
   },
   {
     id: "syndicat_montant",
@@ -311,7 +356,7 @@ export const QUESTIONS: Question[] = [
     field: "frais_reels_km_aller_retour",
     placeholder: "Ex : 40",
     suffix: "km",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "frais_jours",
@@ -355,7 +400,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Si la distance ou vos horaires ne vous permettent pas de rentrer déjeuner.",
     type: "boolean",
     field: "frais_reels_repas",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "frais_teletravail",
@@ -364,7 +409,7 @@ export const QUESTIONS: Question[] = [
     text: "Avez-vous télétravaillé en 2025 ?",
     type: "boolean",
     field: "frais_reels_teletravail",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "frais_teletravail_jours",
@@ -385,7 +430,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Vous et votre conjoint travaillez dans deux villes différentes et maintenez deux logements.",
     type: "boolean",
     field: "frais_reels_double_residence",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "salaire",
@@ -397,8 +442,8 @@ export const QUESTIONS: Question[] = [
     field: "salaire_net_imposable",
     placeholder: "Ex : 28000",
     suffix: "€",
-    showIf: (a, profiles) =>
-      profiles.includes("salarie") &&
+    showIf: (a) =>
+      !!a.est_salarie &&
       !!((a.frais_reels_km_aller_retour as number) > 0 || a.frais_reels_repas || a.frais_reels_teletravail),
   },
 
@@ -441,7 +486,7 @@ export const QUESTIONS: Question[] = [
     text: "Avez-vous payé des frais d'EHPAD ou d'établissement pour personne dépendante ?",
     type: "boolean",
     field: "frais_ehpad",
-    showIf: (_a, profiles) => profiles.includes("aidant_familial") || profiles.includes("retraite") || profiles.includes("handicap"),
+    showIf: (a) => !!a.est_aidant || !!a.est_retraite || !!a.est_handicap,
   },
   {
     id: "ehpad_montant",
@@ -472,7 +517,7 @@ export const QUESTIONS: Question[] = [
       { field: "adaptation_barre_appui", label: "Barres d'appui / rampes" },
       { field: "adaptation_autre", label: "Autre équipement d'accessibilité" },
     ],
-    showIf: (_a, profiles) => profiles.includes("handicap") || profiles.includes("aidant_familial") || profiles.includes("retraite"),
+    showIf: (a) => !!a.est_handicap || !!a.est_aidant || !!a.est_retraite,
   },
   {
     id: "adaptation_montant",
@@ -520,7 +565,7 @@ export const QUESTIONS: Question[] = [
       { field: "bailleur_location_meublee", label: "Location meublée" },
       { field: "bailleur_lmnp", label: "LMNP (Loueur Meublé Non Professionnel)" },
     ],
-    showIf: (_a, profiles) => profiles.includes("proprietaire_bailleur"),
+    showIf: (a) => !!a.est_bailleur,
   },
   {
     id: "bailleur_charges",
@@ -551,7 +596,7 @@ export const QUESTIONS: Question[] = [
       { value: "service_bic", label: "Prestations de services BIC (abattement 50%)" },
       { value: "service_bnc", label: "Professions libérales BNC (abattement 34%)" },
     ],
-    showIf: (_a, profiles) => profiles.includes("micro_entrepreneur"),
+    showIf: (a) => !!a.est_micro_entrepreneur_flag,
   },
   {
     id: "micro_ca",
@@ -562,7 +607,7 @@ export const QUESTIONS: Question[] = [
     field: "micro_ca_annuel",
     placeholder: "Ex : 25000",
     suffix: "€",
-    showIf: (_a, profiles) => profiles.includes("micro_entrepreneur"),
+    showIf: (a) => !!a.est_micro_entrepreneur_flag,
   },
 
   // ─── Frais de scolarité ───
@@ -579,7 +624,7 @@ export const QUESTIONS: Question[] = [
       { field: "scolarite_lycee_flag", label: "Au lycée" },
       { field: "scolarite_superieur_flag", label: "En études supérieures" },
     ],
-    showIf: (_a, profiles) => profiles.includes("parent"),
+    showIf: (a) => !!a.a_enfants,
     tooltip: "Réduction d'impôt forfaitaire : 61 € par collégien, 153 € par lycéen, 183 € par étudiant.",
   },
   {
@@ -668,7 +713,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Un abattement spécial s'ajoute à l'abattement de 10% sur les pensions.",
     type: "boolean",
     field: "senior_plus_65",
-    showIf: (_a, profiles) => profiles.includes("retraite"),
+    showIf: (a) => !!a.est_retraite,
     tooltip: "Abattement de 2 822 € si revenu net < 17 670 €, ou 1 411 € si revenu entre 17 670 € et 28 480 €.",
   },
   {
@@ -693,7 +738,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Les heures supplémentaires sont exonérées d'impôt jusqu'à 7 500 € par an.",
     type: "boolean",
     field: "heures_sup_exonerees",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
     tooltip: "Vérifiez que le montant exonéré apparaît bien en case 1GH de votre déclaration pré-remplie.",
   },
   {
@@ -718,6 +763,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Dividendes, intérêts de comptes, coupons d'obligations, etc.",
     type: "boolean",
     field: "revenus_capitaux",
+    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "revenus_capitaux_montant",
@@ -752,7 +798,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Parent célibataire, divorcé ou veuf avec enfant(s) à charge. Donne droit à une demi-part supplémentaire.",
     type: "boolean",
     field: "parent_isole",
-    showIf: (_a, profiles) => profiles.includes("parent"),
+    showIf: (a) => !!a.a_enfants,
     tooltip: "Case T si vous vivez seul(e), case L si vous avez élevé seul(e) un enfant pendant 5 ans.",
   },
 
@@ -765,7 +811,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Anciennement « prime Macron ». Exonérée d'impôt sous conditions.",
     type: "boolean",
     field: "prime_partage_valeur",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "ppv_montant",
@@ -940,7 +986,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Loyer plafonné en échange d'une réduction d'impôt de 15% à 65%.",
     type: "boolean",
     field: "loc_avantages",
-    showIf: (_a, profiles) => profiles.includes("proprietaire_bailleur"),
+    showIf: (a) => !!a.est_bailleur,
   },
   {
     id: "loc_avantages_type",
@@ -998,6 +1044,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Bitcoin, Ethereum, etc. Les plus-values sont imposées à 30% (flat tax).",
     type: "boolean",
     field: "plus_value_crypto",
+    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "crypto_montant",
@@ -1074,6 +1121,7 @@ export const QUESTIONS: Question[] = [
     text: "Avez-vous effectué un rachat (retrait) sur un contrat d'assurance-vie en 2025 ?",
     type: "boolean",
     field: "assurance_vie_rachat",
+    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "av_montant",
@@ -1195,7 +1243,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Abattement fiscal spécifique de 7 650 € sur vos revenus.",
     type: "boolean",
     field: "profession_journaliste",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "assistant_maternel",
@@ -1205,7 +1253,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Régime fiscal spécifique avec abattement forfaitaire sur les revenus.",
     type: "boolean",
     field: "profession_assistant_maternel",
-    showIf: (_a, profiles) => profiles.includes("salarie"),
+    showIf: (a) => !!a.est_salarie,
   },
   {
     id: "assistant_maternel_revenus",
@@ -1228,6 +1276,7 @@ export const QUESTIONS: Question[] = [
     subtext: "Titres acquis avant 2018 : abattements possibles de 50% ou 65% selon la durée.",
     type: "boolean",
     field: "plus_value_mobiliere",
+    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "pv_mob_montant",

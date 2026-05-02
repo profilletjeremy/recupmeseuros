@@ -3,36 +3,47 @@
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS } from "@/data/questions";
-import { PROFILE_LABELS, type ProfileType } from "@/data/types";
+import type { ProfileType } from "@/data/types";
 
 type Answers = Record<string, unknown>;
 
-const ALL_PROFILES = Object.entries(PROFILE_LABELS) as [ProfileType, string][];
+/**
+ * Dérive automatiquement les profils à partir des réponses de découverte.
+ * Remplace la sélection manuelle qui ratait les combinaisons (salarié + bailleur).
+ */
+function deriveProfiles(answers: Answers): ProfileType[] {
+  const profiles: ProfileType[] = [];
+  if (answers.est_salarie) profiles.push("salarie");
+  if (answers.est_retraite) profiles.push("retraite");
+  if (answers.a_enfants) profiles.push("parent");
+  if (answers.est_proprietaire) profiles.push("proprietaire_occupant");
+  if (answers.est_locataire_flag) profiles.push("locataire");
+  if (answers.est_bailleur) profiles.push("proprietaire_bailleur");
+  if (answers.est_aidant) profiles.push("aidant_familial");
+  if (answers.est_handicap) profiles.push("handicap");
+  if (answers.est_micro_entrepreneur_flag) profiles.push("micro_entrepreneur");
+  if (answers.est_premiere_declaration_flag) profiles.push("premiere_declaration");
+  return profiles;
+}
 
 export default function QuestionnaireClient() {
   const router = useRouter();
-  const [step, setStep] = useState<"profiles" | "questions" | "done">("profiles");
-  const [selectedProfiles, setSelectedProfiles] = useState<ProfileType[]>([]);
   const [answers, setAnswers] = useState<Answers>({});
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Filter questions based on selected profiles and previous answers
+  const derivedProfiles = useMemo(() => deriveProfiles(answers), [answers]);
+
+  // Filter questions based on previous answers (profiles are derived, not selected)
   const visibleQuestions = useMemo(() => {
     return QUESTIONS.filter((q) => {
       if (!q.showIf) return true;
-      return q.showIf(answers, selectedProfiles);
+      return q.showIf(answers, derivedProfiles);
     });
-  }, [answers, selectedProfiles]);
+  }, [answers, derivedProfiles]);
 
   const currentQuestion = visibleQuestions[currentIndex];
   const totalQuestions = visibleQuestions.length;
-  const progress = step === "profiles" ? 0 : Math.round(((currentIndex + 1) / totalQuestions) * 100);
-
-  const toggleProfile = useCallback((profile: ProfileType) => {
-    setSelectedProfiles((prev) =>
-      prev.includes(profile) ? prev.filter((p) => p !== profile) : [...prev, profile]
-    );
-  }, []);
+  const progress = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
   const setAnswer = useCallback((field: string, value: unknown) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
@@ -42,70 +53,21 @@ export default function QuestionnaireClient() {
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      // Done — save to sessionStorage and navigate
+      // Done — save to sessionStorage with derived profiles and navigate
       const data = {
-        profiles: selectedProfiles,
+        profiles: deriveProfiles(answers),
         ...answers,
       };
       sessionStorage.setItem("recupmeseuros_answers", JSON.stringify(data));
-      setStep("done");
       router.push("/resultats");
     }
-  }, [currentIndex, totalQuestions, selectedProfiles, answers, router]);
+  }, [currentIndex, totalQuestions, answers, router]);
 
   const goPrev = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex((i) => i - 1);
-    } else {
-      setStep("profiles");
     }
   }, [currentIndex]);
-
-  const startQuestions = useCallback(() => {
-    if (selectedProfiles.length === 0) return;
-    setStep("questions");
-    setCurrentIndex(0);
-  }, [selectedProfiles]);
-
-  // ─── Profile selection screen ───
-  if (step === "profiles") {
-    return (
-      <div className="animate-fadeIn">
-        <h1 className="text-2xl font-bold mb-2">Quel est votre profil ?</h1>
-        <p className="text-text-light mb-6">
-          Sélectionnez tous les profils qui vous correspondent. Cela nous permet de
-          vous poser les bonnes questions.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-          {ALL_PROFILES.map(([key, label]) => {
-            const selected = selectedProfiles.includes(key);
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => toggleProfile(key)}
-                className={`text-left p-4 rounded-xl border-2 transition-all ${
-                  selected
-                    ? "border-primary bg-blue-50 text-primary"
-                    : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
-              >
-                <span className="font-medium">{label}</span>
-              </button>
-            );
-          })}
-        </div>
-        <button
-          type="button"
-          onClick={startQuestions}
-          disabled={selectedProfiles.length === 0}
-          className="w-full bg-primary text-white font-bold py-4 rounded-xl disabled:opacity-40 hover:bg-primary-dark transition-colors"
-        >
-          Continuer ({selectedProfiles.length} profil{selectedProfiles.length > 1 ? "s" : ""} sélectionné{selectedProfiles.length > 1 ? "s" : ""})
-        </button>
-      </div>
-    );
-  }
 
   if (!currentQuestion) {
     return null;
@@ -251,13 +213,15 @@ export default function QuestionnaireClient() {
 
       {/* Navigation */}
       <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={goPrev}
-          className="px-6 py-3 rounded-xl border-2 border-gray-200 text-text-light font-medium hover:border-gray-300 transition-colors"
-        >
-          ← Retour
-        </button>
+        {currentIndex > 0 && (
+          <button
+            type="button"
+            onClick={goPrev}
+            className="px-6 py-3 rounded-xl border-2 border-gray-200 text-text-light font-medium hover:border-gray-300 transition-colors"
+          >
+            ← Retour
+          </button>
+        )}
         <button
           type="button"
           onClick={goNext}
@@ -267,7 +231,7 @@ export default function QuestionnaireClient() {
         </button>
       </div>
 
-      {/* Skip */}
+      {/* Skip (not for multi-boolean or first 3 discovery questions) */}
       {currentQuestion.type !== "multi_boolean" && (
         <button
           type="button"

@@ -229,7 +229,7 @@ export function evaluateTaxOpportunities(
   }
 
   // ─── E. Frais réels vs abattement 10% ───
-  if (answers.profiles.includes("salarie")) {
+  if (answers.profiles.includes("salarie") || answers.est_salarie) {
     const km = answers.frais_reels_km_aller_retour || 0;
     const jours = answers.frais_reels_jours_travailles || 220;
     const cv = answers.frais_reels_puissance_fiscale || 5;
@@ -480,7 +480,7 @@ export function evaluateTaxOpportunities(
 
   // ─── K. Micro-entrepreneur ───
   if (
-    answers.profiles.includes("micro_entrepreneur") &&
+    (answers.profiles.includes("micro_entrepreneur") || answers.est_micro_entrepreneur_flag) &&
     answers.micro_ca_annuel &&
     answers.micro_type_activite
   ) {
@@ -825,7 +825,7 @@ export function evaluateTaxOpportunities(
   }
 
   // ─── X. Parent isolé (case T/L) ───
-  if (answers.parent_isole && answers.profiles.includes("parent")) {
+  if (answers.parent_isole && (answers.profiles.includes("parent") || answers.a_enfants)) {
     opportunities.push({
       id: "parent_isole",
       title: "Demi-part supplémentaire — Parent isolé",
@@ -912,7 +912,7 @@ export function evaluateTaxOpportunities(
   }
 
   // ─── AB. Pension retraite — vérification abattement 10% ───
-  if (answers.profiles.includes("retraite")) {
+  if (answers.profiles.includes("retraite") || answers.est_retraite) {
     opportunities.push({
       id: "verif_pension_10pct",
       title: "Vérification abattement 10% sur pensions de retraite",
