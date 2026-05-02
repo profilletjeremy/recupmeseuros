@@ -1282,51 +1282,30 @@ export default function DashboardClient() {
       {/* ═══════════════ VIEW: SIMULATEURS ═══════════════ */}
       {activeView === "simulateurs" && (
         <div className="grid md:grid-cols-2 gap-4 animate-fadeIn">
-          <Link
-            href="/simulateurs/frais-reels"
-            className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:border-primary/30 hover:shadow-md transition-all group"
-          >
-            <span className="text-3xl mb-3 block">🚗</span>
-            <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
-              Simulateur frais réels
-            </h3>
-            <p className="text-sm text-text-light mb-3">
-              Calculez vos frais kilométriques, repas et télétravail. Comparez avec l&apos;abattement de 10% en temps réel.
-            </p>
-            <span className="text-sm text-primary font-medium">Lancer le simulateur →</span>
-          </Link>
-
-          <Link
-            href="/simulateurs/rattachement-pension"
-            className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:border-primary/30 hover:shadow-md transition-all group"
-          >
-            <span className="text-3xl mb-3 block">👨‍👩‍👧</span>
-            <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
-              Rattachement ou pension ?
-            </h3>
-            <p className="text-sm text-text-light mb-3">
-              Comparez l&apos;impact fiscal du rattachement d&apos;un enfant majeur vs la déduction d&apos;une pension alimentaire.
-            </p>
-            <span className="text-sm text-primary font-medium">Lancer le simulateur →</span>
-          </Link>
-
-          <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-6 opacity-60">
-            <span className="text-3xl mb-3 block">🏠</span>
-            <h3 className="font-bold text-lg mb-2">Simulateur revenus fonciers</h3>
-            <p className="text-sm text-text-light mb-3">
-              Micro-foncier vs régime réel, LMNP vs LMP... Comparez les régimes.
-            </p>
-            <span className="text-sm text-text-lighter font-medium">Bientôt disponible</span>
-          </div>
-
-          <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-6 opacity-60">
-            <span className="text-3xl mb-3 block">💰</span>
-            <h3 className="font-bold text-lg mb-2">Simulateur d&apos;impôt complet</h3>
-            <p className="text-sm text-text-light mb-3">
-              Estimez votre impôt net après toutes les réductions et crédits détectés.
-            </p>
-            <span className="text-sm text-text-lighter font-medium">Bientôt disponible</span>
-          </div>
+          {([
+            { href: "/simulateurs/impot-revenu", icon: "💰", title: "Simulateur d'impôt sur le revenu", desc: "Estimez votre IR : barème, décote, quotient familial, réductions et crédits." },
+            { href: "/simulateurs/frais-reels", icon: "🚗", title: "Simulateur frais réels", desc: "Frais kilométriques, repas, télétravail. Comparez avec l'abattement de 10%." },
+            { href: "/simulateurs/tmi", icon: "📊", title: "Tranche marginale (TMI)", desc: "Calculez votre TMI et visualisez la répartition par tranche." },
+            { href: "/simulateurs/micro-entrepreneur", icon: "🏪", title: "Micro-entrepreneur", desc: "Barème classique vs versement libératoire. Cotisations et impôt." },
+            { href: "/simulateurs/emploi-domicile", icon: "🏠", title: "Crédit emploi à domicile", desc: "Ménage, jardinage, garde, soutien scolaire... Calculez votre crédit de 50%." },
+            { href: "/simulateurs/per", icon: "🏦", title: "Simulateur PER", desc: "Économie d'impôt selon votre TMI et votre plafond PER disponible." },
+            { href: "/simulateurs/dons", icon: "❤️", title: "Réduction pour dons", desc: "Dons associations (66%), aide aux personnes (75%), partis politiques." },
+            { href: "/simulateurs/quotient-familial", icon: "👨‍👩‍👧‍👦", title: "Quotient familial", desc: "Impact du mariage, PACS, enfants et garde alternée sur votre impôt." },
+            { href: "/simulateurs/rattachement-pension", icon: "👨‍👩‍👧", title: "Rattachement ou pension ?", desc: "Comparez rattachement d'un enfant majeur vs pension alimentaire." },
+            { href: "/simulateurs/revenus-fonciers", icon: "🏘️", title: "Revenus fonciers", desc: "Micro-foncier vs régime réel. Déficit foncier et prélèvements sociaux." },
+            { href: "/simulateurs/plus-value-immobiliere", icon: "🔑", title: "Plus-value immobilière", desc: "Taxe à la vente : abattements par durée, IR, PS et surtaxe." },
+          ] as const).map((sim) => (
+            <Link
+              key={sim.href}
+              href={sim.href}
+              className="bg-white rounded-xl border-2 border-gray-200 p-5 hover:border-primary/30 hover:shadow-md transition-all group"
+            >
+              <span className="text-2xl mb-2 block">{sim.icon}</span>
+              <h3 className="font-bold mb-1 group-hover:text-primary transition-colors">{sim.title}</h3>
+              <p className="text-sm text-text-light mb-2">{sim.desc}</p>
+              <span className="text-sm text-primary font-medium">Lancer →</span>
+            </Link>
+          ))}
         </div>
       )}
 

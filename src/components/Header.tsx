@@ -36,11 +36,11 @@ export default function Header() {
         Guides
       </Link>
       <Link
-        href="/simulateurs/tmi"
+        href="/simulateurs"
         className="hover:text-primary transition-colors"
         onClick={() => setMenuOpen(false)}
       >
-        Simulateur TMI
+        Simulateurs
       </Link>
       {premium && (
         <Link
