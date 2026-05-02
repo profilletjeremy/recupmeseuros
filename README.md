@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RecupMesEuros — Assistant fiscal grand public
 
-## Getting Started
+Assistant d'aide à la préparation de la déclaration d'impôts pour les particuliers français.
+Déclaration 2026 des revenus 2025.
 
-First, run the development server:
+> **Avertissement** : Les résultats sont indicatifs. Vérifiez votre situation sur [impots.gouv.fr](https://www.impots.gouv.fr) ou auprès d'un professionnel.
+
+## Fonctionnalités
+
+- **Questionnaire dynamique** : sélection de profils, questions conditionnelles, une question par écran
+- **Moteur de règles fiscales** : calculs automatisés basés sur les barèmes officiels 2025
+- **Résultats détaillés** : score d'opportunité, estimations, cases à vérifier, justificatifs
+- **Génération PDF** : résumé téléchargeable côté client
+- **Guides SEO** : pages de contenu sur les sujets fiscaux courants
+- **Glossaire fiscal** : explications des termes (crédit, réduction, déduction, TMI, etc.)
+- **Calendrier fiscal** : dates clés de la déclaration 2026
+- **100% côté client** : aucune donnée envoyée à un serveur
+
+## Stack technique
+
+- **Next.js 16** (App Router)
+- **TypeScript**
+- **Tailwind CSS 4**
+- **Zod 4** (validation des données)
+- **jsPDF** (génération PDF côté client)
+- **Vitest** (tests unitaires)
+
+## Installation
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test          # run once
+npm run test:watch # watch mode
+```
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Pages Next.js (App Router)
+│   ├── page.tsx           # Landing page
+│   ├── questionnaire/     # Questionnaire dynamique
+│   ├── resultats/         # Page résultats
+│   ├── guides/            # Pages guides SEO
+│   ├── mentions-legales/  # Mentions légales
+│   └── confidentialite/   # Politique de confidentialité
+├── components/            # Composants partagés
+├── data/
+│   ├── types.ts           # Types TypeScript + schémas Zod
+│   ├── questions.ts       # Définition des questions du questionnaire
+│   └── taxRules2026.ts    # Règles fiscales 2026 (revenus 2025)
+└── lib/
+    ├── engine.ts          # Moteur d'évaluation fiscale
+    └── __tests__/         # Tests unitaires
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Mise à jour annuelle
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pour adapter à une nouvelle année fiscale :
 
-## Deploy on Vercel
+1. Dupliquer `src/data/taxRules2026.ts` en `taxRules2027.ts`
+2. Mettre à jour les barèmes, plafonds et seuils
+3. Mettre à jour les dates du calendrier fiscal
+4. Mettre à jour l'import dans `src/lib/engine.ts`
+5. Vérifier les tests unitaires
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Règles à vérifier avant mise en production
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Vérifier les barèmes kilométriques sur impots.gouv.fr
+- [ ] Vérifier les plafonds emploi à domicile
+- [ ] Vérifier le plafond garde d'enfants (revalorisé récemment)
+- [ ] Vérifier le plafond dons aide aux personnes en difficulté
+- [ ] Vérifier le plafond pension alimentaire enfant majeur
+- [ ] Vérifier le forfait hébergement ascendant
+- [ ] Vérifier les seuils micro-entrepreneur
+- [ ] Vérifier les dates du calendrier fiscal
+- [ ] Vérifier les numéros de cases sur les formulaires
+- [ ] Vérifier le crédit borne de recharge (prorogé ou modifié ?)
+- [ ] Faire relire les mentions légales par un juriste
+- [ ] Compléter les coordonnées éditeur dans les mentions légales
+- [ ] Tester sur mobile (iOS Safari, Android Chrome)
+
+## Licence
+
+Privé — Tous droits réservés.
