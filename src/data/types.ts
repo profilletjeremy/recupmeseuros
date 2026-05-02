@@ -149,6 +149,106 @@ export const QuestionnaireAnswers = z.object({
   senior_plus_65: z.boolean().optional(),
   senior_revenu_net: z.number().min(0).optional(),
 
+  // Heures supplémentaires exonérées
+  heures_sup_exonerees: z.boolean().optional(),
+  heures_sup_montant: z.number().min(0).optional(),
+
+  // Revenus de capitaux mobiliers (PFU vs barème)
+  revenus_capitaux: z.boolean().optional(),
+  revenus_capitaux_montant: z.number().min(0).optional(),
+  option_bareme_2op: z.boolean().optional(),
+
+  // Parent isolé
+  parent_isole: z.boolean().optional(),
+
+  // Prime de partage de la valeur (PPV)
+  prime_partage_valeur: z.boolean().optional(),
+  prime_partage_montant: z.number().min(0).optional(),
+
+  // Déficit foncier
+  revenus_fonciers_bruts: z.number().min(0).optional(),
+  charges_foncieres_total: z.number().min(0).optional(),
+
+  // CSG déductible sur revenus du patrimoine
+  csg_deductible_patrimoine: z.boolean().optional(),
+  csg_deductible_montant: z.number().min(0).optional(),
+
+  // Prestation compensatoire (divorce)
+  prestation_compensatoire: z.boolean().optional(),
+  prestation_compensatoire_montant: z.number().min(0).optional(),
+  prestation_compensatoire_12mois: z.boolean().optional(),
+
+  // Investissement Pinel / Pinel+
+  investissement_pinel: z.boolean().optional(),
+  pinel_montant: z.number().min(0).optional(),
+  pinel_type: z.enum(["pinel_classique", "pinel_plus"]).optional(),
+  pinel_duree: z.enum(["6", "9", "12"]).optional(),
+
+  // Denormandie
+  investissement_denormandie: z.boolean().optional(),
+  denormandie_montant: z.number().min(0).optional(),
+
+  // Loc'Avantages
+  loc_avantages: z.boolean().optional(),
+  loc_avantages_type: z.enum(["loc1", "loc2", "loc3"]).optional(),
+
+  // FIP / FCPI
+  investissement_fip_fcpi: z.boolean().optional(),
+  fip_fcpi_montant: z.number().min(0).optional(),
+  fip_outremer_corse: z.boolean().optional(),
+
+  // Plus-values crypto
+  plus_value_crypto: z.boolean().optional(),
+  pv_crypto_montant: z.number().min(0).optional(),
+
+  // Location meublée tourisme (Airbnb)
+  location_meuble_tourisme: z.boolean().optional(),
+  airbnb_revenus: z.number().min(0).optional(),
+  airbnb_classe: z.boolean().optional(),
+
+  // Girardin industriel / logement social
+  girardin_industriel: z.boolean().optional(),
+  girardin_montant: z.number().min(0).optional(),
+
+  // Assurance-vie rachat après 8 ans
+  assurance_vie_rachat: z.boolean().optional(),
+  av_rachat_montant: z.number().min(0).optional(),
+  av_duree_8ans: z.boolean().optional(),
+
+  // SOFICA
+  investissement_sofica: z.boolean().optional(),
+  sofica_montant: z.number().min(0).optional(),
+
+  // Malraux
+  investissement_malraux: z.boolean().optional(),
+  malraux_montant: z.number().min(0).optional(),
+
+  // Monuments Historiques
+  monuments_historiques: z.boolean().optional(),
+  mh_travaux_montant: z.number().min(0).optional(),
+
+  // DEFI Forêt
+  investissement_foret: z.boolean().optional(),
+  foret_montant: z.number().min(0).optional(),
+
+  // Professions spécifiques
+  profession_journaliste: z.boolean().optional(),
+  profession_assistant_maternel: z.boolean().optional(),
+  assistant_maternel_revenus: z.number().min(0).optional(),
+
+  // Plus-values mobilières avec abattements
+  plus_value_mobiliere: z.boolean().optional(),
+  pv_mobiliere_montant: z.number().min(0).optional(),
+  pv_mobiliere_duree: z.enum(["moins_2", "2_8", "plus_8"]).optional(),
+
+  // Crédit investissement Corse
+  investissement_corse: z.boolean().optional(),
+  invest_corse_montant: z.number().min(0).optional(),
+
+  // Souscription ESUS
+  investissement_esus: z.boolean().optional(),
+  esus_montant: z.number().min(0).optional(),
+
   // Erreurs fréquentes
   revenus_vinted_leboncoin: z.boolean().optional(),
   enfant_majeur_rattachement: z.boolean().optional(),
