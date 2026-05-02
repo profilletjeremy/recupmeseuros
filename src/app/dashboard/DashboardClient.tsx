@@ -442,17 +442,30 @@ function buildSteps(result: TaxResult): Step[] {
           if (nonStandard.length === 0) return null;
           return (
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
-              <h4 className="font-bold text-primary mb-2">Annexes à cocher</h4>
+              <h4 className="font-bold text-primary mb-2">Formulaires à activer sur impots.gouv.fr</h4>
               <p className="text-sm text-text-light mb-3">
-                Lors de la première page, cochez les formulaires suivants pour débloquer les cases nécessaires :
+                Sur la première page de votre déclaration en ligne, il faut <strong>cocher des cases pour ajouter les formulaires annexes</strong>. Sans ça, les cases à remplir n&apos;apparaîtront pas. Cochez :
               </p>
-              <div className="flex flex-wrap gap-2">
-                {nonStandard.map(f => (
-                  <div key={f} className="inline-flex items-center gap-2 bg-white border border-primary/30 rounded-lg px-3 py-2">
-                    <span className="font-mono font-bold text-primary">{f}</span>
-                    <CopyButton text={f} />
-                  </div>
-                ))}
+              <div className="space-y-2">
+                {nonStandard.map(f => {
+                  const explanations: Record<string, string> = {
+                    "2042-RICI": "Cochez « Réductions et crédits d'impôt » — pour vos dons, emploi à domicile, garde d'enfant, scolarité, etc.",
+                    "2042-C-PRO": "Cochez « Revenus des professions non salariées » — pour votre micro-entreprise ou activité indépendante.",
+                    "2044": "Cochez « Revenus fonciers » — pour vos revenus locatifs (location vide).",
+                    "2042 + 2047": "Cochez « Revenus encaissés à l'étranger » — pour déclarer vos revenus frontaliers.",
+                  };
+                  return (
+                    <div key={f} className="flex items-start gap-3 bg-white border border-primary/30 rounded-lg px-3 py-2.5">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-mono font-bold text-primary">{f}</span>
+                        <CopyButton text={f} />
+                      </div>
+                      {explanations[f] && (
+                        <p className="text-xs text-text-light mt-0.5">{explanations[f]}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
