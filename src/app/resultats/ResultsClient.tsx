@@ -6,7 +6,8 @@ import Link from "next/link";
 import { evaluateTaxOpportunities } from "@/lib/engine";
 import { QuestionnaireAnswers } from "@/data/types";
 import type { TaxResult, TaxOpportunity } from "@/data/types";
-import { isPremium, setPremium, PREMIUM_PRICE, PREMIUM_FEATURES } from "@/lib/premium";
+import { isPremium, setPremium, PREMIUM_TIERS, PREMIUM_PRICE } from "@/lib/premium";
+import type { PremiumTier } from "@/lib/premium";
 import Disclaimer from "@/components/Disclaimer";
 
 const SCORE_CONFIG = {
@@ -204,19 +205,23 @@ function PremiumOpportunityCard({ opp }: { opp: TaxOpportunity }) {
   );
 }
 
-// ─── Premium unlock modal ───
+// ─── Premium unlock modal (tiered pricing) ───
 function PremiumModal({ result, onClose, onUnlocked }: { result: TaxResult; onClose: () => void; onUnlocked: () => void }) {
-  const handlePurchase = () => {
+  const handlePurchase = (tier: PremiumTier) => {
     // TODO: Intégrer Stripe / paiement réel
     // Pour le MVP, on simule le déblocage
-    setPremium();
+    setPremium(tier);
     onUnlocked();
   };
+
+  const tiers = Object.entries(PREMIUM_TIERS) as [PremiumTier, typeof PREMIUM_TIERS[PremiumTier]][];
+  const hasFrontalier = result.opportunities.some((o) => o.id.startsWith("frontalier_"));
+  const hasTerritorial = result.opportunities.some((o) => ["abattement_dom", "alsace_moselle", "corse_patrimoine"].includes(o.id));
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 animate-fadeIn"
+        className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center mb-6">
@@ -232,34 +237,67 @@ function PremiumModal({ result, onClose, onUnlocked }: { result: TaxResult; onCl
           </p>
         </div>
 
-        <div className="bg-surface rounded-xl p-5 mb-6">
-          <p className="font-semibold mb-3">Ce que vous obtenez :</p>
-          <ul className="space-y-2">
-            {PREMIUM_FEATURES.map((feature) => (
-              <li key={feature} className="flex items-start gap-2 text-sm">
-                <span className="text-secondary mt-0.5">✓</span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </div>
-
         {result.totalEstimatedMax > 0 && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-center">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-center">
             <p className="text-sm text-green-800">
-              Vous payez <strong>{PREMIUM_PRICE} €</strong> pour potentiellement récupérer
+              Investissez quelques euros pour potentiellement récupérer
               {" "}<strong>{result.totalEstimatedMin.toLocaleString("fr-FR")} à {result.totalEstimatedMax.toLocaleString("fr-FR")} €</strong>
             </p>
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={handlePurchase}
-          className="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary-dark transition-colors text-lg mb-3"
-        >
-          Obtenir mon guide complet — {PREMIUM_PRICE} €
-        </button>
+        {/* Tiers grid */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {tiers.map(([key, tier]) => {
+            const isPopular = "popular" in tier && tier.popular;
+            const isRecommended =
+              (key === "expert" && hasFrontalier) ||
+              (key === "complet" && hasTerritorial && !hasFrontalier) ||
+              (key === "essentiel" && !hasTerritorial && !hasFrontalier);
+
+            return (
+              <div
+                key={key}
+                className={`relative rounded-xl border-2 p-5 flex flex-col ${
+                  isPopular ? "border-primary bg-primary/5" : "border-gray-200"
+                }`}
+              >
+                {isPopular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-3 py-0.5 rounded-full">
+                    Populaire
+                  </span>
+                )}
+                {isRecommended && !isPopular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs font-bold px-3 py-0.5 rounded-full whitespace-nowrap">
+                    Recommandé pour vous
+                  </span>
+                )}
+                <h3 className="font-bold text-lg">{tier.name}</h3>
+                <p className="text-xs text-text-lighter mb-3">{tier.subtitle}</p>
+                <p className="text-3xl font-bold mb-4">{tier.price} <span className="text-sm font-normal text-text-lighter">€</span></p>
+                <ul className="space-y-2 mb-5 flex-1">
+                  {tier.features.map((f) => (
+                    <li key={f} className="flex items-start gap-1.5 text-sm">
+                      <span className="text-green-600 shrink-0 mt-0.5">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={() => handlePurchase(key)}
+                  className={`w-full py-3 rounded-xl font-bold transition-colors text-sm ${
+                    isPopular
+                      ? "bg-primary text-white hover:bg-primary-dark"
+                      : "bg-gray-100 text-text hover:bg-gray-200"
+                  }`}
+                >
+                  {tier.cta}
+                </button>
+              </div>
+            );
+          })}
+        </div>
 
         <p className="text-xs text-text-lighter text-center mb-3">
           Paiement sécurisé — Satisfait ou remboursé 14 jours

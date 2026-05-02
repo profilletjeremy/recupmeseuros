@@ -5,6 +5,19 @@ import type {
   ScoreLevel,
 } from "@/data/types";
 import * as rules from "@/data/taxRules2026";
+import {
+  getDomAbatement,
+  AUTONOMOUS_TERRITORIES,
+  ALSACE_MOSELLE,
+  CORSE_RULES,
+  isZoneTendue,
+  ENCADREMENT_LOYERS_CITIES,
+  getFrontalierConvention,
+  DEMENAGEMENT_FISCAL,
+  BORDER_COUNTRY_LABELS,
+} from "@/data/territoryRules";
+import { getDepartment, departmentFromPostalCode } from "@/data/departments";
+import type { BorderCountry } from "@/data/departments";
 
 /**
  * Calcule les frais kilométriques selon le barème officiel.
@@ -607,6 +620,150 @@ export function evaluateTaxOpportunities(
         ],
         officialLink: "https://www.service-public.fr/particuliers/vosdroits/F2329",
       });
+    }
+  }
+
+  // ─── P. Abattement DOM ───
+  const territory = answers.territory;
+  if (territory) {
+    const domAbat = getDomAbatement(territory as import("@/data/departments").TerritoryType);
+    if (domAbat) {
+      opportunities.push({
+        id: "abattement_dom",
+        title: `Abattement DOM ${Math.round(domAbat.rate * 100)}%`,
+        description: domAbat.description,
+        type: "reduction",
+        estimatedSaving: { min: Math.round(domAbat.maxAmount * 0.3), max: domAbat.maxAmount },
+        confidence: "haute",
+        boxes: domAbat.boxes,
+        form: domAbat.form,
+        justificatifs: [
+          "Justificatif de domicile au 31 décembre 2025 dans le DOM",
+        ],
+        officialLink: domAbat.officialLink,
+      });
+    }
+
+    // Territoire autonome — avertissement
+    const autonome = AUTONOMOUS_TERRITORIES.find((t) =>
+      t.id === territory
+    );
+    if (autonome) {
+      warnings.push(
+        `${autonome.name} : ${autonome.fiscalRegime}. ${autonome.description}`
+      );
+    }
+  }
+
+  // ─── Q. Alsace-Moselle ───
+  const deptCode = answers.department_code || (answers.code_postal ? departmentFromPostalCode(String(answers.code_postal)) : "");
+  if (deptCode && ALSACE_MOSELLE.departments.includes(deptCode)) {
+    const dept = getDepartment(deptCode);
+    opportunities.push({
+      id: "alsace_moselle",
+      title: "Régime local Alsace-Moselle",
+      description: `Vous résidez en ${dept?.name || "Alsace-Moselle"}, département soumis au régime local. Cela impacte vos cotisations sociales (contribution maladie de 1,30%), vos remboursements santé (90% au lieu de 70%), et le calcul de vos jours travaillés (2 jours fériés supplémentaires).`,
+      type: "info",
+      estimatedSaving: null,
+      confidence: "haute",
+      boxes: [],
+      form: "2042",
+      justificatifs: [],
+      officialLink: ALSACE_MOSELLE.officialLink,
+    });
+  }
+
+  // ─── R. Corse — spécificités patrimoniales ───
+  if (deptCode && CORSE_RULES.departments.includes(deptCode)) {
+    if (hasBailleur || answers.residence_secondaire_zone_tendue) {
+      opportunities.push({
+        id: "corse_patrimoine",
+        title: "Spécificités fiscales Corse",
+        description: "La Corse bénéficie de régimes patrimoniaux et immobiliers spécifiques : exonérations successorales historiques, plafonds Pinel adaptés, crédit d'impôt investissement productif (art. 244 quater E). Consultez un notaire ou fiscaliste local.",
+        type: "info",
+        estimatedSaving: null,
+        confidence: "moyenne",
+        boxes: [],
+        form: "Selon situation",
+        justificatifs: [],
+        officialLink: CORSE_RULES.officialLink,
+      });
+    }
+  }
+
+  // ─── S. Zones tendues ───
+  if (deptCode && isZoneTendue(deptCode)) {
+    if (answers.residence_secondaire_zone_tendue) {
+      warnings.push(
+        "Votre résidence secondaire est potentiellement en zone tendue. Certaines communes appliquent une surtaxe de 5% à 60% sur la taxe d'habitation des résidences secondaires. Vérifiez auprès de votre commune."
+      );
+    }
+    if (answers.investissement_locatif_zone_tendue) {
+      const hasEncadrement = ENCADREMENT_LOYERS_CITIES.some((c) =>
+        answers.commune?.toLowerCase().includes(c.toLowerCase())
+      );
+      if (hasEncadrement) {
+        warnings.push(
+          `Votre bien locatif est dans une ville avec encadrement des loyers (${answers.commune}). Les loyers sont plafonnés. Vérifiez la conformité sur l'observatoire des loyers de votre ville.`
+        );
+      }
+      warnings.push(
+        "En zone tendue, la location courte durée (Airbnb) est souvent soumise à autorisation municipale et peut nécessiter un changement d'usage. Vérifiez les règles de votre commune."
+      );
+    }
+  }
+
+  // ─── T. Frontalier ───
+  if (answers.travail_etranger && answers.pays_employeur && answers.pays_employeur !== "autre") {
+    const convention = getFrontalierConvention(answers.pays_employeur as BorderCountry);
+    if (convention) {
+      const countryLabel = BORDER_COUNTRY_LABELS[answers.pays_employeur as BorderCountry];
+      const rulesDesc = convention.rules.map((r) => `${r.title} : ${r.description}`).join("\n\n");
+
+      opportunities.push({
+        id: `frontalier_${answers.pays_employeur}`,
+        title: `Convention fiscale frontalière — ${countryLabel}`,
+        description: `En tant que frontalier travaillant en ${countryLabel}, des règles spécifiques s'appliquent à votre déclaration. ${convention.rules[0].description}`,
+        type: "info",
+        estimatedSaving: null,
+        confidence: "haute",
+        boxes: convention.boxes,
+        form: convention.form,
+        justificatifs: [
+          "Attestation de résidence fiscale (formulaire 5000)",
+          "Bulletins de salaire de l'employeur étranger",
+          "Justificatif de jours travaillés dans chaque pays",
+          "Formulaire 2047 (revenus encaissés à l'étranger)",
+        ],
+        officialLink: convention.officialLink,
+      });
+
+      // Alerte télétravail
+      const ttJours = answers.teletravail_frontalier_jours || 0;
+      if (ttJours > 0) {
+        const limits: Record<string, number> = {
+          suisse: 96, luxembourg: 34, belgique: 34, allemagne: 34,
+        };
+        const limit = limits[answers.pays_employeur];
+        if (limit && ttJours > limit) {
+          warnings.push(
+            `Attention : vous avez télétravaillé ${ttJours} jours depuis la France. La convention ${countryLabel} tolère ${limit} jours maximum. Au-delà, les jours supplémentaires sont imposables en France. Consultez votre centre des impôts.`
+          );
+        }
+      }
+    }
+  }
+
+  // ─── U. Déménagement en cours d'année ───
+  if (answers.demenagement_annee) {
+    warnings.push(
+      `${DEMENAGEMENT_FISCAL.rules[0].title} : ${DEMENAGEMENT_FISCAL.rules[0].description}`
+    );
+    // DOM ↔ métropole
+    if (territory && territory !== "metropole" && territory !== "corse") {
+      warnings.push(
+        "Changement métropole ↔ DOM : c'est votre résidence au 31 décembre 2025 qui détermine si vous bénéficiez de l'abattement DOM. Assurez-vous que votre adresse fiscale est correcte."
+      );
     }
   }
 

@@ -341,4 +341,155 @@ describe("evaluateTaxOpportunities", () => {
     const opp = result.opportunities.find((o) => o.id === "abattement_senior");
     expect(opp).toBeUndefined();
   });
+
+  // ─── Territory tests ───
+  it("détecte l'abattement DOM 30% pour la Martinique", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "martinique",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "abattement_dom");
+    expect(opp).toBeDefined();
+    expect(opp!.title).toContain("30%");
+    expect(opp!.estimatedSaving!.max).toBe(2450);
+  });
+
+  it("détecte l'abattement DOM 40% pour la Guyane", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "guyane",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "abattement_dom");
+    expect(opp).toBeDefined();
+    expect(opp!.title).toContain("40%");
+    expect(opp!.estimatedSaving!.max).toBe(4050);
+  });
+
+  it("détecte le régime Alsace-Moselle par code postal", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        code_postal: "67000",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "alsace_moselle");
+    expect(opp).toBeDefined();
+    expect(opp!.title).toContain("Alsace-Moselle");
+  });
+
+  it("ne détecte pas Alsace-Moselle pour Paris", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        code_postal: "75015",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "alsace_moselle");
+    expect(opp).toBeUndefined();
+  });
+
+  it("détecte un frontalier Suisse", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        travail_etranger: true,
+        pays_employeur: "suisse",
+        jours_travailles_etranger: 220,
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "frontalier_suisse");
+    expect(opp).toBeDefined();
+    expect(opp!.form).toContain("2047");
+  });
+
+  it("détecte un frontalier Luxembourg", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        travail_etranger: true,
+        pays_employeur: "luxembourg",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "frontalier_luxembourg");
+    expect(opp).toBeDefined();
+  });
+
+  it("avertit si télétravail frontalier dépasse le seuil Suisse", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        travail_etranger: true,
+        pays_employeur: "suisse",
+        teletravail_frontalier_jours: 120,
+      })
+    );
+    expect(result.warnings.some((w) => w.includes("télétravaillé") && w.includes("96"))).toBe(true);
+  });
+
+  it("pas d'alerte télétravail si sous le seuil", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        travail_etranger: true,
+        pays_employeur: "luxembourg",
+        teletravail_frontalier_jours: 20,
+      })
+    );
+    expect(result.warnings.some((w) => w.includes("télétravaillé") && w.includes("34"))).toBe(false);
+  });
+
+  it("avertit pour résidence secondaire en zone tendue", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+        code_postal: "75015",
+        residence_secondaire_zone_tendue: true,
+      })
+    );
+    expect(result.warnings.some((w) => w.includes("surtaxe"))).toBe(true);
+  });
+
+  it("avertit pour déménagement en cours d'année", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "martinique",
+        demenagement_annee: true,
+      })
+    );
+    expect(result.warnings.some((w) => w.includes("31 décembre"))).toBe(true);
+    expect(result.warnings.some((w) => w.includes("DOM"))).toBe(true);
+  });
+
+  it("pas d'abattement DOM pour la métropole", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "metropole",
+      })
+    );
+    const opp = result.opportunities.find((o) => o.id === "abattement_dom");
+    expect(opp).toBeUndefined();
+  });
+
+  it("avertit pour territoire autonome (Polynésie)", () => {
+    const result = evaluateTaxOpportunities(
+      makeAnswers({
+        residence_country: "france",
+        territory: "polynesie",
+      })
+    );
+    expect(result.warnings.some((w) => w.includes("Polynésie"))).toBe(true);
+  });
 });

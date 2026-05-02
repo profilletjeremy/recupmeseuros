@@ -32,6 +32,28 @@ export const PROFILE_LABELS: Record<ProfileType, string> = {
 export const QuestionnaireAnswers = z.object({
   profiles: z.array(ProfileType).min(1),
 
+  // Localisation fiscale
+  residence_country: z.enum(["france", "etranger"]).optional(),
+  territory: z.enum([
+    "metropole", "martinique", "guadeloupe", "guyane", "reunion",
+    "mayotte", "corse", "polynesie", "nouvelle_caledonie",
+    "saint_martin", "saint_barthelemy", "wallis_futuna",
+    "saint_pierre_miquelon", "etranger",
+  ]).optional(),
+  department_code: z.string().optional(),
+  commune: z.string().optional(),
+  code_postal: z.union([z.string(), z.number()]).optional(),
+  demenagement_annee: z.boolean().optional(),
+  travail_etranger: z.boolean().optional(),
+  pays_employeur: z.enum([
+    "suisse", "luxembourg", "belgique", "allemagne",
+    "espagne", "italie", "monaco", "autre",
+  ]).optional(),
+  jours_travailles_etranger: z.number().min(0).max(365).optional(),
+  teletravail_frontalier_jours: z.number().min(0).max(365).optional(),
+  residence_secondaire_zone_tendue: z.boolean().optional(),
+  investissement_locatif_zone_tendue: z.boolean().optional(),
+
   // Emploi à domicile
   emploi_menage: z.boolean().optional(),
   emploi_jardinage: z.boolean().optional(),

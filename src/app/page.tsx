@@ -345,6 +345,43 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Guides territoriaux */}
+        <section className="py-16 bg-surface">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
+              Votre lieu de vie change vos impôts
+            </h2>
+            <p className="text-text-light text-center mb-10 max-w-2xl mx-auto">
+              Abattements DOM, régime frontalier, zones tendues, Alsace-Moselle... Chaque territoire a ses règles.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { href: "/impots-martinique", label: "Martinique", badge: "-30%" },
+                { href: "/impots-guadeloupe", label: "Guadeloupe", badge: "-30%" },
+                { href: "/impots-reunion", label: "La Réunion", badge: "-30%" },
+                { href: "/impots-guyane", label: "Guyane", badge: "-40%" },
+                { href: "/impots-mayotte", label: "Mayotte", badge: "-40%" },
+                { href: "/impots-frontalier-suisse", label: "Frontalier Suisse", badge: "Conv." },
+                { href: "/impots-luxembourg-france", label: "Frontalier Lux.", badge: "Conv." },
+                { href: "/impots-alsace-moselle", label: "Alsace-Moselle", badge: "Local" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="bg-white rounded-xl p-4 border border-gray-100 hover:border-primary/30 hover:shadow-md transition-all text-center group"
+                >
+                  <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary mb-2">
+                    {item.badge}
+                  </span>
+                  <p className="text-sm font-semibold group-hover:text-primary transition-colors">
+                    {item.label}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Simulateurs gratuits */}
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4">
