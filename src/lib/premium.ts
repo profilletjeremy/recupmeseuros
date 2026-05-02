@@ -22,30 +22,47 @@ export function getPremiumTier(): PremiumTier | null {
   return null;
 }
 
+/** Vérifie si le tier permet l'accès à une fonctionnalité */
+export function hasTierAccess(required: PremiumTier): boolean {
+  const tier = getPremiumTier();
+  if (!tier) return false;
+  const order: PremiumTier[] = ["essentiel", "complet", "expert"];
+  return order.indexOf(tier) >= order.indexOf(required);
+}
+
 export const PREMIUM_TIERS = {
   essentiel: {
     price: 19,
     name: "Essentiel",
-    subtitle: "L'indispensable",
+    subtitle: "Aperçu de votre potentiel",
     features: [
+      "Nombre d'avantages détectés",
+      "Estimation du gain potentiel",
+      "Formulaires concernés",
+      "Résumé de votre situation",
+    ],
+    excluded: [
       "Cases exactes à remplir",
-      "Formulaires concernés (2042, RICI...)",
-      "Checklist personnalisée",
-      "Liste des justificatifs",
+      "Guide pas-à-pas",
+      "PDF téléchargeable",
+      "Boutons copier-coller",
+      "Calendrier fiscal .ICS",
     ],
     cta: "Débloquer pour 19 €",
   },
   complet: {
     price: 39,
     name: "Complet",
-    subtitle: "Le plus populaire",
+    subtitle: "Le guide pour agir",
     features: [
       "Tout Essentiel +",
-      "Rapport territorial complet",
-      "Avantages DOM / zones tendues",
+      "Cases exactes à remplir",
       "Guide pas-à-pas interactif",
+      "Boutons copier-coller",
       "PDF personnalisé téléchargeable",
       "Liens directs impots.gouv.fr",
+      "Calendrier fiscal .ICS",
+      "Liste complète des justificatifs",
     ],
     cta: "Débloquer pour 39 €",
     popular: true,
@@ -56,10 +73,10 @@ export const PREMIUM_TIERS = {
     subtitle: "Situations complexes",
     features: [
       "Tout Complet +",
-      "Module frontalier (Suisse, Luxembourg...)",
-      "Déclaration couple / complexe",
+      "Module frontalier complet",
+      "Rapport territorial détaillé",
       "Conventions fiscales internationales",
-      "Calendrier fiscal .ICS personnalisé",
+      "Optimisation couple / complexe",
       "Assistance prioritaire",
     ],
     cta: "Débloquer pour 59 €",
