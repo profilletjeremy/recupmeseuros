@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Cr\u00e9dit d\u2019imp\u00f4t emploi \u00e0 domicile 2026 : guide pratique | R\u00e9cupMesEuros",
+  title: "Crédit d’impôt emploi à domicile 2026 : guide pratique | RécupMesEuros",
   description:
-    "Guide complet sur le cr\u00e9dit d\u2019imp\u00f4t de 50\u00a0% pour l\u2019emploi \u00e0 domicile : services \u00e9ligibles, plafonds, cases 7DB/7DL/7DQ du formulaire 2042-RICI, CESU et justificatifs.",
+    "Guide complet sur le crédit d’impôt de 50 % pour l’emploi à domicile : services éligibles, plafonds, cases 7DB/7DL/7DQ du formulaire 2042-RICI, CESU et justificatifs.",
 };
 
 export default function GuideEmploiADomicile() {
@@ -17,85 +17,85 @@ export default function GuideEmploiADomicile() {
       <main className="flex-1 bg-surface">
         <article className="max-w-3xl mx-auto px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Emploi \u00e0 domicile : r\u00e9cup\u00e9rez 50% en cr\u00e9dit d&apos;imp\u00f4t
+            Emploi à domicile : récupérez 50% en crédit d&apos;impôt
           </h1>
 
           <p className="text-text-light text-lg mb-8">
-            Femme de m\u00e9nage, jardinier, soutien scolaire, aide \u00e0 domicile... L&apos;\u00c9tat
-            vous rembourse <strong>la moiti\u00e9 de ce que vous d\u00e9pensez</strong>, m\u00eame si vous
-            ne payez pas d&apos;imp\u00f4t.
+            Femme de ménage, jardinier, soutien scolaire, aide à domicile... L&apos;État
+            vous rembourse <strong>la moitié de ce que vous dépensez</strong>, même si vous
+            ne payez pas d&apos;impôt.
           </p>
 
-          {/* ─── R\u00e9sum\u00e9 en 30 secondes ─── */}
+          {/* ─── Résumé en 30 secondes ─── */}
           <div className="bg-white rounded-2xl border-2 border-primary/20 p-6 mb-10">
             <h2 className="text-lg font-bold text-primary mb-4">En 30 secondes</h2>
             <div className="grid md:grid-cols-3 gap-4 text-center">
               <div className="bg-primary/5 rounded-xl p-4">
                 <p className="text-3xl font-bold text-primary">50%</p>
-                <p className="text-sm text-text-light mt-1">de cr\u00e9dit d&apos;imp\u00f4t</p>
+                <p className="text-sm text-text-light mt-1">de crédit d&apos;impôt</p>
               </div>
               <div className="bg-primary/5 rounded-xl p-4">
-                <p className="text-3xl font-bold text-primary">12 000 \u20ac</p>
-                <p className="text-sm text-text-light mt-1">plafond de d\u00e9penses/an</p>
+                <p className="text-3xl font-bold text-primary">12 000 €</p>
+                <p className="text-sm text-text-light mt-1">plafond de dépenses/an</p>
               </div>
               <div className="bg-primary/5 rounded-xl p-4">
-                <p className="text-3xl font-bold text-primary">6 000 \u20ac</p>
-                <p className="text-sm text-text-light mt-1">cr\u00e9dit maximum</p>
+                <p className="text-3xl font-bold text-primary">6 000 €</p>
+                <p className="text-sm text-text-light mt-1">crédit maximum</p>
               </div>
             </div>
             <p className="text-sm text-text-lighter mt-4 text-center">
-              Cr\u00e9dit d&apos;imp\u00f4t = rembours\u00e9 m\u00eame si vous ne payez pas d&apos;imp\u00f4t (contrairement \u00e0 une r\u00e9duction).
+              Crédit d&apos;impôt = remboursé même si vous ne payez pas d&apos;impôt (contrairement à une réduction).
             </p>
           </div>
 
-          {/* ─── Comment \u00e7a marche ─── */}
+          {/* ─── Comment ça marche ─── */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Comment \u00e7a marche concr\u00e8tement ?</h2>
+            <h2 className="text-2xl font-bold mb-4">Comment ça marche concrètement ?</h2>
             <div className="space-y-4">
               <div className="flex gap-4 items-start">
                 <span className="shrink-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-lg font-bold">1</span>
                 <div>
-                  <h3 className="font-bold">Vous payez un service \u00e0 domicile</h3>
-                  <p className="text-text-light text-sm">Directement (CESU) ou via un organisme agr\u00e9\u00e9.</p>
+                  <h3 className="font-bold">Vous payez un service à domicile</h3>
+                  <p className="text-text-light text-sm">Directement (CESU) ou via un organisme agréé.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
                 <span className="shrink-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-lg font-bold">2</span>
                 <div>
-                  <h3 className="font-bold">Vous d\u00e9clarez le montant en case 7DB</h3>
-                  <p className="text-text-light text-sm">Sur le formulaire 2042-RICI, lors de votre d\u00e9claration de revenus.</p>
+                  <h3 className="font-bold">Vous déclarez le montant en case 7DB</h3>
+                  <p className="text-text-light text-sm">Sur le formulaire 2042-RICI, lors de votre déclaration de revenus.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
                 <span className="shrink-0 w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center text-lg font-bold">3</span>
                 <div>
-                  <h3 className="font-bold">L&apos;\u00c9tat vous rembourse 50%</h3>
-                  <p className="text-text-light text-sm">Vers\u00e9 sur votre compte en septembre, ou d\u00e9duit de votre imp\u00f4t.</p>
+                  <h3 className="font-bold">L&apos;État vous rembourse 50%</h3>
+                  <p className="text-text-light text-sm">Versé sur votre compte en septembre, ou déduit de votre impôt.</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mt-4">
               <p className="text-sm text-green-800">
-                <strong>Exemple :</strong> Vous payez 200 \u20ac/mois de m\u00e9nage = 2 400 \u20ac/an.
-                Cr\u00e9dit d&apos;imp\u00f4t = <strong>1 200 \u20ac rembours\u00e9s</strong>.
+                <strong>Exemple :</strong> Vous payez 200 €/mois de ménage = 2 400 €/an.
+                Crédit d&apos;impôt = <strong>1 200 € remboursés</strong>.
               </p>
             </div>
           </section>
 
-          {/* ─── Services \u00e9ligibles ─── */}
+          {/* ─── Services éligibles ─── */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Quels services sont \u00e9ligibles ?</h2>
+            <h2 className="text-2xl font-bold mb-4">Quels services sont éligibles ?</h2>
             <div className="grid md:grid-cols-2 gap-3">
               {[
-                { icon: "🧹", title: "M\u00e9nage et repassage", plafond: "12 000 \u20ac" },
-                { icon: "🌿", title: "Jardinage", plafond: "5 000 \u20ac" },
-                { icon: "👶", title: "Garde d'enfant \u00e0 domicile", plafond: "12 000 \u20ac" },
-                { icon: "📚", title: "Soutien scolaire", plafond: "12 000 \u20ac" },
-                { icon: "💻", title: "Assistance informatique", plafond: "3 000 \u20ac" },
-                { icon: "🔧", title: "Petit bricolage", plafond: "500 \u20ac" },
-                { icon: "🧑\u200d🦳", title: "Aide personne \u00e2g\u00e9e/handicap\u00e9e", plafond: "12 000 \u20ac" },
-                { icon: "🍳", title: "Pr\u00e9paration de repas", plafond: "12 000 \u20ac" },
+                { icon: "🧹", title: "Ménage et repassage", plafond: "12 000 €" },
+                { icon: "🌿", title: "Jardinage", plafond: "5 000 €" },
+                { icon: "👶", title: "Garde d'enfant à domicile", plafond: "12 000 €" },
+                { icon: "📚", title: "Soutien scolaire", plafond: "12 000 €" },
+                { icon: "💻", title: "Assistance informatique", plafond: "3 000 €" },
+                { icon: "🔧", title: "Petit bricolage", plafond: "500 €" },
+                { icon: "🧑‍🦳", title: "Aide personne âgée/handicapée", plafond: "12 000 €" },
+                { icon: "🍳", title: "Préparation de repas", plafond: "12 000 €" },
               ].map((s) => (
                 <div key={s.title} className="bg-white rounded-xl border border-gray-200 p-4 flex items-start gap-3">
                   <span className="text-2xl">{s.icon}</span>
@@ -108,9 +108,9 @@ export default function GuideEmploiADomicile() {
             </div>
           </section>
 
-          {/* ─── Cases \u00e0 remplir ─── */}
+          {/* ─── Cases à remplir ─── */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Quelle case remplir sur votre d\u00e9claration ?</h2>
+            <h2 className="text-2xl font-bold mb-4">Quelle case remplir sur votre déclaration ?</h2>
             <div className="bg-white rounded-xl border-2 border-primary/20 overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-primary/5">
@@ -125,7 +125,7 @@ export default function GuideEmploiADomicile() {
                       <span className="font-mono text-lg font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">7DB</span>
                     </td>
                     <td className="p-4 text-text-light">
-                      <strong>La case principale.</strong> Indiquez le total des sommes vers\u00e9es pour l&apos;emploi d&apos;un salari\u00e9 \u00e0 domicile.
+                      <strong>La case principale.</strong> Indiquez le total des sommes versées pour l&apos;emploi d&apos;un salarié à domicile.
                     </td>
                   </tr>
                   <tr>
@@ -133,7 +133,7 @@ export default function GuideEmploiADomicile() {
                       <span className="font-mono text-lg font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">7DL</span>
                     </td>
                     <td className="p-4 text-text-light">
-                      Nombre d&apos;ascendants b\u00e9n\u00e9ficiaires de l&apos;APA (augmente le plafond).
+                      Nombre d&apos;ascendants bénéficiaires de l&apos;APA (augmente le plafond).
                     </td>
                   </tr>
                   <tr>
@@ -141,42 +141,42 @@ export default function GuideEmploiADomicile() {
                       <span className="font-mono text-lg font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">7DQ</span>
                     </td>
                     <td className="p-4 text-text-light">
-                      Cochez si c&apos;est votre <strong>1\u00e8re ann\u00e9e</strong> d&apos;emploi \u00e0 domicile (plafond major\u00e9 \u00e0 15 000 \u20ac).
+                      Cochez si c&apos;est votre <strong>1ère année</strong> d&apos;emploi à domicile (plafond majoré à 15 000 €).
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p className="text-xs text-text-lighter mt-2">
-              Formulaire : <strong>2042-RICI</strong> (R\u00e9ductions et Cr\u00e9dits d&apos;Imp\u00f4t). \u00c0 cocher dans les annexes de votre d\u00e9claration en ligne.
+              Formulaire : <strong>2042-RICI</strong> (Réductions et Crédits d&apos;Impôt). À cocher dans les annexes de votre déclaration en ligne.
             </p>
           </section>
 
-          {/* ─── Plafonds d\u00e9taill\u00e9s ─── */}
+          {/* ─── Plafonds détaillés ─── */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Les plafonds en d\u00e9tail</h2>
+            <h2 className="text-2xl font-bold mb-4">Les plafonds en détail</h2>
             <div className="space-y-3">
               <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="font-bold mb-2">Plafond g\u00e9n\u00e9ral : 12 000 \u20ac/an</h3>
+                <h3 className="font-bold mb-2">Plafond général : 12 000 €/an</h3>
                 <ul className="text-sm text-text-light space-y-1">
-                  <li>+ 1 500 \u20ac par enfant \u00e0 charge ou membre du foyer &gt; 65 ans</li>
-                  <li>+ 1 500 \u20ac par ascendant b\u00e9n\u00e9ficiaire de l&apos;APA</li>
-                  <li>Maximum : <strong>15 000 \u20ac</strong> (ou 20 000 \u20ac si carte d&apos;invalidit\u00e9)</li>
+                  <li>+ 1 500 € par enfant à charge ou membre du foyer &gt; 65 ans</li>
+                  <li>+ 1 500 € par ascendant bénéficiaire de l&apos;APA</li>
+                  <li>Maximum : <strong>15 000 €</strong> (ou 20 000 € si carte d&apos;invalidité)</li>
                 </ul>
               </div>
               <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="font-bold mb-2">Sous-plafonds sp\u00e9cifiques</h3>
+                <h3 className="font-bold mb-2">Sous-plafonds spécifiques</h3>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div className="bg-surface rounded-lg p-3">
-                    <p className="font-bold text-primary">5 000 \u20ac</p>
+                    <p className="font-bold text-primary">5 000 €</p>
                     <p className="text-xs text-text-lighter">Jardinage</p>
                   </div>
                   <div className="bg-surface rounded-lg p-3">
-                    <p className="font-bold text-primary">3 000 \u20ac</p>
+                    <p className="font-bold text-primary">3 000 €</p>
                     <p className="text-xs text-text-lighter">Informatique</p>
                   </div>
                   <div className="bg-surface rounded-lg p-3">
-                    <p className="font-bold text-primary">500 \u20ac</p>
+                    <p className="font-bold text-primary">500 €</p>
                     <p className="text-xs text-text-lighter">Bricolage</p>
                   </div>
                 </div>
@@ -190,8 +190,8 @@ export default function GuideEmploiADomicile() {
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
               <ul className="space-y-3">
                 {[
-                  { doc: "Attestation annuelle URSSAF ou CESU", detail: "G\u00e9n\u00e9r\u00e9e automatiquement en f\u00e9vrier" },
-                  { doc: "Factures des organismes agr\u00e9\u00e9s", detail: "Si vous passez par une soci\u00e9t\u00e9 de services" },
+                  { doc: "Attestation annuelle URSSAF ou CESU", detail: "Générée automatiquement en février" },
+                  { doc: "Factures des organismes agréés", detail: "Si vous passez par une société de services" },
                   { doc: "Bulletins de salaire", detail: "Si emploi direct (sans CESU)" },
                 ].map((j) => (
                   <li key={j.doc} className="flex items-start gap-3">
@@ -204,7 +204,7 @@ export default function GuideEmploiADomicile() {
                 ))}
               </ul>
               <p className="text-xs text-amber-600 mt-3">
-                Conservez tout pendant <strong>3 ans</strong> en cas de contr\u00f4le fiscal.
+                Conservez tout pendant <strong>3 ans</strong> en cas de contrôle fiscal.
               </p>
             </div>
           </section>
@@ -214,7 +214,7 @@ export default function GuideEmploiADomicile() {
             <h2 className="text-2xl font-bold mb-4">CESU+ : le plus simple</h2>
             <div className="bg-white rounded-xl border border-gray-200 p-5">
               <p className="text-text-light mb-3">
-                Le <strong>CESU+</strong> (Ch\u00e8que Emploi Service Universel) est la solution la plus simple :
+                Le <strong>CESU+</strong> (Chèque Emploi Service Universel) est la solution la plus simple :
               </p>
               <ul className="space-y-2 text-sm text-text-light">
                 <li className="flex gap-2">
@@ -223,11 +223,11 @@ export default function GuideEmploiADomicile() {
                 </li>
                 <li className="flex gap-2">
                   <span className="text-green-500 font-bold">&#10003;</span>
-                  L&apos;attestation fiscale est g\u00e9n\u00e9r\u00e9e en f\u00e9vrier
+                  L&apos;attestation fiscale est générée en février
                 </li>
                 <li className="flex gap-2">
                   <span className="text-green-500 font-bold">&#10003;</span>
-                  <strong>Avance imm\u00e9diate</strong> du cr\u00e9dit d&apos;imp\u00f4t (vous ne payez que la moiti\u00e9 chaque mois)
+                  <strong>Avance immédiate</strong> du crédit d&apos;impôt (vous ne payez que la moitié chaque mois)
                 </li>
               </ul>
               <a
@@ -251,7 +251,7 @@ export default function GuideEmploiADomicile() {
                 rel="noopener noreferrer"
                 className="text-sm text-primary hover:underline"
               >
-                impots.gouv.fr &#8212; Emploi \u00e0 domicile &#8594;
+                impots.gouv.fr &#8212; Emploi à domicile &#8594;
               </a>
               <a
                 href="https://www.service-public.fr/particuliers/vosdroits/F12"
@@ -259,7 +259,7 @@ export default function GuideEmploiADomicile() {
                 rel="noopener noreferrer"
                 className="text-sm text-primary hover:underline"
               >
-                service-public.fr &#8212; Cr\u00e9dit d&apos;imp\u00f4t services \u00e0 la personne &#8594;
+                service-public.fr &#8212; Crédit d&apos;impôt services à la personne &#8594;
               </a>
             </div>
           </section>
@@ -267,10 +267,10 @@ export default function GuideEmploiADomicile() {
           {/* ─── CTA ─── */}
           <section className="bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-8 text-white text-center mb-10">
             <h2 className="text-xl font-bold mb-2">
-              Vous avez d&apos;autres avantages fiscaux \u00e0 r\u00e9cup\u00e9rer ?
+              Vous avez d&apos;autres avantages fiscaux à récupérer ?
             </h2>
             <p className="text-blue-100 mb-6">
-              Notre questionnaire analyse votre situation compl\u00e8te en 3 minutes.
+              Notre questionnaire analyse votre situation complète en 3 minutes.
             </p>
             <Link
               href="/questionnaire"

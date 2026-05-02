@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Fiscalit\u00e9 en Corse : sp\u00e9cificit\u00e9s immobili\u00e8res et patrimoniales | R\u00e9cupMesEuros",
+  title: "Fiscalité en Corse : spécificités immobilières et patrimoniales | RécupMesEuros",
   description:
-    "R\u00e9gime successoral corse, indivisions fonci\u00e8res, cr\u00e9dit d\u2019imp\u00f4t investissement productif (244 quater E), plafonds Pinel adapt\u00e9s : guide fiscal complet de la Corse.",
+    "Régime successoral corse, indivisions foncières, crédit d’impôt investissement productif (244 quater E), plafonds Pinel adaptés : guide fiscal complet de la Corse.",
 };
 
 const FAQ_JSONLD = {
@@ -16,34 +16,34 @@ const FAQ_JSONLD = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Quelles sont les sp\u00e9cificit\u00e9s successorales en Corse ?",
+      name: "Quelles sont les spécificités successorales en Corse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La Corse b\u00e9n\u00e9ficiait d\u2019une exon\u00e9ration de droits de succession sur les immeubles situ\u00e9s sur l\u2019\u00eele. Ce r\u00e9gime d\u00e9rogatoire a \u00e9t\u00e9 progressivement supprim\u00e9, mais des mesures transitoires s\u2019appliquent encore pour certaines successions.",
+        text: "La Corse bénéficiait d’une exonération de droits de succession sur les immeubles situés sur l’île. Ce régime dérogatoire a été progressivement supprimé, mais des mesures transitoires s’appliquent encore pour certaines successions.",
       },
     },
     {
       "@type": "Question",
-      name: "Qu\u2019est-ce que le cr\u00e9dit d\u2019imp\u00f4t investissement productif en Corse ?",
+      name: "Qu’est-ce que le crédit d’impôt investissement productif en Corse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "L\u2019article 244 quater E du CGI pr\u00e9voit un cr\u00e9dit d\u2019imp\u00f4t de 20\u00a0% (30\u00a0% pour les TPE) pour les investissements productifs neufs r\u00e9alis\u00e9s en Corse dans certains secteurs d\u2019activit\u00e9.",
+        text: "L’article 244 quater E du CGI prévoit un crédit d’impôt de 20 % (30 % pour les TPE) pour les investissements productifs neufs réalisés en Corse dans certains secteurs d’activité.",
       },
     },
     {
       "@type": "Question",
-      name: "Les plafonds Pinel sont-ils diff\u00e9rents en Corse ?",
+      name: "Les plafonds Pinel sont-ils différents en Corse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Oui, la Corse est class\u00e9e principalement en zone B1, avec des plafonds de loyer et de ressources des locataires sp\u00e9cifiques. Certaines communes b\u00e9n\u00e9ficient de d\u00e9rogations permettant l\u2019\u00e9ligibilit\u00e9 au dispositif.",
+        text: "Oui, la Corse est classée principalement en zone B1, avec des plafonds de loyer et de ressources des locataires spécifiques. Certaines communes bénéficient de dérogations permettant l’éligibilité au dispositif.",
       },
     },
     {
       "@type": "Question",
-      name: "Comment fonctionnent les indivisions fonci\u00e8res en Corse ?",
+      name: "Comment fonctionnent les indivisions foncières en Corse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "De nombreux biens corses sont en indivision du fait de l\u2019absence de r\u00e8glement successoral. La loi du 6 mars 2017 a cr\u00e9\u00e9 un groupement foncier rural pour faciliter la sortie d\u2019indivision et la mise en valeur de ces terrains.",
+        text: "De nombreux biens corses sont en indivision du fait de l’absence de règlement successoral. La loi du 6 mars 2017 a créé un groupement foncier rural pour faciliter la sortie d’indivision et la mise en valeur de ces terrains.",
       },
     },
   ],

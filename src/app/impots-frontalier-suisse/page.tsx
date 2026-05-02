@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Imp\u00f4ts frontalier Suisse : guide fiscal complet | R\u00e9cupMesEuros",
+  title: "Impôts frontalier Suisse : guide fiscal complet | RécupMesEuros",
   description:
-    "Canton de Gen\u00e8ve, autres cantons, cases 1AF/1BF/8TK, formulaire 2047, r\u00e8gle t\u00e9l\u00e9travail 40\u00a0% : tout comprendre sur la fiscalit\u00e9 des frontaliers franco-suisses.",
+    "Canton de Genève, autres cantons, cases 1AF/1BF/8TK, formulaire 2047, règle télétravail 40 % : tout comprendre sur la fiscalité des frontaliers franco-suisses.",
 };
 
 const FAQ_JSONLD = {
@@ -16,34 +16,34 @@ const FAQ_JSONLD = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "O\u00f9 suis-je impos\u00e9 si je travaille dans le canton de Gen\u00e8ve ?",
+      name: "Où suis-je imposé si je travaille dans le canton de Genève ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "En vertu de l\u2019accord de 1983, les frontaliers travaillant dans le canton de Gen\u00e8ve sont impos\u00e9s en France. Le salaire est d\u00e9clar\u00e9 en cases 1AF/1BF du formulaire 2042 et d\u00e9taill\u00e9 dans le formulaire 2047.",
+        text: "En vertu de l’accord de 1983, les frontaliers travaillant dans le canton de Genève sont imposés en France. Le salaire est déclaré en cases 1AF/1BF du formulaire 2042 et détaillé dans le formulaire 2047.",
       },
     },
     {
       "@type": "Question",
-      name: "Comment fonctionne le cr\u00e9dit d\u2019imp\u00f4t pour les autres cantons suisses ?",
+      name: "Comment fonctionne le crédit d’impôt pour les autres cantons suisses ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pour les cantons hors Gen\u00e8ve, l\u2019imp\u00f4t est pr\u00e9lev\u00e9 \u00e0 la source en Suisse. La France accorde un cr\u00e9dit d\u2019imp\u00f4t \u00e9gal \u00e0 l\u2019imp\u00f4t fran\u00e7ais correspondant, \u00e0 d\u00e9clarer en case 8TK.",
+        text: "Pour les cantons hors Genève, l’impôt est prélevé à la source en Suisse. La France accorde un crédit d’impôt égal à l’impôt français correspondant, à déclarer en case 8TK.",
       },
     },
     {
       "@type": "Question",
-      name: "Combien de jours de t\u00e9l\u00e9travail sont autoris\u00e9s pour un frontalier suisse ?",
+      name: "Combien de jours de télétravail sont autorisés pour un frontalier suisse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Depuis 2023, un frontalier peut t\u00e9l\u00e9travailler jusqu\u2019\u00e0 40\u00a0% de son temps de travail (soit environ 96 jours par an) sans que cela remette en cause son statut fiscal de frontalier.",
+        text: "Depuis 2023, un frontalier peut télétravailler jusqu’à 40 % de son temps de travail (soit environ 96 jours par an) sans que cela remette en cause son statut fiscal de frontalier.",
       },
     },
     {
       "@type": "Question",
-      name: "Quels justificatifs conserver pour la d\u00e9claration frontalier Suisse ?",
+      name: "Quels justificatifs conserver pour la déclaration frontalier Suisse ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Conservez votre attestation de r\u00e9sidence fiscale, le certificat de salaire suisse (Lohnausweis), l\u2019attestation de l\u2019employeur pour le t\u00e9l\u00e9travail, et le formulaire 2047 rempli.",
+        text: "Conservez votre attestation de résidence fiscale, le certificat de salaire suisse (Lohnausweis), l’attestation de l’employeur pour le télétravail, et le formulaire 2047 rempli.",
       },
     },
   ],

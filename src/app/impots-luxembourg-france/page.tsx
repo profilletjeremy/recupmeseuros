@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Imp\u00f4ts frontalier Luxembourg : guide fiscal | R\u00e9cupMesEuros",
+  title: "Impôts frontalier Luxembourg : guide fiscal | RécupMesEuros",
   description:
-    "Frontalier au Luxembourg : imposition luxembourgeoise, cr\u00e9dit d\u2019imp\u00f4t France, 34 jours de t\u00e9l\u00e9travail, cases 1AF/8TK/8TI, formulaire 2047 et double d\u00e9claration.",
+    "Frontalier au Luxembourg : imposition luxembourgeoise, crédit d’impôt France, 34 jours de télétravail, cases 1AF/8TK/8TI, formulaire 2047 et double déclaration.",
 };
 
 const FAQ_JSONLD = {
@@ -16,34 +16,34 @@ const FAQ_JSONLD = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "O\u00f9 sont impos\u00e9s les frontaliers du Luxembourg ?",
+      name: "Où sont imposés les frontaliers du Luxembourg ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Les salaires des frontaliers sont impos\u00e9s au Luxembourg (retenue \u00e0 la source). La France accorde un cr\u00e9dit d\u2019imp\u00f4t pour \u00e9viter la double imposition, \u00e0 d\u00e9clarer en case 8TK du formulaire 2042.",
+        text: "Les salaires des frontaliers sont imposés au Luxembourg (retenue à la source). La France accorde un crédit d’impôt pour éviter la double imposition, à déclarer en case 8TK du formulaire 2042.",
       },
     },
     {
       "@type": "Question",
-      name: "Combien de jours de t\u00e9l\u00e9travail sont autoris\u00e9s pour un frontalier luxembourgeois ?",
+      name: "Combien de jours de télétravail sont autorisés pour un frontalier luxembourgeois ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "L\u2019accord franco-luxembourgeois pr\u00e9voit un seuil de 34 jours de t\u00e9l\u00e9travail par an. Au-del\u00e0, les jours t\u00e9l\u00e9travaill\u00e9s en France sont imposables en France.",
+        text: "L’accord franco-luxembourgeois prévoit un seuil de 34 jours de télétravail par an. Au-delà, les jours télétravaillés en France sont imposables en France.",
       },
     },
     {
       "@type": "Question",
-      name: "Faut-il remplir une d\u00e9claration au Luxembourg et en France ?",
+      name: "Faut-il remplir une déclaration au Luxembourg et en France ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Oui, une double d\u00e9claration est n\u00e9cessaire : la d\u00e9claration luxembourgeoise (mod\u00e8le 100) pour l\u2019imp\u00f4t \u00e0 la source, et la d\u00e9claration fran\u00e7aise (2042 + 2047) pour le cr\u00e9dit d\u2019imp\u00f4t.",
+        text: "Oui, une double déclaration est nécessaire : la déclaration luxembourgeoise (modèle 100) pour l’impôt à la source, et la déclaration française (2042 + 2047) pour le crédit d’impôt.",
       },
     },
     {
       "@type": "Question",
-      name: "Quelles cases remplir sur la d\u00e9claration fran\u00e7aise ?",
+      name: "Quelles cases remplir sur la déclaration française ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "D\u00e9clarez vos salaires luxembourgeois en case 1AF (d\u00e9clarant 1) du formulaire 2047, le cr\u00e9dit d\u2019imp\u00f4t en case 8TK, et les revenus exon\u00e9r\u00e9s pris en compte pour le taux effectif en case 8TI.",
+        text: "Déclarez vos salaires luxembourgeois en case 1AF (déclarant 1) du formulaire 2047, le crédit d’impôt en case 8TK, et les revenus exonérés pris en compte pour le taux effectif en case 8TI.",
       },
     },
   ],

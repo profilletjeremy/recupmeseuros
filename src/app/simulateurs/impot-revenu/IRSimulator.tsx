@@ -446,8 +446,8 @@ export default function IRSimulator() {
                 </p>
                 <p className="text-sm opacity-80">
                   {result.impotNet === 0
-                    ? "Vous n\u2019\u00eates pas imposable."
-                    : `Apr\u00e8s d\u00e9cote et r\u00e9ductions/cr\u00e9dits d\u2019imp\u00f4t.`}
+                    ? "Vous n’êtes pas imposable."
+                    : `Après décote et réductions/crédits d’impôt.`}
                 </p>
               </div>
 
@@ -541,7 +541,7 @@ export default function IRSimulator() {
                           style={{ width: `${width}%` }}
                           title={`${t.label} : ${t.base.toLocaleString(
                             "fr-FR"
-                          )} \u20AC`}
+                          )} €`}
                         />
                       );
                     })}

@@ -247,7 +247,7 @@ export default function PERSimulator() {
               </p>
               <p>
                 Plafond PER{" "}
-                {plafondManuel ? "renseign\u00e9" : "estim\u00e9"} :{" "}
+                {plafondManuel ? "renseigné" : "estimé"} :{" "}
                 <strong className="text-text">{fmt(result.plafondDispo)} &euro;</strong>
               </p>
             </div>
@@ -270,7 +270,7 @@ export default function PERSimulator() {
                   &Eacute;conomie d&apos;imp&ocirc;t estim&eacute;e
                 </p>
                 <p className="text-4xl font-bold text-green-800 mb-1">
-                  {versement > 0 ? `${fmt(result.economie)} \u20AC` : "\u2014"}
+                  {versement > 0 ? `${fmt(result.economie)} €` : "—"}
                 </p>
                 {versement > 0 && result.montantDeduit < versement && (
                   <p className="text-xs text-green-600">
@@ -296,7 +296,7 @@ export default function PERSimulator() {
                 <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
                   <p className="text-xs text-text-lighter mb-1">D&eacute;duit</p>
                   <p className="text-xl font-bold text-primary">
-                    {versement > 0 ? `${fmt(result.montantDeduit)} \u20AC` : "\u2014"}
+                    {versement > 0 ? `${fmt(result.montantDeduit)} €` : "—"}
                   </p>
                 </div>
               </div>

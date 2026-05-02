@@ -660,17 +660,17 @@ function buildSteps(result: TaxResult): Step[] {
 function sanitize(text: string): string {
   // Replace problematic Unicode chars that jsPDF can't render with standard font
   return text
-    .replace(/[\u2019\u2018]/g, "'")
-    .replace(/[\u201c\u201d]/g, '"')
-    .replace(/\u2014/g, " - ")
-    .replace(/\u2013/g, "-")
-    .replace(/\u00a0/g, " ")
-    .replace(/\u2026/g, "...")
-    .replace(/\u20ac/g, "EUR")
-    .replace(/\u2192/g, "->")
-    .replace(/\u2022/g, "-")
-    .replace(/\u26a0/g, "/!\\")
-    .replace(/[\u2610\u2611\u2612\u2713\u2714\u2717\u2718]/g, "-")
+    .replace(/[’‘]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/—/g, " - ")
+    .replace(/–/g, "-")
+    .replace(/ /g, " ")
+    .replace(/…/g, "...")
+    .replace(/€/g, "EUR")
+    .replace(/→/g, "->")
+    .replace(/•/g, "-")
+    .replace(/⚠/g, "/!\\")
+    .replace(/[☐☑☒✓✔✗✘]/g, "-")
     .replace(/[^\x00-\xFF]/g, ""); // Strip remaining non-latin1
 }
 

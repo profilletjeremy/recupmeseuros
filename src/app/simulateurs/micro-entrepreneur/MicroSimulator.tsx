@@ -69,7 +69,7 @@ function calculateIR(revenuImposable: number, parts: number): number {
 
 const CHARGE_COLORS = [
   { key: "cotisations", label: "Cotisations sociales", bar: "bg-blue-400", text: "bg-blue-100 text-blue-800" },
-  { key: "ir", label: "Imp\u00f4t sur le revenu", bar: "bg-amber-400", text: "bg-amber-100 text-amber-800" },
+  { key: "ir", label: "Impôt sur le revenu", bar: "bg-amber-400", text: "bg-amber-100 text-amber-800" },
   { key: "cfe", label: "CFE", bar: "bg-gray-400", text: "bg-gray-100 text-gray-700" },
 ];
 
@@ -93,14 +93,14 @@ export default function MicroSimulator() {
 
     const cotisations = Math.round(ca * cotisationsRate);
 
-    /* Option 1 : bar\u00e8me classique */
+    /* Option 1 : barème classique */
     const revenuMicro = Math.round(ca * (1 - abattement));
     const revenuImposableClassique = revenuMicro + autresRevenus;
     const irClassique = calculateIR(revenuImposableClassique, parts);
     const totalClassique = cotisations + irClassique + CFE;
     const netClassique = ca - totalClassique;
 
-    /* Option 2 : versement lib\u00e9ratoire */
+    /* Option 2 : versement libératoire */
     const irVL = Math.round(ca * vlRate);
     const irAutres = calculateIR(autresRevenus, parts);
     const irLiberatoire = irVL + irAutres;
@@ -144,7 +144,7 @@ export default function MicroSimulator() {
 
       {/* ── Inputs ─────────────────────────────────────────── */}
       <div className="space-y-5 mb-8">
-        {/* Type d'activit\u00e9 */}
+        {/* Type d'activité */}
         <div>
           <label className="block text-sm font-medium mb-1">Type d&apos;activit&eacute;</label>
           <div className="flex gap-2">
@@ -229,7 +229,7 @@ export default function MicroSimulator() {
           </div>
         </div>
 
-        {/* Versement lib\u00e9ratoire toggle */}
+        {/* Versement libératoire toggle */}
         <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
           <div>
             <p className="text-sm font-medium">Versement lib&eacute;ratoire de l&apos;IR</p>
@@ -278,9 +278,9 @@ export default function MicroSimulator() {
 
           {/* Side-by-side comparison */}
           <div className="grid md:grid-cols-2 gap-4">
-            {/* Bar\u00e8me classique */}
+            {/* Barème classique */}
             <ComparisonCard
-              title="Bar\u00e8me classique"
+              title="Barème classique"
               isBest={result.bestOption === "classique"}
               ca={result.ca}
               cotisations={result.cotisations}
@@ -290,9 +290,9 @@ export default function MicroSimulator() {
               net={result.netClassique}
             />
 
-            {/* Versement lib\u00e9ratoire */}
+            {/* Versement libératoire */}
             <ComparisonCard
-              title="Versement lib\u00e9ratoire"
+              title="Versement libératoire"
               isBest={result.bestOption === "liberatoire"}
               ca={result.ca}
               cotisations={result.cotisations}
@@ -307,7 +307,7 @@ export default function MicroSimulator() {
           {result.saving > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
               <p className="text-sm text-green-800">
-                Le <strong>{result.bestOption === "classique" ? "bar\u00e8me classique" : "versement lib\u00e9ratoire"}</strong> vous
+                Le <strong>{result.bestOption === "classique" ? "barème classique" : "versement libératoire"}</strong> vous
                 fait &eacute;conomiser{" "}
                 <strong className="text-lg">{result.saving.toLocaleString("fr-FR")} &euro;</strong> par an.
               </p>
@@ -338,7 +338,7 @@ export default function MicroSimulator() {
                             key={c.key}
                             className={`${c.bar} relative`}
                             style={{ width: `${width}%` }}
-                            title={`${c.label} : ${c.value.toLocaleString("fr-FR")} \u20ac`}
+                            title={`${c.label} : ${c.value.toLocaleString("fr-FR")} €`}
                           />
                         );
                       })}
@@ -435,17 +435,17 @@ function ComparisonCard({
       </div>
 
       <div className="space-y-2 text-sm">
-        <Row label="Chiffre d&apos;affaires" value={`${fmt(ca)} \u20ac`} />
-        <Row label="Cotisations sociales" value={`\u2212 ${fmt(cotisations)} \u20ac`} muted />
-        <Row label="Imp\u00f4t sur le revenu" value={`\u2212 ${fmt(ir)} \u20ac`} muted />
-        <Row label="CFE" value={`\u2212 ${fmt(cfe)} \u20ac`} muted />
+        <Row label="Chiffre d&apos;affaires" value={`${fmt(ca)} €`} />
+        <Row label="Cotisations sociales" value={`− ${fmt(cotisations)} €`} muted />
+        <Row label="Impôt sur le revenu" value={`− ${fmt(ir)} €`} muted />
+        <Row label="CFE" value={`− ${fmt(cfe)} €`} muted />
         <div className="border-t border-gray-100 pt-2">
-          <Row label="Total charges" value={`${fmt(total)} \u20ac`} bold />
+          <Row label="Total charges" value={`${fmt(total)} €`} bold />
         </div>
         <div className="border-t border-gray-100 pt-2">
           <Row
             label="Revenu net"
-            value={`${fmt(net)} \u20ac`}
+            value={`${fmt(net)} €`}
             bold
             highlight={isBest}
           />

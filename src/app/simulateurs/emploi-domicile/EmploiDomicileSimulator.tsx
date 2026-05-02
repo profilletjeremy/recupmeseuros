@@ -22,11 +22,11 @@ interface Service {
 const SERVICES: Service[] = [
   { id: "menage", label: "Ménage / entretien", plafond: null, color: "bg-blue-100 text-blue-800", barColor: "bg-blue-400" },
   { id: "jardinage", label: "Jardinage", plafond: 5_000, color: "bg-green-100 text-green-800", barColor: "bg-green-400" },
-  { id: "garde", label: "Garde d\u2019enfants \u00e0 domicile", plafond: null, color: "bg-purple-100 text-purple-800", barColor: "bg-purple-400" },
+  { id: "garde", label: "Garde d’enfants à domicile", plafond: null, color: "bg-purple-100 text-purple-800", barColor: "bg-purple-400" },
   { id: "soutien", label: "Soutien scolaire", plafond: null, color: "bg-amber-100 text-amber-800", barColor: "bg-amber-400" },
   { id: "informatique", label: "Aide informatique", plafond: 3_000, color: "bg-cyan-100 text-cyan-800", barColor: "bg-cyan-400" },
   { id: "bricolage", label: "Bricolage", plafond: 500, color: "bg-orange-100 text-orange-800", barColor: "bg-orange-400" },
-  { id: "dependance", label: "Aide aux personnes d\u00e9pendantes", plafond: null, color: "bg-rose-100 text-rose-800", barColor: "bg-rose-400" },
+  { id: "dependance", label: "Aide aux personnes dépendantes", plafond: null, color: "bg-rose-100 text-rose-800", barColor: "bg-rose-400" },
 ];
 
 /* ── Component ──────────────────────────────────────────────── */
@@ -208,7 +208,7 @@ export default function EmploiDomicileSimulator() {
                         key={d.id}
                         className={`${d.barColor} relative`}
                         style={{ width: `${width}%` }}
-                        title={`${d.label} : ${d.retenuFinal.toLocaleString("fr-FR")} \u20ac`}
+                        title={`${d.label} : ${d.retenuFinal.toLocaleString("fr-FR")} €`}
                       />
                     );
                   })}

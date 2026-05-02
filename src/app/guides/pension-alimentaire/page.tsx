@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Pension alimentaire : que peut-on d\u00e9duire ? | R\u00e9cupMesEuros",
+  title: "Pension alimentaire : que peut-on déduire ? | RécupMesEuros",
   description:
-    "D\u00e9duction des pensions alimentaires vers\u00e9es aux enfants majeurs (6\u00a0674\u00a0\u20ac) et ascendants : cases 6EL/6EM/6GP/6GU, comparaison avec le rattachement fiscal.",
+    "Déduction des pensions alimentaires versées aux enfants majeurs (6 674 €) et ascendants : cases 6EL/6EM/6GP/6GU, comparaison avec le rattachement fiscal.",
 };
 
 export default function GuidePensionAlimentaire() {
@@ -17,64 +17,64 @@ export default function GuidePensionAlimentaire() {
       <main className="flex-1">
         <article className="max-w-3xl mx-auto px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-bold mb-6">
-            Pension alimentaire : que peut-on d\u00e9duire ?
+            Pension alimentaire : que peut-on déduire ?
           </h1>
 
           <p className="text-text-light mb-8 text-lg">
-            Si vous versez une pension alimentaire \u00e0 un enfant majeur ou \u00e0 un
-            ascendant dans le besoin, cette somme est <strong>d\u00e9ductible de votre
-            revenu imposable</strong>. Un avantage souvent m\u00e9connu ou mal d\u00e9clar\u00e9.
+            Si vous versez une pension alimentaire à un enfant majeur ou à un
+            ascendant dans le besoin, cette somme est <strong>déductible de votre
+            revenu imposable</strong>. Un avantage souvent méconnu ou mal déclaré.
           </p>
 
           {/* Enfant majeur */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Pension \u00e0 un enfant majeur</h2>
+            <h2 className="text-2xl font-bold mb-4 text-primary">Pension à un enfant majeur</h2>
             <p className="text-text-light mb-4">
-              Vous pouvez d\u00e9duire la pension vers\u00e9e \u00e0 un enfant majeur qui n&apos;est plus
-              rattach\u00e9 \u00e0 votre foyer fiscal, \u00e0 condition qu&apos;il ne puisse pas subvenir
-              seul \u00e0 ses besoins (\u00e9tudiant, recherche d&apos;emploi, faibles revenus).
+              Vous pouvez déduire la pension versée à un enfant majeur qui n&apos;est plus
+              rattaché à votre foyer fiscal, à condition qu&apos;il ne puisse pas subvenir
+              seul à ses besoins (étudiant, recherche d&apos;emploi, faibles revenus).
             </p>
             <div className="bg-surface rounded-xl p-6 border border-gray-100">
-              <p className="font-semibold mb-2">Plafond de d\u00e9duction</p>
+              <p className="font-semibold mb-2">Plafond de déduction</p>
               <p className="text-sm text-text-light">
-                <strong>6&nbsp;674&nbsp;\u20ac</strong> par enfant et par an (montant pour les revenus 2025).
-                Si l&apos;enfant vit chez vous, vous pouvez d\u00e9duire un forfait h\u00e9bergement
-                + nourriture de <strong>3&nbsp;968&nbsp;\u20ac</strong> sans justificatif, plus les d\u00e9penses
-                r\u00e9elles justifi\u00e9es dans la limite du plafond global.
+                <strong>6&nbsp;674&nbsp;€</strong> par enfant et par an (montant pour les revenus 2025).
+                Si l&apos;enfant vit chez vous, vous pouvez déduire un forfait hébergement
+                + nourriture de <strong>3&nbsp;968&nbsp;€</strong> sans justificatif, plus les dépenses
+                réelles justifiées dans la limite du plafond global.
               </p>
             </div>
             <p className="text-sm text-text-lighter mt-3">
-              Attention : l&apos;enfant doit d\u00e9clarer cette pension dans ses propres revenus.
+              Attention : l&apos;enfant doit déclarer cette pension dans ses propres revenus.
             </p>
           </section>
 
           {/* Ascendants */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Pension \u00e0 un ascendant dans le besoin</h2>
+            <h2 className="text-2xl font-bold mb-4 text-primary">Pension à un ascendant dans le besoin</h2>
             <p className="text-text-light mb-4">
-              Si vous aidez financi\u00e8rement vos parents ou grands-parents qui ne peuvent
-              pas subvenir seuls \u00e0 leurs besoins, vous pouvez d\u00e9duire :
+              Si vous aidez financièrement vos parents ou grands-parents qui ne peuvent
+              pas subvenir seuls à leurs besoins, vous pouvez déduire :
             </p>
             <ul className="list-disc pl-6 space-y-2 text-text-light mb-4">
-              <li>Les sommes vers\u00e9es directement (virements, ch\u00e8ques...)</li>
-              <li>Les d\u00e9penses r\u00e9gl\u00e9es pour leur compte (loyer, EHPAD, soins...)</li>
-              <li>Un <strong>forfait h\u00e9bergement de 3&nbsp;968&nbsp;\u20ac</strong> si l&apos;ascendant vit chez vous (sans justificatif)</li>
+              <li>Les sommes versées directement (virements, chèques...)</li>
+              <li>Les dépenses réglées pour leur compte (loyer, EHPAD, soins...)</li>
+              <li>Un <strong>forfait hébergement de 3&nbsp;968&nbsp;€</strong> si l&apos;ascendant vit chez vous (sans justificatif)</li>
             </ul>
             <div className="bg-surface rounded-xl p-6 border border-gray-100">
               <p className="font-semibold mb-2">Pas de plafond fixe</p>
               <p className="text-sm text-text-light">
-                Contrairement \u00e0 la pension pour enfant majeur, il n&apos;y a <strong>pas de
-                plafond l\u00e9gal</strong> pour la d\u00e9duction des pensions vers\u00e9es aux ascendants.
-                Le montant doit cependant \u00eatre <strong>proportionn\u00e9 \u00e0 vos revenus</strong> et
-                aux besoins r\u00e9els de l&apos;ascendant. L&apos;administration peut contester
-                une d\u00e9duction jug\u00e9e excessive.
+                Contrairement à la pension pour enfant majeur, il n&apos;y a <strong>pas de
+                plafond légal</strong> pour la déduction des pensions versées aux ascendants.
+                Le montant doit cependant être <strong>proportionné à vos revenus</strong> et
+                aux besoins réels de l&apos;ascendant. L&apos;administration peut contester
+                une déduction jugée excessive.
               </p>
             </div>
           </section>
 
           {/* Cases */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Cases \u00e0 remplir (2042)</h2>
+            <h2 className="text-2xl font-bold mb-4 text-primary">Cases à remplir (2042)</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
                 <thead className="bg-surface">
@@ -86,19 +86,19 @@ export default function GuidePensionAlimentaire() {
                 <tbody className="divide-y divide-gray-100">
                   <tr>
                     <td className="p-3 font-mono text-primary">6EL</td>
-                    <td className="p-3 text-text-light">Pension vers\u00e9e \u00e0 un enfant majeur \u2014 d\u00e9clarant 1</td>
+                    <td className="p-3 text-text-light">Pension versée à un enfant majeur — déclarant 1</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-primary">6EM</td>
-                    <td className="p-3 text-text-light">Pension vers\u00e9e \u00e0 un enfant majeur \u2014 d\u00e9clarant 2</td>
+                    <td className="p-3 text-text-light">Pension versée à un enfant majeur — déclarant 2</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-primary">6GP</td>
-                    <td className="p-3 text-text-light">Pension alimentaire vers\u00e9e \u00e0 un ascendant</td>
+                    <td className="p-3 text-text-light">Pension alimentaire versée à un ascendant</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-mono text-primary">6GU</td>
-                    <td className="p-3 text-text-light">Autres pensions alimentaires (fix\u00e9es par d\u00e9cision de justice)</td>
+                    <td className="p-3 text-text-light">Autres pensions alimentaires (fixées par décision de justice)</td>
                   </tr>
                 </tbody>
               </table>
@@ -118,24 +118,24 @@ export default function GuidePensionAlimentaire() {
                 <p className="font-semibold text-primary mb-2">Rattachement</p>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-text-light">
                   <li>L&apos;enfant reste dans votre foyer fiscal</li>
-                  <li>Vous gagnez une <strong>demi-part</strong> suppl\u00e9mentaire</li>
-                  <li>Int\u00e9ressant si vos revenus sont \u00e9lev\u00e9s (TMI 30&nbsp;% ou plus)</li>
-                  <li>Pas de d\u00e9duction de pension possible</li>
+                  <li>Vous gagnez une <strong>demi-part</strong> supplémentaire</li>
+                  <li>Intéressant si vos revenus sont élevés (TMI 30&nbsp;% ou plus)</li>
+                  <li>Pas de déduction de pension possible</li>
                 </ul>
               </div>
               <div className="bg-surface rounded-xl p-6 border border-gray-100">
-                <p className="font-semibold text-secondary mb-2">D\u00e9duction de pension</p>
+                <p className="font-semibold text-secondary mb-2">Déduction de pension</p>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-text-light">
-                  <li>L&apos;enfant fait sa propre d\u00e9claration</li>
-                  <li>Vous d\u00e9duisez jusqu&apos;\u00e0 <strong>6&nbsp;674&nbsp;\u20ac</strong></li>
-                  <li>Int\u00e9ressant si vos revenus sont moyens (TMI 11&nbsp;%)</li>
-                  <li>L&apos;enfant d\u00e9clare la pension en revenus</li>
+                  <li>L&apos;enfant fait sa propre déclaration</li>
+                  <li>Vous déduisez jusqu&apos;à <strong>6&nbsp;674&nbsp;€</strong></li>
+                  <li>Intéressant si vos revenus sont moyens (TMI 11&nbsp;%)</li>
+                  <li>L&apos;enfant déclare la pension en revenus</li>
                 </ul>
               </div>
             </div>
             <p className="text-sm text-text-lighter mt-4">
-              Le choix d\u00e9pend de votre tranche marginale d&apos;imposition et du nombre
-              d&apos;enfants. Notre questionnaire peut vous aider \u00e0 comparer.
+              Le choix dépend de votre tranche marginale d&apos;imposition et du nombre
+              d&apos;enfants. Notre questionnaire peut vous aider à comparer.
             </p>
           </section>
 
@@ -150,7 +150,7 @@ export default function GuidePensionAlimentaire() {
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  impots.gouv.fr \u2014 Pensions alimentaires \u2192
+                  impots.gouv.fr — Pensions alimentaires →
                 </a>
               </li>
               <li>
@@ -160,7 +160,7 @@ export default function GuidePensionAlimentaire() {
                   rel="noopener noreferrer"
                   className="text-primary hover:underline"
                 >
-                  service-public.fr \u2014 D\u00e9duction des pensions alimentaires \u2192
+                  service-public.fr — Déduction des pensions alimentaires →
                 </a>
               </li>
             </ul>
@@ -172,7 +172,7 @@ export default function GuidePensionAlimentaire() {
               Rattachement ou pension : quelle est la meilleure option ?
             </h2>
             <p className="text-blue-100 mb-6">
-              R\u00e9pondez au questionnaire pour comparer selon votre situation.
+              Répondez au questionnaire pour comparer selon votre situation.
             </p>
             <Link
               href="/questionnaire"

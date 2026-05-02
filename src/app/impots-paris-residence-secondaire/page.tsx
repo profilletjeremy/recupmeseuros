@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "Surtaxe r\u00e9sidence secondaire \u00e0 Paris et zones tendues | R\u00e9cupMesEuros",
+  title: "Surtaxe résidence secondaire à Paris et zones tendues | RécupMesEuros",
   description:
-    "Majoration taxe d\u2019habitation 60\u00a0% \u00e0 Paris, liste des villes concern\u00e9es, conditions d\u2019exon\u00e9ration, taxe logement vacant, encadrement des loyers : guide complet.",
+    "Majoration taxe d’habitation 60 % à Paris, liste des villes concernées, conditions d’exonération, taxe logement vacant, encadrement des loyers : guide complet.",
 };
 
 const FAQ_JSONLD = {
@@ -16,34 +16,34 @@ const FAQ_JSONLD = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Quel est le taux de la surtaxe r\u00e9sidence secondaire \u00e0 Paris ?",
+      name: "Quel est le taux de la surtaxe résidence secondaire à Paris ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La majoration de la taxe d\u2019habitation sur les r\u00e9sidences secondaires \u00e0 Paris est de 60\u00a0%. Elle s\u2019applique automatiquement et s\u2019ajoute au taux normal de la taxe d\u2019habitation.",
+        text: "La majoration de la taxe d’habitation sur les résidences secondaires à Paris est de 60 %. Elle s’applique automatiquement et s’ajoute au taux normal de la taxe d’habitation.",
       },
     },
     {
       "@type": "Question",
-      name: "Quelles villes appliquent la surtaxe r\u00e9sidence secondaire ?",
+      name: "Quelles villes appliquent la surtaxe résidence secondaire ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La surtaxe concerne les communes situ\u00e9es en zone tendue : Paris, Lyon, Marseille, Bordeaux, Lille, Nice, Toulouse, Nantes, Montpellier, Strasbourg, et plus de 1\u00a0100 autres communes list\u00e9es par d\u00e9cret.",
+        text: "La surtaxe concerne les communes situées en zone tendue : Paris, Lyon, Marseille, Bordeaux, Lille, Nice, Toulouse, Nantes, Montpellier, Strasbourg, et plus de 1 100 autres communes listées par décret.",
       },
     },
     {
       "@type": "Question",
-      name: "Peut-on \u00eatre exon\u00e9r\u00e9 de la surtaxe r\u00e9sidence secondaire ?",
+      name: "Peut-on être exonéré de la surtaxe résidence secondaire ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Oui, dans certains cas : obligation professionnelle de r\u00e9sider dans un lieu diff\u00e9rent, logement rendu inhabitable, logement mis en location ou en vente sans trouver preneur. La demande d\u2019exon\u00e9ration se fait aupr\u00e8s du service des imp\u00f4ts.",
+        text: "Oui, dans certains cas : obligation professionnelle de résider dans un lieu différent, logement rendu inhabitable, logement mis en location ou en vente sans trouver preneur. La demande d’exonération se fait auprès du service des impôts.",
       },
     },
     {
       "@type": "Question",
-      name: "Quelle diff\u00e9rence entre la surtaxe r\u00e9sidence secondaire et la taxe sur les logements vacants ?",
+      name: "Quelle différence entre la surtaxe résidence secondaire et la taxe sur les logements vacants ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La surtaxe concerne les r\u00e9sidences secondaires meubl\u00e9es et occup\u00e9es occasionnellement. La taxe sur les logements vacants (TLV) concerne les logements vides depuis plus de 1 an en zone tendue. Les deux ne se cumulent pas.",
+        text: "La surtaxe concerne les résidences secondaires meublées et occupées occasionnellement. La taxe sur les logements vacants (TLV) concerne les logements vides depuis plus de 1 an en zone tendue. Les deux ne se cumulent pas.",
       },
     },
   ],

@@ -416,13 +416,13 @@ export default function QuotientSimulator() {
                 </p>
                 <p className="text-4xl font-bold text-green-800 mb-2">
                   {result.economie > 0
-                    ? `${result.economie.toLocaleString("fr-FR")} \u20AC`
-                    : "0 \u20AC"}
+                    ? `${result.economie.toLocaleString("fr-FR")} €`
+                    : "0 €"}
                 </p>
                 <p className="text-sm text-green-600">
                   {result.parts > 1
-                    ? `Avec ${result.parts} parts au lieu d\u2019une seule, votre impot baisse de ${result.economie.toLocaleString("fr-FR")} \u20AC.`
-                    : "Vous etes a 1 part. Le quotient familial n\u2019apporte pas de reduction supplementaire."}
+                    ? `Avec ${result.parts} parts au lieu d’une seule, votre impot baisse de ${result.economie.toLocaleString("fr-FR")} €.`
+                    : "Vous etes a 1 part. Le quotient familial n’apporte pas de reduction supplementaire."}
                 </p>
               </div>
 
@@ -460,15 +460,15 @@ export default function QuotientSimulator() {
                     const icons: string[] = [];
                     let remaining = b.value;
                     while (remaining >= 1) {
-                      icons.push("\u25CF"); // full circle
+                      icons.push("●"); // full circle
                       remaining -= 1;
                     }
                     if (remaining >= 0.5) {
-                      icons.push("\u25D0"); // half circle
+                      icons.push("◐"); // half circle
                       remaining -= 0.5;
                     }
                     if (remaining >= 0.25) {
-                      icons.push("\u25D4"); // quarter circle
+                      icons.push("◔"); // quarter circle
                       remaining -= 0.25;
                     }
                     return (

@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Disclaimer from "@/components/Disclaimer";
 
 export const metadata: Metadata = {
-  title: "R\u00e9gime local Alsace-Moselle : impacts fiscaux | R\u00e9cupMesEuros",
+  title: "Régime local Alsace-Moselle : impacts fiscaux | RécupMesEuros",
   description:
-    "Cotisation maladie 1,30\u00a0%, remboursement 90\u00a0%, jours f\u00e9ri\u00e9s suppl\u00e9mentaires, dons associations droit local : les sp\u00e9cificit\u00e9s fiscales d\u2019Alsace-Moselle.",
+    "Cotisation maladie 1,30 %, remboursement 90 %, jours fériés supplémentaires, dons associations droit local : les spécificités fiscales d’Alsace-Moselle.",
 };
 
 const FAQ_JSONLD = {
@@ -19,31 +19,31 @@ const FAQ_JSONLD = {
       name: "Quel est le taux de la cotisation maladie en Alsace-Moselle ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Les salari\u00e9s relevant du r\u00e9gime local d\u2019Alsace-Moselle paient une cotisation suppl\u00e9mentaire de 1,30\u00a0% sur leur salaire brut. Cette cotisation est d\u00e9ductible du revenu imposable.",
+        text: "Les salariés relevant du régime local d’Alsace-Moselle paient une cotisation supplémentaire de 1,30 % sur leur salaire brut. Cette cotisation est déductible du revenu imposable.",
       },
     },
     {
       "@type": "Question",
-      name: "Le r\u00e9gime local donne-t-il droit \u00e0 un meilleur remboursement ?",
+      name: "Le régime local donne-t-il droit à un meilleur remboursement ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Oui, le r\u00e9gime local offre un taux de remboursement de 90\u00a0% (contre 70\u00a0% dans le r\u00e9gime g\u00e9n\u00e9ral) pour les consultations et soins m\u00e9dicaux, ce qui r\u00e9duit le besoin de mutuelle compl\u00e9mentaire.",
+        text: "Oui, le régime local offre un taux de remboursement de 90 % (contre 70 % dans le régime général) pour les consultations et soins médicaux, ce qui réduit le besoin de mutuelle complémentaire.",
       },
     },
     {
       "@type": "Question",
-      name: "Quels sont les jours f\u00e9ri\u00e9s suppl\u00e9mentaires en Alsace-Moselle ?",
+      name: "Quels sont les jours fériés supplémentaires en Alsace-Moselle ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "L\u2019Alsace-Moselle b\u00e9n\u00e9ficie de 2 jours f\u00e9ri\u00e9s suppl\u00e9mentaires : le Vendredi Saint et le 26 d\u00e9cembre (Saint-\u00c9tienne). Ces jours r\u00e9duisent le nombre de jours travaill\u00e9s et impactent le calcul des frais r\u00e9els.",
+        text: "L’Alsace-Moselle bénéficie de 2 jours fériés supplémentaires : le Vendredi Saint et le 26 décembre (Saint-Étienne). Ces jours réduisent le nombre de jours travaillés et impactent le calcul des frais réels.",
       },
     },
     {
       "@type": "Question",
-      name: "Les dons aux associations de droit local ont-ils un traitement fiscal sp\u00e9cifique ?",
+      name: "Les dons aux associations de droit local ont-ils un traitement fiscal spécifique ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Les associations de droit local (inscrites au registre des associations du tribunal d\u2019instance) ouvrent droit aux m\u00eames r\u00e9ductions d\u2019imp\u00f4t que les associations loi 1901, \u00e0 condition de remplir les m\u00eames crit\u00e8res d\u2019int\u00e9r\u00eat g\u00e9n\u00e9ral.",
+        text: "Les associations de droit local (inscrites au registre des associations du tribunal d’instance) ouvrent droit aux mêmes réductions d’impôt que les associations loi 1901, à condition de remplir les mêmes critères d’intérêt général.",
       },
     },
   ],
