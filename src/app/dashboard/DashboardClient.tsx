@@ -657,145 +657,265 @@ function buildSteps(result: TaxResult): Step[] {
 }
 
 // ─── PDF generation ───
-function generatePremiumPDF(result: TaxResult, steps: Step[], completedSteps: Record<string, boolean>) {
+function sanitize(text: string): string {
+  // Replace problematic Unicode chars that jsPDF can't render with standard font
+  return text
+    .replace(/[\u2019\u2018]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/\u2014/g, " - ")
+    .replace(/\u2013/g, "-")
+    .replace(/\u00a0/g, " ")
+    .replace(/\u2026/g, "...")
+    .replace(/\u20ac/g, "EUR")
+    .replace(/\u2192/g, "->")
+    .replace(/\u2022/g, "-")
+    .replace(/\u26a0/g, "/!\\")
+    .replace(/[\u2610\u2611\u2612\u2713\u2714\u2717\u2718]/g, "-")
+    .replace(/[^\x00-\xFF]/g, ""); // Strip remaining non-latin1
+}
+
+function generatePremiumPDF(result: TaxResult, _steps: Step[], _completedSteps: Record<string, boolean>) {
   import("jspdf").then(({ jsPDF }) => {
     const doc = new jsPDF();
-    const m = 20;
+    const m = 20; // margin
+    const pw = 170; // page width usable
     let y = m;
 
-    doc.setFontSize(22);
-    doc.setTextColor(30, 64, 175);
-    doc.text("RecupMesEuros", m, y);
-    doc.setFontSize(14);
-    doc.setTextColor(100);
-    y += 8;
-    doc.text("Guide fiscal personnalisé — Déclaration 2026 (revenus 2025)", m, y);
-    y += 6;
-    doc.setFontSize(9);
-    doc.text(`Généré le ${new Date().toLocaleDateString("fr-FR")}`, m, y);
-    y += 12;
+    const pageBreak = (need: number) => {
+      if (y + need > 275) { doc.addPage(); y = m; }
+    };
 
-    doc.setFontSize(16);
-    doc.setTextColor(0);
-    doc.text(`Score d'opportunité : ${result.score.toUpperCase()}`, m, y);
-    y += 7;
-
-    if (result.totalEstimatedMax > 0) {
-      doc.setFontSize(13);
-      doc.setTextColor(5, 150, 105);
-      doc.text(`Gain potentiel estimé : ${result.totalEstimatedMin.toLocaleString("fr-FR")} à ${result.totalEstimatedMax.toLocaleString("fr-FR")} €`, m, y);
+    const drawSectionTitle = (title: string) => {
+      pageBreak(15);
+      y += 4;
+      doc.setFillColor(30, 64, 175);
+      doc.roundedRect(m, y - 5, pw, 10, 2, 2, "F");
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text(sanitize(title), m + 4, y + 1);
       y += 10;
-    }
-    y += 3;
-    doc.setDrawColor(200);
-    doc.line(m, y, 190, y);
-    y += 8;
+    };
 
-    // Opportunities
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text("VOS AVANTAGES FISCAUX", m, y);
-    y += 8;
+    // ─── Page 1: Header ───
+    doc.setFillColor(30, 64, 175);
+    doc.rect(0, 0, 210, 55, "F");
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text("RecupMesEuros", m, 22);
+    doc.setFontSize(13);
+    doc.text("Guide fiscal personnalise - Declaration 2026", m, 32);
+    doc.setFontSize(9);
+    doc.setTextColor(200, 210, 255);
+    doc.text(`Genere le ${new Date().toLocaleDateString("fr-FR")}`, m, 42);
+    y = 65;
+
+    // Summary boxes
+    const boxW = pw / 3 - 3;
+    const boxes = [
+      { label: "Avantages detectes", value: String(result.opportunities.length), color: [30, 64, 175] as [number, number, number] },
+      { label: "Gain potentiel max", value: result.totalEstimatedMax > 0 ? `${result.totalEstimatedMax.toLocaleString("fr-FR")} EUR` : "-", color: [5, 150, 105] as [number, number, number] },
+      { label: "Formulaires concernes", value: String(new Set(result.opportunities.map(o => o.form)).size), color: [100, 100, 100] as [number, number, number] },
+    ];
+
+    boxes.forEach((b, i) => {
+      const x = m + i * (boxW + 4);
+      doc.setFillColor(245, 247, 255);
+      doc.roundedRect(x, y, boxW, 22, 3, 3, "F");
+      doc.setFontSize(18);
+      doc.setTextColor(...b.color);
+      doc.text(sanitize(b.value), x + boxW / 2, y + 10, { align: "center" });
+      doc.setFontSize(7);
+      doc.setTextColor(120, 120, 120);
+      doc.text(sanitize(b.label), x + boxW / 2, y + 17, { align: "center" });
+    });
+    y += 30;
+
+    // ─── Recap table ───
+    drawSectionTitle("RECAPITULATIF DES CASES A REMPLIR");
+
+    // Table header
+    doc.setFillColor(240, 243, 255);
+    doc.rect(m, y, pw, 8, "F");
+    doc.setFontSize(8);
+    doc.setTextColor(80, 80, 80);
+    doc.text("Avantage fiscal", m + 2, y + 5.5);
+    doc.text("Formulaire", m + 95, y + 5.5);
+    doc.text("Case(s)", m + 125, y + 5.5);
+    doc.text("Gain estime", m + 150, y + 5.5);
+    y += 10;
 
     for (const opp of result.opportunities) {
-      if (y > 230) { doc.addPage(); y = m; }
-      doc.setFontSize(12);
+      pageBreak(12);
+
+      // Alternate row color
+      const rowIdx = result.opportunities.indexOf(opp);
+      if (rowIdx % 2 === 0) {
+        doc.setFillColor(250, 250, 255);
+        doc.rect(m, y - 3, pw, 9, "F");
+      }
+
+      doc.setFontSize(8);
+      doc.setTextColor(30, 30, 30);
+      const titleTrunc = sanitize(opp.title).substring(0, 45) + (opp.title.length > 45 ? "..." : "");
+      doc.text(titleTrunc, m + 2, y + 2);
+
       doc.setTextColor(30, 64, 175);
-      doc.text(opp.title, m, y);
-      y += 6;
+      doc.text(sanitize(opp.form), m + 95, y + 2);
 
       doc.setFontSize(9);
-      doc.setTextColor(60);
-      const descLines = doc.splitTextToSize(opp.description, 170);
-      doc.text(descLines, m, y);
-      y += descLines.length * 3.8 + 2;
+      doc.text(opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto", m + 125, y + 2);
 
-      doc.setFillColor(240, 245, 255);
-      doc.roundedRect(m, y - 1, 170, opp.boxes.length > 0 ? 16 : 10, 2, 2, "F");
+      doc.setFontSize(8);
+      doc.setTextColor(5, 150, 105);
+      if (opp.estimatedSaving) {
+        const savingText = opp.estimatedSaving.min === opp.estimatedSaving.max
+          ? `${opp.estimatedSaving.min.toLocaleString("fr-FR")} EUR`
+          : `${opp.estimatedSaving.min.toLocaleString("fr-FR")}-${opp.estimatedSaving.max.toLocaleString("fr-FR")} EUR`;
+        doc.text(sanitize(savingText), m + 150, y + 2);
+      } else {
+        doc.setTextColor(160, 160, 160);
+        doc.text("-", m + 150, y + 2);
+      }
+
+      y += 8;
+    }
+
+    // Total row
+    if (result.totalEstimatedMax > 0) {
+      pageBreak(12);
+      doc.setFillColor(30, 64, 175);
+      doc.roundedRect(m, y - 2, pw, 10, 2, 2, "F");
+      doc.setFontSize(9);
+      doc.setTextColor(255, 255, 255);
+      doc.text("TOTAL ESTIME", m + 2, y + 4);
+      doc.text(
+        sanitize(`${result.totalEstimatedMin.toLocaleString("fr-FR")} a ${result.totalEstimatedMax.toLocaleString("fr-FR")} EUR`),
+        m + 150, y + 4
+      );
+      y += 14;
+    }
+
+    // ─── Detail per opportunity ───
+    drawSectionTitle("DETAIL DE VOS AVANTAGES FISCAUX");
+
+    for (const opp of result.opportunities) {
+      pageBreak(40);
+
+      // Title bar
+      doc.setFillColor(245, 247, 255);
+      doc.roundedRect(m, y - 2, pw, 10, 2, 2, "F");
       doc.setFontSize(10);
       doc.setTextColor(30, 64, 175);
-      doc.text(`Formulaire : ${opp.form}`, m + 4, y + 4);
-      if (opp.boxes.length > 0) {
-        doc.setFontSize(11);
-        doc.text(`Cases : ${opp.boxes.join("  /  ")}`, m + 4, y + 10);
-        y += 18;
-      } else {
-        y += 12;
-      }
+      doc.text(sanitize(opp.title), m + 3, y + 4);
+      y += 12;
 
+      // Description
+      doc.setFontSize(8);
+      doc.setTextColor(60, 60, 60);
+      const descLines = doc.splitTextToSize(sanitize(opp.description), pw - 4);
+      doc.text(descLines, m + 2, y);
+      y += descLines.length * 3.5 + 3;
+
+      // Form + Cases box
+      doc.setFillColor(230, 240, 255);
+      doc.roundedRect(m, y - 1, 80, 12, 2, 2, "F");
+      doc.setFontSize(8);
+      doc.setTextColor(30, 64, 175);
+      doc.text(`Formulaire: ${sanitize(opp.form)}`, m + 3, y + 4);
+      doc.text(`Cases: ${opp.boxes.length > 0 ? opp.boxes.join("  ") : "Automatique"}`, m + 3, y + 9);
+
+      // Saving box
       if (opp.estimatedSaving) {
-        doc.setFontSize(10);
+        doc.setFillColor(230, 255, 240);
+        doc.roundedRect(m + 85, y - 1, 85, 12, 2, 2, "F");
         doc.setTextColor(5, 150, 105);
-        doc.text(`Gain estimé : ${opp.estimatedSaving.min.toLocaleString("fr-FR")} à ${opp.estimatedSaving.max.toLocaleString("fr-FR")} €`, m, y);
-        y += 5;
+        const saving = opp.estimatedSaving.min === opp.estimatedSaving.max
+          ? `${opp.estimatedSaving.min.toLocaleString("fr-FR")} EUR`
+          : `${opp.estimatedSaving.min.toLocaleString("fr-FR")} a ${opp.estimatedSaving.max.toLocaleString("fr-FR")} EUR`;
+        doc.text(`Gain estime: ${sanitize(saving)}`, m + 88, y + 4);
+
+        const typeLabels: Record<string, string> = {
+          credit: "Credit d'impot",
+          reduction: "Reduction d'impot",
+          deduction: "Deduction",
+          info: "Information",
+        };
+        doc.setTextColor(100, 100, 100);
+        doc.text(typeLabels[opp.type] || opp.type, m + 88, y + 9);
       }
 
-      doc.setDrawColor(220);
-      doc.line(m, y, 190, y);
+      y += 16;
+
+      // Justificatifs
+      if (opp.justificatifs.length > 0) {
+        doc.setFontSize(7);
+        doc.setTextColor(140, 100, 0);
+        doc.text("Justificatifs a conserver:", m + 2, y);
+        y += 3.5;
+        for (const j of opp.justificatifs) {
+          pageBreak(6);
+          doc.setTextColor(120, 90, 0);
+          doc.text(`  - ${sanitize(j)}`, m + 2, y);
+          y += 3.5;
+        }
+      }
+
+      // Separator
+      y += 2;
+      doc.setDrawColor(220, 220, 220);
+      doc.line(m, y, m + pw, y);
+      y += 5;
+    }
+
+    // ─── Calendar ───
+    drawSectionTitle("CALENDRIER FISCAL 2026");
+
+    for (const c of CALENDRIER_FISCAL) {
+      pageBreak(8);
+      const d = new Date(c.date);
+      const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+      const isPast = d < new Date();
+
+      doc.setFontSize(9);
+      doc.setTextColor(isPast ? 160 : 30, isPast ? 160 : 64, isPast ? 160 : 175);
+      doc.text(dateStr, m + 2, y + 1);
+      doc.setTextColor(isPast ? 160 : 60, isPast ? 160 : 60, isPast ? 160 : 60);
+      doc.text(sanitize(c.label), m + 30, y + 1);
       y += 6;
     }
 
-    // Progress
-    if (y > 200) { doc.addPage(); y = m; }
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text("PROGRESSION", m, y);
-    y += 8;
-
-    for (const step of steps) {
-      if (y > 270) { doc.addPage(); y = m; }
-      const done = completedSteps[step.id];
-      doc.setFontSize(9);
-      doc.setTextColor(done ? 150 : 0);
-      doc.text(`${done ? "☑" : "☐"} ${step.title}`, m, y);
-      y += 4.5;
-    }
-
-    // Calendar
-    if (y > 240) { doc.addPage(); y = m; }
-    y += 5;
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("DATES CLÉS 2026", m, y);
-    y += 7;
-    doc.setFontSize(9);
-    doc.setTextColor(60);
-    for (const c of CALENDRIER_FISCAL) {
-      const d = new Date(c.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-      doc.text(`${d} — ${c.label}`, m, y);
-      y += 4.5;
-    }
-
-    // Warnings
+    // ─── Warnings ───
     if (result.warnings.length > 0) {
-      if (y > 240) { doc.addPage(); y = m; }
-      y += 5;
-      doc.setFontSize(12);
-      doc.setTextColor(180, 80, 0);
-      doc.text("POINTS D'ATTENTION", m, y);
-      y += 7;
-      doc.setFontSize(9);
-      doc.setTextColor(80);
+      drawSectionTitle("POINTS D'ATTENTION");
+
       for (const w of result.warnings) {
-        if (y > 270) { doc.addPage(); y = m; }
-        const wl = doc.splitTextToSize(`⚠ ${w}`, 170);
-        doc.text(wl, m, y);
-        y += wl.length * 3.8 + 3;
+        pageBreak(12);
+        doc.setFillColor(255, 248, 235);
+        const wLines = doc.splitTextToSize(sanitize(`/!\\ ${w}`), pw - 8);
+        const boxH = wLines.length * 3.5 + 5;
+        doc.roundedRect(m, y - 2, pw, boxH, 2, 2, "F");
+        doc.setFontSize(7.5);
+        doc.setTextColor(140, 80, 0);
+        doc.text(wLines, m + 4, y + 2);
+        y += boxH + 3;
       }
     }
 
-    // Footer
-    if (y > 260) { doc.addPage(); y = m; }
-    y += 8;
-    doc.setFontSize(8);
-    doc.setTextColor(140);
-    doc.text("Les résultats sont indicatifs. Vérifiez votre situation sur impots.gouv.fr ou auprès d'un professionnel.", m, y);
-    y += 4;
-    doc.text("© RecupMesEuros — Guide fiscal personnalisé", m, y);
+    // ─── Footer ───
+    pageBreak(15);
+    y += 6;
+    doc.setDrawColor(200, 200, 200);
+    doc.line(m, y, m + pw, y);
+    y += 5;
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.text("Les resultats sont indicatifs. Verifiez votre situation sur impots.gouv.fr ou aupres d'un professionnel.", m, y);
+    y += 3.5;
+    doc.text("RecupMesEuros - Guide fiscal personnalise - recupmeseuros.vercel.app", m, y);
 
-    doc.save("recupmeseuros-guide-complet.pdf");
+    doc.save("recupmeseuros-guide-fiscal.pdf");
   }).catch(() => {
-    alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+    alert("Erreur lors de la generation du PDF. Veuillez reessayer.");
   });
 }
 

@@ -763,7 +763,6 @@ export const QUESTIONS: Question[] = [
     subtext: "Dividendes, intérêts de comptes, coupons d'obligations, etc.",
     type: "boolean",
     field: "revenus_capitaux",
-    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "revenus_capitaux_montant",
@@ -1044,7 +1043,6 @@ export const QUESTIONS: Question[] = [
     subtext: "Bitcoin, Ethereum, etc. Les plus-values sont imposées à 30% (flat tax).",
     type: "boolean",
     field: "plus_value_crypto",
-    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "crypto_montant",
@@ -1121,7 +1119,6 @@ export const QUESTIONS: Question[] = [
     text: "Avez-vous effectué un rachat (retrait) sur un contrat d'assurance-vie en 2025 ?",
     type: "boolean",
     field: "assurance_vie_rachat",
-    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "av_montant",
@@ -1276,7 +1273,6 @@ export const QUESTIONS: Question[] = [
     subtext: "Titres acquis avant 2018 : abattements possibles de 50% ou 65% selon la durée.",
     type: "boolean",
     field: "plus_value_mobiliere",
-    showIf: (a) => !!a.a_revenus_financiers,
   },
   {
     id: "pv_mob_montant",
