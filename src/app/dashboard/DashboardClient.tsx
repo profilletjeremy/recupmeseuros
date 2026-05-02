@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { evaluateTaxOpportunities } from "@/lib/engine";
 import { QuestionnaireAnswers } from "@/data/types";
 import type { TaxResult, TaxOpportunity } from "@/data/types";
-import { isPremium, getPremiumTier, hasTierAccess, PREMIUM_TIERS } from "@/lib/premium";
-import type { PremiumTier } from "@/lib/premium";
+import { isPremium } from "@/lib/premium";
 import { CALENDRIER_FISCAL } from "@/data/taxRules2026";
 import Disclaimer from "@/components/Disclaimer";
 
@@ -110,44 +109,7 @@ const PHASE_CONFIG = {
 };
 
 // ─── Build opportunity step content ───
-// ─── Upgrade CTA for essentiel users ───
-function UpgradeBanner({ from, feature }: { from: PremiumTier; feature: string }) {
-  const target = from === "essentiel" ? "complet" : "expert";
-  const targetTier = PREMIUM_TIERS[target];
-  return (
-    <div className="relative overflow-hidden rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-blue-50 p-6 text-center">
-      <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]" />
-      <div className="relative z-10">
-        <span className="text-2xl mb-2 block">🔒</span>
-        <p className="font-bold text-primary mb-1">
-          {feature}
-        </p>
-        <p className="text-sm text-text-light mb-4">
-          Disponible avec le pack <strong>{targetTier.name}</strong> à {targetTier.price} €
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            // TODO: Stripe upgrade flow
-            alert(`Upgrade vers ${targetTier.name} — Stripe à intégrer`);
-          }}
-          className="bg-primary text-white font-bold px-6 py-2.5 rounded-xl hover:bg-primary-dark transition-colors text-sm"
-        >
-          Passer au pack {targetTier.name} — {targetTier.price} €
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── Blurred text for locked content ───
-function BlurredText({ text }: { text: string }) {
-  return (
-    <span className="select-none blur-[5px] text-text-lighter" aria-hidden="true">{text}</span>
-  );
-}
-
-function OpportunityStep({ opp, locked }: { opp: TaxOpportunity; locked?: boolean }) {
+function OpportunityStep({ opp }: { opp: TaxOpportunity }) {
   const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
     credit: { label: "Crédit d'impôt", cls: "bg-green-100 text-green-800" },
     reduction: { label: "Réduction d'impôt", cls: "bg-blue-100 text-blue-800" },
@@ -172,27 +134,10 @@ function OpportunityStep({ opp, locked }: { opp: TaxOpportunity; locked?: boolea
         )}
       </div>
 
-      {/* Description — always visible */}
+      {/* Description */}
       <p className="text-text-light">{opp.description}</p>
 
-      {locked ? (
-        <>
-          {/* Teaser: blurred boxes + upgrade CTA */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
-              <p className="text-xs font-semibold text-text-lighter mb-1">Formulaire</p>
-              <p className="font-mono font-bold text-primary text-lg">{opp.form}</p>
-            </div>
-            <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
-              <p className="text-xs font-semibold text-text-lighter mb-1">Case(s) à remplir</p>
-              <BlurredText text={opp.boxes.length > 0 ? opp.boxes.join("  ") : "7XX / 7YY"} />
-            </div>
-          </div>
-          <UpgradeBanner from="essentiel" feature="Guide pas-à-pas, cases exactes et boutons copier-coller" />
-        </>
-      ) : (
-        <>
-          {/* Visual step-by-step instructions */}
+      {/* Visual step-by-step instructions */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
             <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
@@ -313,14 +258,12 @@ function OpportunityStep({ opp, locked }: { opp: TaxOpportunity; locked?: boolea
               </Link>
             )}
           </div>
-        </>
-      )}
     </div>
   );
 }
 
 // ─── Build all steps from result ───
-function buildSteps(result: TaxResult, locked: boolean): Step[] {
+function buildSteps(result: TaxResult): Step[] {
   const steps: Step[] = [];
 
   // ── Phase 1: Préparation ──
@@ -428,18 +371,14 @@ function buildSteps(result: TaxResult, locked: boolean): Step[] {
           })}
         </div>
 
-        {locked ? (
-          <UpgradeBanner from="essentiel" feature="Calendrier fiscal .ICS personnalisé" />
-        ) : (
-          <button
-            type="button"
-            onClick={downloadICS}
-            className="w-full flex items-center justify-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-dark transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            Ajouter les dates à mon calendrier (.ics)
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={downloadICS}
+          className="w-full flex items-center justify-center gap-2 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-dark transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          Ajouter les dates à mon calendrier (.ics)
+        </button>
       </div>
     ),
   });
@@ -544,7 +483,7 @@ function buildSteps(result: TaxResult, locked: boolean): Step[] {
       subtitle: opp.boxes.length > 0
         ? `Case${opp.boxes.length > 1 ? "s" : ""} ${opp.boxes.join(", ")} — Formulaire ${opp.form}`
         : `Formulaire ${opp.form}`,
-      content: <OpportunityStep opp={opp} locked={locked} />,
+      content: <OpportunityStep opp={opp} />,
     });
   }
 
@@ -595,9 +534,7 @@ function buildSteps(result: TaxResult, locked: boolean): Step[] {
                     <td className="px-4 py-2.5 font-medium">{opp.title}</td>
                     <td className="px-4 py-2.5 font-mono text-primary text-xs">{opp.form}</td>
                     <td className="px-4 py-2.5 font-mono text-primary font-bold">
-                      {locked
-                        ? <BlurredText text={opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"} />
-                        : opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"}
+                      {opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono font-bold text-secondary">
                       {opp.estimatedSaving
@@ -883,10 +820,7 @@ export default function DashboardClient() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({});
   const [activeView, setActiveView] = useState<"guide" | "recap" | "simulateurs">("guide");
-  const [tier, setTier] = useState<PremiumTier>("complet");
   const contentRef = useRef<HTMLDivElement>(null);
-  const canAccessGuide = tier === "complet" || tier === "expert";
-  const canAccessExpert = tier === "expert";
 
   useEffect(() => {
     if (!isPremium()) {
@@ -909,8 +843,6 @@ export default function DashboardClient() {
       router.push("/questionnaire");
       return;
     }
-
-    setTier(getPremiumTier() || "complet");
 
     // Load saved progress
     const saved = localStorage.getItem("recupmeseuros_progress");
@@ -944,7 +876,7 @@ export default function DashboardClient() {
     );
   }
 
-  const steps = buildSteps(result, !canAccessGuide);
+  const steps = buildSteps(result);
   const currentStep = steps[currentStepIndex];
   const totalCompleted = Object.values(completedSteps).filter(Boolean).length;
   const progressPercent = Math.round((totalCompleted / steps.length) * 100);
@@ -1041,11 +973,7 @@ export default function DashboardClient() {
           <p className="text-xs text-text-light">Formulaires concernés</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-          <p className="text-2xl font-bold">
-            {canAccessGuide
-              ? result.opportunities.reduce((n, o) => n + o.boxes.length, 0)
-              : <BlurredText text={String(result.opportunities.reduce((n, o) => n + o.boxes.length, 0))} />}
-          </p>
+          <p className="text-2xl font-bold">{result.opportunities.reduce((n, o) => n + o.boxes.length, 0)}</p>
           <p className="text-xs text-text-light">Cases à remplir</p>
         </div>
       </div>
@@ -1266,16 +1194,10 @@ export default function DashboardClient() {
                       <td className="px-4 py-2.5 font-mono text-primary text-xs">{opp.form}</td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-1">
-                          {canAccessGuide ? (
-                            <>
-                              <span className="font-mono text-primary font-bold">
-                                {opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"}
-                              </span>
-                              {opp.boxes.length > 0 && <CopyButton text={opp.boxes.join(", ")} />}
-                            </>
-                          ) : (
-                            <BlurredText text={opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"} />
-                          )}
+                          <span className="font-mono text-primary font-bold">
+                            {opp.boxes.length > 0 ? opp.boxes.join(", ") : "Auto"}
+                          </span>
+                          {opp.boxes.length > 0 && <CopyButton text={opp.boxes.join(", ")} />}
                         </div>
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono font-bold text-secondary">
@@ -1335,16 +1257,11 @@ export default function DashboardClient() {
                   </div>
                 </summary>
                 <div className="px-5 pb-5 border-t border-gray-100 pt-4">
-                  <OpportunityStep opp={opp} locked={!canAccessGuide} />
+                  <OpportunityStep opp={opp} />
                 </div>
               </details>
             );
           })}
-
-          {/* Upgrade CTA for essentiel in recap */}
-          {!canAccessGuide && (
-            <UpgradeBanner from="essentiel" feature="Cases exactes, boutons copier-coller et guide pas-à-pas" />
-          )}
 
           {/* Warnings */}
           {result.warnings.length > 0 && (
@@ -1415,19 +1332,13 @@ export default function DashboardClient() {
 
       {/* ─── Actions ─── */}
       <div className="flex flex-col sm:flex-row gap-3 mt-8 mb-6">
-        {canAccessGuide ? (
-          <button
-            type="button"
-            onClick={() => generatePremiumPDF(result, steps, completedSteps)}
-            className="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-dark transition-colors"
-          >
-            Télécharger le guide complet PDF
-          </button>
-        ) : (
-          <div className="flex-1">
-            <UpgradeBanner from="essentiel" feature="PDF personnalisé téléchargeable" />
-          </div>
-        )}
+        <button
+          type="button"
+          onClick={() => generatePremiumPDF(result, steps, completedSteps)}
+          className="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-xl hover:bg-primary-dark transition-colors"
+        >
+          Télécharger le guide complet PDF
+        </button>
         <Link
           href="/questionnaire"
           className="flex-1 text-center border-2 border-gray-200 font-bold py-3 px-6 rounded-xl hover:border-gray-300 transition-colors"

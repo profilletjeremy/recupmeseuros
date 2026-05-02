@@ -216,12 +216,11 @@ function PremiumModal({ result, onClose, onUnlocked }: { result: TaxResult; onCl
 
   const tiers = Object.entries(PREMIUM_TIERS) as [PremiumTier, typeof PREMIUM_TIERS[PremiumTier]][];
   const hasFrontalier = result.opportunities.some((o) => o.id.startsWith("frontalier_"));
-  const hasTerritorial = result.opportunities.some((o) => ["abattement_dom", "alsace_moselle", "corse_patrimoine"].includes(o.id));
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 animate-fadeIn"
+        className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center mb-6">
@@ -240,20 +239,17 @@ function PremiumModal({ result, onClose, onUnlocked }: { result: TaxResult; onCl
         {result.totalEstimatedMax > 0 && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 text-center">
             <p className="text-sm text-green-800">
-              Investissez quelques euros pour potentiellement récupérer
+              Investissez <strong>39 €</strong> pour potentiellement récupérer
               {" "}<strong>{result.totalEstimatedMin.toLocaleString("fr-FR")} à {result.totalEstimatedMax.toLocaleString("fr-FR")} €</strong>
             </p>
           </div>
         )}
 
         {/* Tiers grid */}
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <div className="grid md:grid-cols-2 gap-4 mb-6">
           {tiers.map(([key, tier]) => {
             const isPopular = "popular" in tier && tier.popular;
-            const isRecommended =
-              (key === "expert" && hasFrontalier) ||
-              (key === "complet" && hasTerritorial && !hasFrontalier) ||
-              (key === "essentiel" && !hasTerritorial && !hasFrontalier);
+            const isRecommended = key === "expert" && hasFrontalier;
 
             return (
               <div

@@ -1,7 +1,7 @@
 const STORAGE_KEY = "recupmeseuros_premium";
 const TIER_KEY = "recupmeseuros_tier";
 
-export type PremiumTier = "essentiel" | "complet" | "expert";
+export type PremiumTier = "complet" | "expert";
 
 export function isPremium(): boolean {
   if (typeof window === "undefined") return false;
@@ -16,7 +16,7 @@ export function setPremium(tier: PremiumTier = "complet"): void {
 export function getPremiumTier(): PremiumTier | null {
   if (typeof window === "undefined") return null;
   const tier = sessionStorage.getItem(TIER_KEY);
-  if (tier === "essentiel" || tier === "complet" || tier === "expert") return tier;
+  if (tier === "complet" || tier === "expert") return tier;
   // Legacy users who paid before tiers → default to complet
   if (isPremium()) return "complet";
   return null;
@@ -26,36 +26,16 @@ export function getPremiumTier(): PremiumTier | null {
 export function hasTierAccess(required: PremiumTier): boolean {
   const tier = getPremiumTier();
   if (!tier) return false;
-  const order: PremiumTier[] = ["essentiel", "complet", "expert"];
+  const order: PremiumTier[] = ["complet", "expert"];
   return order.indexOf(tier) >= order.indexOf(required);
 }
 
 export const PREMIUM_TIERS = {
-  essentiel: {
-    price: 19,
-    name: "Essentiel",
-    subtitle: "Aperçu de votre potentiel",
-    features: [
-      "Nombre d'avantages détectés",
-      "Estimation du gain potentiel",
-      "Formulaires concernés",
-      "Résumé de votre situation",
-    ],
-    excluded: [
-      "Cases exactes à remplir",
-      "Guide pas-à-pas",
-      "PDF téléchargeable",
-      "Boutons copier-coller",
-      "Calendrier fiscal .ICS",
-    ],
-    cta: "Débloquer pour 19 €",
-  },
   complet: {
     price: 39,
     name: "Complet",
     subtitle: "Le guide pour agir",
     features: [
-      "Tout Essentiel +",
       "Cases exactes à remplir",
       "Guide pas-à-pas interactif",
       "Boutons copier-coller",
