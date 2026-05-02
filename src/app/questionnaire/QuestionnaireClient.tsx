@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS } from "@/data/questions";
 import type { ProfileType } from "@/data/types";
 
 type Answers = Record<string, unknown>;
 
+const STORAGE_KEY = "recupmeseuros_answers";
+const DRAFT_KEY = "recupmeseuros_draft";
+
 /**
  * Dérive automatiquement les profils à partir des réponses de découverte.
- * Remplace la sélection manuelle qui ratait les combinaisons (salarié + bailleur).
  */
 function deriveProfiles(answers: Answers): ProfileType[] {
   const profiles: ProfileType[] = [];
@@ -26,14 +28,49 @@ function deriveProfiles(answers: Answers): ProfileType[] {
   return profiles;
 }
 
+function loadDraft(): { answers: Answers; index: number } | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (data && typeof data.answers === "object" && typeof data.index === "number") {
+      return data;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 export default function QuestionnaireClient() {
   const router = useRouter();
   const [answers, setAnswers] = useState<Answers>({});
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showResume, setShowResume] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  // On mount, check for existing draft
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft && Object.keys(draft.answers).length > 0) {
+      setShowResume(true);
+      // Pre-load draft in case user wants to resume
+      setAnswers(draft.answers);
+      setCurrentIndex(draft.index);
+    }
+    setInitialized(true);
+  }, []);
+
+  // Auto-save draft on every answer change
+  useEffect(() => {
+    if (!initialized) return;
+    if (Object.keys(answers).length > 0) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, index: currentIndex }));
+    }
+  }, [answers, currentIndex, initialized]);
 
   const derivedProfiles = useMemo(() => deriveProfiles(answers), [answers]);
 
-  // Filter questions based on previous answers (profiles are derived, not selected)
   const visibleQuestions = useMemo(() => {
     return QUESTIONS.filter((q) => {
       if (!q.showIf) return true;
@@ -53,12 +90,16 @@ export default function QuestionnaireClient() {
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      // Done — save to sessionStorage with derived profiles and navigate
+      // Done — save to localStorage with derived profiles and navigate
       const data = {
         profiles: deriveProfiles(answers),
         ...answers,
       };
-      sessionStorage.setItem("recupmeseuros_answers", JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      // Also keep in sessionStorage for backward compat
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      // Clear draft
+      localStorage.removeItem(DRAFT_KEY);
       router.push("/resultats");
     }
   }, [currentIndex, totalQuestions, answers, router]);
@@ -68,6 +109,51 @@ export default function QuestionnaireClient() {
       setCurrentIndex((i) => i - 1);
     }
   }, [currentIndex]);
+
+  const startFresh = useCallback(() => {
+    setAnswers({});
+    setCurrentIndex(0);
+    localStorage.removeItem(DRAFT_KEY);
+    setShowResume(false);
+  }, []);
+
+  const resumeDraft = useCallback(() => {
+    setShowResume(false);
+  }, []);
+
+  if (!initialized) return null;
+
+  // ─── Resume prompt ───
+  if (showResume) {
+    const draftAnswerCount = Object.keys(answers).length;
+    return (
+      <div className="animate-fadeIn">
+        <div className="bg-white rounded-2xl border-2 border-primary/20 p-6 text-center">
+          <div className="text-4xl mb-4">📋</div>
+          <h2 className="text-xl font-bold mb-2">Reprendre votre questionnaire ?</h2>
+          <p className="text-text-light text-sm mb-6">
+            Vous avez un questionnaire en cours ({draftAnswerCount} réponses sauvegardées).
+          </p>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={startFresh}
+              className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-text-light font-medium hover:border-gray-300 transition-colors"
+            >
+              Recommencer
+            </button>
+            <button
+              type="button"
+              onClick={resumeDraft}
+              className="flex-1 bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-dark transition-colors"
+            >
+              Reprendre
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentQuestion) {
     return null;

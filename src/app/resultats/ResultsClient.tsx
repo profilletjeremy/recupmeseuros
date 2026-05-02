@@ -579,7 +579,7 @@ export default function ResultsClient() {
   useEffect(() => {
     setPremiumState(isPremium());
 
-    const raw = sessionStorage.getItem("recupmeseuros_answers");
+    const raw = localStorage.getItem("recupmeseuros_answers") || sessionStorage.getItem("recupmeseuros_answers");
     if (!raw) {
       setError(true);
       return;

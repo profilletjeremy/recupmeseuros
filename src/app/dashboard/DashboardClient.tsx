@@ -948,7 +948,7 @@ export default function DashboardClient() {
       return;
     }
 
-    const raw = sessionStorage.getItem("recupmeseuros_answers");
+    const raw = localStorage.getItem("recupmeseuros_answers") || sessionStorage.getItem("recupmeseuros_answers");
     if (!raw) {
       router.push("/questionnaire");
       return;

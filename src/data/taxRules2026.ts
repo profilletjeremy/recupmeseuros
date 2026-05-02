@@ -69,6 +69,7 @@ export const DON_CLASSIQUE_TAUX = 0.66;
 export const DON_CLASSIQUE_PLAFOND_REVENU = 0.20; // 20% du revenu imposable
 export const DON_AIDE_TAUX = 0.75;
 export const DON_AIDE_PLAFOND = 2000; // Plafond dons aide aux personnes en difficulté (relevé à 2000€ depuis oct 2025)
+export const DON_POLITIQUE_PLAFOND = 15000; // Plafond dons parti politique par foyer
 
 // ─── Cotisation syndicale ───
 export const SYNDICAT_TAUX = 0.66;

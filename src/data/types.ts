@@ -92,6 +92,7 @@ export const QuestionnaireAnswers = z.object({
   don_parti_politique: z.boolean().optional(),
   don_montant_classique: z.number().min(0).optional(),
   don_montant_aide: z.number().min(0).optional(),
+  don_montant_politique: z.number().min(0).optional(),
 
   // Syndicat
   cotisation_syndicale: z.boolean().optional(),
@@ -200,10 +201,12 @@ export const QuestionnaireAnswers = z.object({
   // Denormandie
   investissement_denormandie: z.boolean().optional(),
   denormandie_montant: z.number().min(0).optional(),
+  denormandie_duree: z.enum(["6", "9", "12"]).optional(),
 
   // Loc'Avantages
   loc_avantages: z.boolean().optional(),
   loc_avantages_type: z.enum(["loc1", "loc2", "loc3"]).optional(),
+  loc_avantages_revenus: z.number().min(0).optional(),
 
   // FIP / FCPI
   investissement_fip_fcpi: z.boolean().optional(),

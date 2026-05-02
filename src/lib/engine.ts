@@ -192,14 +192,18 @@ export function evaluateTaxOpportunities(
   }
 
   if (answers.don_parti_politique) {
+    const montantPol = answers.don_montant_politique || 0;
+    const plafondPol = rules.DON_POLITIQUE_PLAFOND;
+    const retenuPol = Math.min(montantPol, plafondPol);
+    const reductionPol = Math.round(retenuPol * rules.DON_CLASSIQUE_TAUX);
+
     opportunities.push({
       id: "don_politique",
       title: "Réduction d'impôt — Dons aux partis politiques",
-      description:
-        "Les dons aux partis politiques ouvrent droit à une réduction de 66%, plafonnée à 15 000 € de dons par an par foyer.",
+      description: `Les dons aux partis politiques ouvrent droit à une réduction de 66%, plafonnée à ${plafondPol.toLocaleString("fr-FR")} € de dons par an par foyer.`,
       type: "reduction",
-      estimatedSaving: null,
-      confidence: "moyenne",
+      estimatedSaving: montantPol > 0 ? { min: reductionPol, max: reductionPol } : null,
+      confidence: montantPol > 0 ? "haute" : "moyenne",
       boxes: rules.CASES.don_politique.boxes,
       form: rules.CASES.don_politique.form,
       justificatifs: ["Reçu du mandataire financier du parti"],
@@ -342,13 +346,19 @@ export function evaluateTaxOpportunities(
   }
 
   if (answers.pension_ascendant) {
+    const montantAsc = answers.pension_montant || 0;
+    const forfaitHeb = rules.PENSION_ASCENDANT_FORFAIT_HEBERGEMENT;
+    const estimAsc = montantAsc > 0 ? montantAsc : forfaitHeb;
+    const gainMinAsc = Math.round(estimAsc * 0.11);
+    const gainMaxAsc = Math.round(estimAsc * 0.30);
+
     opportunities.push({
       id: "pension_ascendant",
-      title: "Déduction pension alimentaire — Ascendant",
-      description: `L'aide versée à un parent dans le besoin est déductible sans plafond fixe, mais doit correspondre aux besoins réels. Si vous hébergez un ascendant, un forfait de ${rules.PENSION_ASCENDANT_FORFAIT_HEBERGEMENT.toLocaleString("fr-FR")} € est déductible sans justificatif.`,
+      title: "Déduction pension alimentaire �� Ascendant",
+      description: `L'aide versée à un parent dans le besoin est déductible sans plafond fixe, mais doit correspondre aux besoins réels. Si vous hébergez un ascendant, un forfait de ${forfaitHeb.toLocaleString("fr-FR")} € est déductible sans justificatif.${montantAsc > 0 ? ` Montant déclaré : ${montantAsc.toLocaleString("fr-FR")} €.` : ` Sans montant précisé, estimation basée sur le forfait hébergement.`}`,
       type: "deduction",
-      estimatedSaving: null,
-      confidence: "moyenne",
+      estimatedSaving: { min: gainMinAsc, max: gainMaxAsc },
+      confidence: montantAsc > 0 ? "haute" : "moyenne",
       boxes: rules.CASES.pension_ascendant.boxes,
       form: rules.CASES.pension_ascendant.form,
       justificatifs: [
@@ -462,7 +472,7 @@ export function evaluateTaxOpportunities(
       title: "Optimisation revenus fonciers / LMNP",
       description: `En tant que propriétaire bailleur, vous pouvez potentiellement déduire : ${deductions.length > 0 ? deductions.join(", ") : "certaines charges"}. ${answers.bailleur_location_vide ? "Location vide : régime micro-foncier (30%) ou réel." : ""} ${answers.bailleur_lmnp ? "LMNP : régime micro-BIC (50%) ou réel avec amortissements." : ""} Ce sujet étant complexe, nous recommandons de consulter un comptable spécialisé.`,
       type: "deduction",
-      estimatedSaving: null,
+      estimatedSaving: { min: 500, max: 5000 },
       confidence: "faible",
       boxes: ["2044", "2042-C-PRO"],
       form: answers.bailleur_location_vide ? "2044" : "2042-C-PRO",
@@ -999,14 +1009,16 @@ export function evaluateTaxOpportunities(
   // ─── AE. Denormandie ───
   if (answers.investissement_denormandie && answers.denormandie_montant) {
     const montant = Math.min(answers.denormandie_montant, rules.DENORMANDIE_PLAFOND);
-    const taux = rules.DENORMANDIE_TAUX["9"]; // Taux 9 ans par défaut
+    const denoDuree = (answers.denormandie_duree || "9") as "6" | "9" | "12";
+    const taux = rules.DENORMANDIE_TAUX[denoDuree];
+    const dureeNum = parseInt(denoDuree);
     const reductionTotale = Math.round(montant * taux);
-    const reductionAnnuelle = Math.round(reductionTotale / 9);
+    const reductionAnnuelle = Math.round(reductionTotale / dureeNum);
 
     opportunities.push({
       id: "denormandie",
-      title: "Réduction Denormandie — Ancien à rénover",
-      description: `Investissement de ${montant.toLocaleString("fr-FR")} € en Denormandie : réduction estimée de ${reductionAnnuelle.toLocaleString("fr-FR")} €/an sur 9 ans (mêmes taux que le Pinel). Le bien doit être dans une commune éligible, avec au moins 25% du coût total en travaux.`,
+      title: `Réduction Denormandie — ${denoDuree} ans`,
+      description: `Investissement de ${montant.toLocaleString("fr-FR")} € en Denormandie sur ${denoDuree} ans : réduction totale de ${reductionTotale.toLocaleString("fr-FR")} € (${(taux * 100).toFixed(0)}%), soit ${reductionAnnuelle.toLocaleString("fr-FR")} €/an. Le bien doit être dans une commune éligible, avec au moins 25% du coût total en travaux.`,
       type: "reduction",
       estimatedSaving: { min: reductionAnnuelle, max: reductionAnnuelle },
       confidence: "haute",
@@ -1025,14 +1037,16 @@ export function evaluateTaxOpportunities(
   if (answers.loc_avantages && answers.loc_avantages_type) {
     const type = answers.loc_avantages_type as "loc1" | "loc2" | "loc3";
     const info = rules.LOC_AVANTAGES[type];
+    const locRevenus = answers.loc_avantages_revenus || 0;
+    const locReduction = locRevenus > 0 ? Math.round(locRevenus * info.taux) : null;
 
     opportunities.push({
       id: "loc_avantages",
       title: `Réduction Loc'Avantages — ${info.label}`,
-      description: `Vous avez signé une convention Anah niveau ${info.label}. La réduction d'impôt est de ${(info.taux * 100).toFixed(0)}% des revenus bruts fonciers du bien conventionné. Plus le loyer est bas, plus la réduction est élevée. La convention dure 6 ans minimum.`,
+      description: `Vous avez signé une convention Anah niveau ${info.label}. La réduction d'impôt est de ${(info.taux * 100).toFixed(0)}% des revenus bruts fonciers du bien conventionné.${locRevenus > 0 ? ` Sur ${locRevenus.toLocaleString("fr-FR")} € de revenus, la réduction est de ${locReduction!.toLocaleString("fr-FR")} €.` : ""} Plus le loyer est bas, plus la réduction est élevée. La convention dure 6 ans minimum.`,
       type: "reduction",
-      estimatedSaving: null,
-      confidence: "moyenne",
+      estimatedSaving: locReduction ? { min: locReduction, max: locReduction } : null,
+      confidence: locRevenus > 0 ? "haute" : "moyenne",
       boxes: rules.CASES.loc_avantages.boxes,
       form: rules.CASES.loc_avantages.form,
       justificatifs: [
@@ -1105,12 +1119,14 @@ export function evaluateTaxOpportunities(
     const seuil = classe ? rules.AIRBNB_CLASSE_SEUIL : rules.AIRBNB_MICRO_BIC_SEUIL;
     const baseImposable = Math.round(revenus * (1 - abattement));
 
+    const airbnbSaving = revenus > 0 && !classe ? Math.round(revenus * 0.21 * 0.30) : null;
+
     opportunities.push({
       id: "airbnb",
       title: `Location meublée de tourisme${classe ? " classé" : ""}`,
-      description: `Revenus locatifs de ${revenus.toLocaleString("fr-FR")} €. En micro-BIC, abattement de ${(abattement * 100).toFixed(0)}% → base imposable de ${baseImposable.toLocaleString("fr-FR")} €. ${revenus > seuil ? `Vous dépassez le seuil micro-BIC de ${seuil.toLocaleString("fr-FR")} € : passage obligatoire au régime réel.` : ""} ${!classe ? "Le classement en meublé de tourisme permettrait un abattement de 71% au lieu de 50%." : ""} Attention : obligation de déclaration en mairie et numéro d'enregistrement dans les zones tendues.`,
+      description: `Revenus locatifs de ${revenus.toLocaleString("fr-FR")} €. En micro-BIC, abattement de ${(abattement * 100).toFixed(0)}% → base imposable de ${baseImposable.toLocaleString("fr-FR")} €. ${revenus > seuil ? `Vous dépassez le seuil micro-BIC de ${seuil.toLocaleString("fr-FR")} € : passage obligatoire au régime réel.` : ""} ${!classe ? "Le classement en meublé de tourisme permettrait un abattement de 71% au lieu de 50%, soit une économie potentielle." : ""} Attention : obligation de déclaration en mairie et numéro d'enregistrement dans les zones tendues.`,
       type: "info",
-      estimatedSaving: null,
+      estimatedSaving: airbnbSaving ? { min: Math.round(airbnbSaving * 0.37), max: airbnbSaving } : null,
       confidence: "haute",
       boxes: rules.CASES.airbnb.boxes,
       form: rules.CASES.airbnb.form,
