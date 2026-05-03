@@ -22,48 +22,27 @@ export interface Question {
 }
 
 export const QUESTIONS: Question[] = [
-  // ═══ DÉCOUVERTE — Remplace la sélection manuelle de profils ═══
+  // ═══ DÉCOUVERTE — 1 seul écran pour tout détecter ═══
   {
-    id: "decouverte_revenus",
-    section: "Vos revenus",
-    sectionIcon: "💶",
-    text: "Quels types de revenus avez-vous perçus en 2025 ?",
-    subtext: "Cochez tout ce qui s'applique. On adapte le questionnaire en fonction.",
+    id: "decouverte",
+    section: "Votre profil",
+    sectionIcon: "👤",
+    text: "Décrivez votre situation en 2025",
+    subtext: "Cochez tout ce qui vous correspond. On adapte le questionnaire automatiquement.",
     type: "multi_boolean",
-    field: "decouverte_revenus_group",
+    field: "decouverte_group",
     fields: [
-      { field: "est_salarie", label: "Salaires (CDI, CDD, intérim...)" },
-      { field: "est_retraite", label: "Pensions de retraite ou d'invalidité" },
-      { field: "est_micro_entrepreneur_flag", label: "Micro-entreprise / indépendant" },
-      { field: "est_bailleur", label: "Revenus locatifs (je loue un bien)" },
-      { field: "a_revenus_financiers", label: "Revenus financiers (dividendes, intérêts, plus-values...)" },
-    ],
-  },
-  {
-    id: "decouverte_famille",
-    section: "Votre famille",
-    sectionIcon: "👨‍👩‍👧‍👦",
-    text: "Votre situation familiale",
-    subtext: "Cochez ce qui correspond à votre situation.",
-    type: "multi_boolean",
-    field: "decouverte_famille_group",
-    fields: [
+      { field: "est_salarie", label: "Salarié(e) (CDI, CDD, intérim...)" },
+      { field: "est_retraite", label: "Retraité(e) ou pensionné(e)" },
+      { field: "est_micro_entrepreneur_flag", label: "Micro-entrepreneur / indépendant" },
+      { field: "est_bailleur", label: "Je loue un bien immobilier" },
+      { field: "a_revenus_financiers", label: "Revenus financiers (dividendes, intérêts...)" },
       { field: "a_enfants", label: "J'ai des enfants à charge" },
-      { field: "est_premiere_declaration_flag", label: "C'est ma première déclaration (18-25 ans)" },
-    ],
-  },
-  {
-    id: "decouverte_logement",
-    section: "Votre situation",
-    sectionIcon: "🏠",
-    text: "Votre logement et votre situation personnelle",
-    type: "multi_boolean",
-    field: "decouverte_logement_group",
-    fields: [
       { field: "est_proprietaire", label: "Propriétaire de ma résidence principale" },
       { field: "est_locataire_flag", label: "Locataire" },
-      { field: "est_aidant", label: "J'aide un proche en situation de dépendance" },
-      { field: "est_handicap", label: "En situation de handicap ou perte d'autonomie" },
+      { field: "est_aidant", label: "Aidant d'un proche dépendant" },
+      { field: "est_handicap", label: "En situation de handicap" },
+      { field: "est_premiere_declaration_flag", label: "Première déclaration (18-25 ans)" },
     ],
   },
 

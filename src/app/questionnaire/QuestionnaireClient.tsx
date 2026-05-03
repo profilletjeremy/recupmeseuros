@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS } from "@/data/questions";
 import type { ProfileType } from "@/data/types";
@@ -10,9 +10,6 @@ type Answers = Record<string, unknown>;
 const STORAGE_KEY = "recupmeseuros_answers";
 const DRAFT_KEY = "recupmeseuros_draft";
 
-/**
- * Dérive automatiquement les profils à partir des réponses de découverte.
- */
 function deriveProfiles(answers: Answers): ProfileType[] {
   const profiles: ProfileType[] = [];
   if (answers.est_salarie) profiles.push("salarie");
@@ -28,17 +25,15 @@ function deriveProfiles(answers: Answers): ProfileType[] {
   return profiles;
 }
 
-function loadDraft(): { answers: Answers; index: number } | null {
+function loadDraft(): { answers: Answers; index: number; ts: number } | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw);
     if (data && typeof data.answers === "object" && typeof data.index === "number") {
-      return data;
+      return { ...data, ts: data.ts || Date.now() };
     }
-  } catch {
-    // ignore
-  }
+  } catch { /* ignore */ }
   return null;
 }
 
@@ -47,27 +42,35 @@ export default function QuestionnaireClient() {
   const [answers, setAnswers] = useState<Answers>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showResume, setShowResume] = useState(false);
+  const [draftTs, setDraftTs] = useState(0);
   const [initialized, setInitialized] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
+  const autoAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // On mount, check for existing draft
   useEffect(() => {
     const draft = loadDraft();
     if (draft && Object.keys(draft.answers).length > 0) {
       setShowResume(true);
-      // Pre-load draft in case user wants to resume
       setAnswers(draft.answers);
       setCurrentIndex(draft.index);
+      setDraftTs(draft.ts);
     }
     setInitialized(true);
   }, []);
 
-  // Auto-save draft on every answer change
   useEffect(() => {
     if (!initialized) return;
     if (Object.keys(answers).length > 0) {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, index: currentIndex }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, index: currentIndex, ts: Date.now() }));
     }
   }, [answers, currentIndex, initialized]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
+    };
+  }, []);
 
   const derivedProfiles = useMemo(() => deriveProfiles(answers), [answers]);
 
@@ -88,24 +91,31 @@ export default function QuestionnaireClient() {
 
   const goNext = useCallback(() => {
     if (currentIndex < totalQuestions - 1) {
+      setAnimKey((k) => k + 1);
       setCurrentIndex((i) => i + 1);
     } else {
-      // Done — save to localStorage with derived profiles and navigate
       const data = {
         profiles: deriveProfiles(answers),
         ...answers,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      // Also keep in sessionStorage for backward compat
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      // Clear draft
       localStorage.removeItem(DRAFT_KEY);
       router.push("/resultats");
     }
   }, [currentIndex, totalQuestions, answers, router]);
 
+  // Auto-advance after a short delay (for boolean + select)
+  const autoAdvance = useCallback(() => {
+    if (autoAdvanceTimer.current) clearTimeout(autoAdvanceTimer.current);
+    autoAdvanceTimer.current = setTimeout(() => {
+      goNext();
+    }, 250);
+  }, [goNext]);
+
   const goPrev = useCallback(() => {
     if (currentIndex > 0) {
+      setAnimKey((k) => k + 1);
       setCurrentIndex((i) => i - 1);
     }
   }, [currentIndex]);
@@ -121,19 +131,38 @@ export default function QuestionnaireClient() {
     setShowResume(false);
   }, []);
 
-  if (!initialized) return null;
+  // Skeleton while loading
+  if (!initialized) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-2 bg-gray-200 rounded-full" />
+        <div className="h-6 bg-gray-200 rounded w-3/4" />
+        <div className="h-4 bg-gray-100 rounded w-1/2" />
+        <div className="flex gap-3 mt-8">
+          <div className="flex-1 h-14 bg-gray-200 rounded-xl" />
+          <div className="flex-1 h-14 bg-gray-200 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
   // ─── Resume prompt ───
   if (showResume) {
     const draftAnswerCount = Object.keys(answers).length;
+    const timeAgo = draftTs > 0
+      ? new Date(draftTs).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })
+      : null;
     return (
       <div className="animate-fadeIn">
         <div className="bg-white rounded-2xl border-2 border-primary/20 p-6 text-center">
           <div className="text-4xl mb-4">📋</div>
           <h2 className="text-xl font-bold mb-2">Reprendre votre questionnaire ?</h2>
-          <p className="text-text-light text-sm mb-6">
-            Vous avez un questionnaire en cours ({draftAnswerCount} réponses sauvegardées).
+          <p className="text-text-light text-sm mb-2">
+            Vous avez un questionnaire en cours ({draftAnswerCount} réponses).
           </p>
+          {timeAgo && (
+            <p className="text-text-lighter text-xs mb-6">Sauvegardé le {timeAgo}</p>
+          )}
           <div className="flex gap-3">
             <button
               type="button"
@@ -155,13 +184,14 @@ export default function QuestionnaireClient() {
     );
   }
 
-  if (!currentQuestion) {
-    return null;
-  }
+  if (!currentQuestion) return null;
 
-  // ─── Question screen ───
+  const isLastQuestion = currentIndex === totalQuestions - 1;
+  const isNumberType = currentQuestion.type === "number";
+  const isMultiBoolean = currentQuestion.type === "multi_boolean";
+
   return (
-    <div className="animate-fadeIn">
+    <div key={animKey} className="animate-fadeIn">
       {/* Progress bar */}
       <div className="mb-6">
         <div className="flex justify-between text-xs text-text-lighter mb-1">
@@ -170,7 +200,7 @@ export default function QuestionnaireClient() {
         </div>
         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-300"
+            className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -188,7 +218,7 @@ export default function QuestionnaireClient() {
       )}
 
       <div className="my-6">
-        {/* Boolean question */}
+        {/* Boolean — auto-advance on click */}
         {currentQuestion.type === "boolean" && (
           <div className="flex gap-3">
             {[
@@ -202,11 +232,12 @@ export default function QuestionnaireClient() {
                   type="button"
                   onClick={() => {
                     setAnswer(currentQuestion.field, value);
+                    autoAdvance();
                   }}
-                  className={`flex-1 py-4 rounded-xl border-2 font-medium transition-all ${
+                  className={`flex-1 py-4 rounded-xl border-2 font-medium transition-all duration-200 ${
                     selected
-                      ? "border-primary bg-blue-50 text-primary"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-primary bg-blue-50 text-primary scale-[1.02]"
+                      : "border-gray-200 bg-white hover:border-gray-300 active:scale-95"
                   }`}
                 >
                   {label}
@@ -216,13 +247,14 @@ export default function QuestionnaireClient() {
           </div>
         )}
 
-        {/* Number question */}
+        {/* Number — Suivant button, Enter to advance */}
         {currentQuestion.type === "number" && (
           <div className="relative">
             <input
               type="number"
               inputMode="numeric"
               min={0}
+              autoFocus
               value={answers[currentQuestion.field] !== undefined ? String(answers[currentQuestion.field]) : ""}
               onChange={(e) => {
                 const val = e.target.value;
@@ -231,6 +263,12 @@ export default function QuestionnaireClient() {
                 } else {
                   const num = Number(val);
                   setAnswer(currentQuestion.field, num < 0 ? 0 : num);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  goNext();
                 }
               }}
               placeholder={currentQuestion.placeholder}
@@ -244,7 +282,7 @@ export default function QuestionnaireClient() {
           </div>
         )}
 
-        {/* Select question */}
+        {/* Select — auto-advance on click */}
         {currentQuestion.type === "select" && currentQuestion.options && (
           <div className="space-y-3">
             {currentQuestion.options.map((opt) => {
@@ -253,11 +291,14 @@ export default function QuestionnaireClient() {
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setAnswer(currentQuestion.field, opt.value)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                  onClick={() => {
+                    setAnswer(currentQuestion.field, opt.value);
+                    autoAdvance();
+                  }}
+                  className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 ${
                     selected
-                      ? "border-primary bg-blue-50 text-primary"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-primary bg-blue-50 text-primary scale-[1.01]"
+                      : "border-gray-200 bg-white hover:border-gray-300 active:scale-[0.98]"
                   }`}
                 >
                   {opt.label}
@@ -267,15 +308,15 @@ export default function QuestionnaireClient() {
           </div>
         )}
 
-        {/* Multi-boolean question */}
-        {currentQuestion.type === "multi_boolean" && currentQuestion.fields && (
+        {/* Multi-boolean — manual advance via Suivant */}
+        {isMultiBoolean && currentQuestion.fields && (
           <div className="space-y-2">
             {currentQuestion.fields.map((f) => {
               const checked = !!answers[f.field];
               return (
                 <label
                   key={f.field}
-                  className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                     checked
                       ? "border-primary bg-blue-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -297,7 +338,7 @@ export default function QuestionnaireClient() {
         )}
       </div>
 
-      {/* Navigation */}
+      {/* Navigation — show Suivant only for number + multi_boolean */}
       <div className="flex gap-3">
         {currentIndex > 0 && (
           <button
@@ -305,26 +346,28 @@ export default function QuestionnaireClient() {
             onClick={goPrev}
             className="px-6 py-3 rounded-xl border-2 border-gray-200 text-text-light font-medium hover:border-gray-300 transition-colors"
           >
-            ← Retour
+            ←
           </button>
         )}
-        <button
-          type="button"
-          onClick={goNext}
-          className="flex-1 bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-dark transition-colors"
-        >
-          {currentIndex === totalQuestions - 1 ? "Voir mes résultats" : "Suivant →"}
-        </button>
+        {(isNumberType || isMultiBoolean || isLastQuestion) && (
+          <button
+            type="button"
+            onClick={goNext}
+            className="flex-1 bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-dark transition-colors"
+          >
+            {isLastQuestion ? "Voir mes résultats" : "Suivant →"}
+          </button>
+        )}
       </div>
 
-      {/* Skip (not for multi-boolean or first 3 discovery questions) */}
-      {currentQuestion.type !== "multi_boolean" && (
+      {/* Skip — only for number questions */}
+      {isNumberType && !isLastQuestion && (
         <button
           type="button"
           onClick={goNext}
-          className="w-full text-center text-sm text-text-lighter mt-3 hover:text-text-light"
+          className="w-full text-center text-sm text-text-lighter mt-3 hover:text-text-light transition-colors"
         >
-          Passer cette question
+          Je ne sais pas
         </button>
       )}
     </div>
