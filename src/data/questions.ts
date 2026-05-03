@@ -438,25 +438,24 @@ export const QUESTIONS: Question[] = [
       !!((a.frais_reels_km_aller_retour as number) > 0 || a.frais_reels_repas || a.frais_reels_teletravail),
   },
 
+  // ═══ GATE SITUATIONS PARTICULIÈRES — 1 écran ═══
+  {
+    id: "situations_gate",
+    section: "Situations particulières",
+    sectionIcon: "📋",
+    text: "Êtes-vous concerné(e) par l'une de ces situations en 2025 ?",
+    subtext: "Cochez ce qui vous concerne. On détaillera ensuite.",
+    type: "multi_boolean",
+    field: "situations_gate_group",
+    fields: [
+      { field: "pension_enfant_majeur", label: "Aide financière à un enfant majeur (pension)" },
+      { field: "pension_ascendant", label: "Aide financière à un parent/ascendant" },
+      { field: "borne_recharge", label: "Installation d'une borne de recharge électrique" },
+      { field: "prestation_compensatoire", label: "Prestation compensatoire (divorce)" },
+    ],
+  },
+
   // ─── Pension alimentaire ───
-  {
-    id: "pension_enfant",
-    section: "Pension alimentaire",
-    sectionIcon: "👨‍👩‍👧",
-    text: "Aidez-vous financièrement un enfant majeur non rattaché à votre foyer fiscal ?",
-    subtext: "Versement régulier pour loyer, nourriture, études...",
-    type: "boolean",
-    field: "pension_enfant_majeur",
-  },
-  {
-    id: "pension_ascendant",
-    section: "Pension alimentaire",
-    sectionIcon: "👨‍👩‍👧",
-    text: "Aidez-vous financièrement un parent ou ascendant dans le besoin ?",
-    subtext: "Aide financière directe ou hébergement à domicile.",
-    type: "boolean",
-    field: "pension_ascendant",
-  },
   {
     id: "pension_montant",
     section: "Pension alimentaire",
@@ -523,14 +522,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Borne de recharge ───
-  {
-    id: "borne",
-    section: "Borne de recharge",
-    sectionIcon: "⚡",
-    text: "Avez-vous fait installer une borne de recharge pour véhicule électrique en 2025 ?",
-    type: "boolean",
-    field: "borne_recharge",
-  },
   {
     id: "borne_montant",
     section: "Borne de recharge",
@@ -673,16 +664,33 @@ export const QUESTIONS: Question[] = [
     showIf: (a) => a.per_versements === true,
   },
 
-  // ─── Investissement PME ───
+  // ═══ GATE INVESTISSEMENTS — 1 écran pour tout filtrer ═══
   {
-    id: "pme",
-    section: "Investissement PME",
-    sectionIcon: "📈",
-    text: "Avez-vous investi au capital d'une PME en 2025 ?",
-    subtext: "Souscription directe ou via un fonds (FCPI, FIP).",
-    type: "boolean",
-    field: "investissement_pme",
+    id: "investissements_gate",
+    section: "Investissements",
+    sectionIcon: "📊",
+    text: "Avez-vous réalisé des investissements ou opérations financières en 2025 ?",
+    subtext: "Cochez uniquement ce qui vous concerne. On détaillera ensuite.",
+    type: "multi_boolean",
+    field: "investissements_gate_group",
+    fields: [
+      { field: "investissement_pme", label: "Capital de PME" },
+      { field: "investissement_pinel", label: "Investissement Pinel / Pinel+" },
+      { field: "investissement_denormandie", label: "Denormandie (ancien à rénover)" },
+      { field: "investissement_fip_fcpi", label: "FIP / FCPI" },
+      { field: "investissement_sofica", label: "SOFICA (cinéma/audiovisuel)" },
+      { field: "investissement_malraux", label: "Travaux Malraux (patrimoine)" },
+      { field: "monuments_historiques", label: "Monuments Historiques" },
+      { field: "investissement_foret", label: "DEFI Forêt" },
+      { field: "investissement_esus", label: "Entreprise solidaire (ESUS)" },
+      { field: "plus_value_crypto", label: "Vente de cryptomonnaies" },
+      { field: "location_meuble_tourisme", label: "Location meublée tourisme (Airbnb...)" },
+      { field: "assurance_vie_rachat", label: "Rachat d'assurance-vie" },
+      { field: "plus_value_mobiliere", label: "Plus-values sur titres (actions, obligations)" },
+    ],
   },
+
+  // ─── Investissement PME ───
   {
     id: "pme_montant",
     section: "Investissement PME",
@@ -867,14 +875,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── Prestation compensatoire ───
   {
-    id: "prestation_compensatoire",
-    section: "Prestation compensatoire",
-    sectionIcon: "⚖️",
-    text: "Avez-vous versé une prestation compensatoire (divorce) en 2025 ?",
-    type: "boolean",
-    field: "prestation_compensatoire",
-  },
-  {
     id: "prestation_montant",
     section: "Prestation compensatoire",
     sectionIcon: "⚖️",
@@ -897,15 +897,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Investissement Pinel ───
-  {
-    id: "pinel",
-    section: "Investissement immobilier",
-    sectionIcon: "🏗️",
-    text: "Avez-vous réalisé un investissement locatif Pinel ou Pinel+ ?",
-    subtext: "Logement neuf acquis pour être loué à loyer plafonné.",
-    type: "boolean",
-    field: "investissement_pinel",
-  },
   {
     id: "pinel_type",
     section: "Investissement immobilier",
@@ -946,15 +937,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Denormandie ───
-  {
-    id: "denormandie",
-    section: "Investissement immobilier",
-    sectionIcon: "🏗️",
-    text: "Avez-vous réalisé un investissement Denormandie (ancien à rénover) ?",
-    subtext: "Logement ancien avec travaux représentant 25% du coût total, en centre-ville dégradé.",
-    type: "boolean",
-    field: "investissement_denormandie",
-  },
   {
     id: "denormandie_duree",
     section: "Investissement immobilier",
@@ -1021,15 +1003,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── FIP / FCPI ───
   {
-    id: "fip_fcpi",
-    section: "Investissements financiers",
-    sectionIcon: "📊",
-    text: "Avez-vous investi dans un FIP ou FCPI en 2025 ?",
-    subtext: "Fonds d'Investissement de Proximité ou Fonds Commun de Placement dans l'Innovation.",
-    type: "boolean",
-    field: "investissement_fip_fcpi",
-  },
-  {
     id: "fip_fcpi_montant",
     section: "Investissements financiers",
     sectionIcon: "📊",
@@ -1053,15 +1026,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── Plus-values crypto ───
   {
-    id: "crypto",
-    section: "Cryptomonnaies",
-    sectionIcon: "🪙",
-    text: "Avez-vous vendu des cryptomonnaies en 2025 ?",
-    subtext: "Bitcoin, Ethereum, etc. Les plus-values sont imposées à 30% (flat tax).",
-    type: "boolean",
-    field: "plus_value_crypto",
-  },
-  {
     id: "crypto_montant",
     section: "Cryptomonnaies",
     sectionIcon: "🪙",
@@ -1075,14 +1039,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Location meublée tourisme (Airbnb) ───
-  {
-    id: "airbnb",
-    section: "Location saisonnière",
-    sectionIcon: "🏖️",
-    text: "Avez-vous loué un bien en meublé de tourisme (Airbnb, Abritel...) ?",
-    type: "boolean",
-    field: "location_meuble_tourisme",
-  },
   {
     id: "airbnb_revenus",
     section: "Location saisonnière",
@@ -1130,14 +1086,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── Assurance-vie rachat ───
   {
-    id: "assurance_vie",
-    section: "Assurance-vie",
-    sectionIcon: "🛡️",
-    text: "Avez-vous effectué un rachat (retrait) sur un contrat d'assurance-vie en 2025 ?",
-    type: "boolean",
-    field: "assurance_vie_rachat",
-  },
-  {
     id: "av_montant",
     section: "Assurance-vie",
     sectionIcon: "🛡️",
@@ -1162,15 +1110,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── SOFICA ───
   {
-    id: "sofica",
-    section: "Investissements spécialisés",
-    sectionIcon: "🎬",
-    text: "Avez-vous investi dans une SOFICA (cinéma/audiovisuel) en 2025 ?",
-    subtext: "Réduction de 30% à 36% du montant investi.",
-    type: "boolean",
-    field: "investissement_sofica",
-  },
-  {
     id: "sofica_montant",
     section: "Investissements spécialisés",
     sectionIcon: "🎬",
@@ -1183,15 +1122,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Malraux ───
-  {
-    id: "malraux",
-    section: "Investissements spécialisés",
-    sectionIcon: "🏛️",
-    text: "Avez-vous réalisé des travaux dans un immeuble en secteur Malraux ?",
-    subtext: "Réduction de 22% ou 30% des travaux de restauration en site patrimonial remarquable.",
-    type: "boolean",
-    field: "investissement_malraux",
-  },
   {
     id: "malraux_montant",
     section: "Investissements spécialisés",
@@ -1206,15 +1136,6 @@ export const QUESTIONS: Question[] = [
 
   // ─── Monuments Historiques ───
   {
-    id: "monuments_historiques",
-    section: "Investissements spécialisés",
-    sectionIcon: "🏰",
-    text: "Possédez-vous un bien classé Monument Historique avec travaux en 2025 ?",
-    subtext: "Déduction intégrale des travaux, sans plafond, sur le revenu global.",
-    type: "boolean",
-    field: "monuments_historiques",
-  },
-  {
     id: "mh_travaux",
     section: "Investissements spécialisés",
     sectionIcon: "🏰",
@@ -1227,15 +1148,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── DEFI Forêt ───
-  {
-    id: "defi_foret",
-    section: "Investissements spécialisés",
-    sectionIcon: "🌲",
-    text: "Avez-vous investi dans l'acquisition ou la gestion de forêts (DEFI Forêt) ?",
-    subtext: "Réduction de 25% pour acquisition de parcelles forestières ou assurance forêt.",
-    type: "boolean",
-    field: "investissement_foret",
-  },
   {
     id: "foret_montant",
     section: "Investissements spécialisés",
@@ -1282,15 +1194,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Plus-values mobilières ───
-  {
-    id: "pv_mobiliere",
-    section: "Plus-values",
-    sectionIcon: "📈",
-    text: "Avez-vous réalisé des plus-values sur la vente de titres (actions, obligations) ?",
-    subtext: "Titres acquis avant 2018 : abattements possibles de 50% ou 65% selon la durée.",
-    type: "boolean",
-    field: "plus_value_mobiliere",
-  },
   {
     id: "pv_mob_montant",
     section: "Plus-values",
@@ -1345,15 +1248,6 @@ export const QUESTIONS: Question[] = [
   },
 
   // ─── Souscription ESUS ───
-  {
-    id: "esus",
-    section: "Investissements solidaires",
-    sectionIcon: "🤝",
-    text: "Avez-vous souscrit au capital d'une entreprise solidaire (ESUS) ?",
-    subtext: "Entreprise Solidaire d'Utilité Sociale. Réduction de 25%.",
-    type: "boolean",
-    field: "investissement_esus",
-  },
   {
     id: "esus_montant",
     section: "Investissements solidaires",
