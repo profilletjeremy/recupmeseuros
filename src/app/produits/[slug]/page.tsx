@@ -156,6 +156,9 @@ export default async function ProductPage({ params }: Props) {
                   paperTypes={product.paperTypes}
                   finishes={product.finishes}
                   productName={product.name}
+                  productId={product.id}
+                  productSlug={product.slug}
+                  productEmoji={product.emoji}
                 />
               )}
             </div>

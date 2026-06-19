@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { categories, products } from '@/data/products';
 import { territories } from '@/data/territories';
+import { useCart } from '@/contexts/CartContext';
 
 const FEATURED_PRODUCTS = ['cartes-de-visite', 'flyers-tracts', 'affiches-posters', 'roll-up-kakemono'];
 
@@ -11,6 +12,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [territory, setTerritory] = useState('GP');
   const [productsOpen, setProductsOpen] = useState(false);
+  const { totalItems, openCart } = useCart();
 
   const currentTerritory = territories.find((t) => t.code === territory);
   const featuredNav = products.filter((p) => FEATURED_PRODUCTS.includes(p.slug));
@@ -145,7 +147,34 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Account icon */}
+          <Link
+            href="/compte"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-ocean"
+            aria-label="Mon compte"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </Link>
+
+          {/* Cart icon */}
+          <button
+            onClick={openCart}
+            className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-ocean"
+            aria-label="Panier"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-coral text-white text-[10px] font-bold w-4.5 h-4.5 min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center leading-none px-0.5">
+                {totalItems}
+              </span>
+            )}
+          </button>
+
           <Link
             href="/contact"
             className="hidden md:inline-flex items-center gap-1.5 bg-coral text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-coral-dark transition-colors"
@@ -191,6 +220,7 @@ export default function Header() {
               { href: '/guide-fichiers', label: 'Guide fichiers' },
               { href: '/faq', label: 'FAQ' },
               { href: '/contact', label: 'Contact' },
+              { href: '/compte', label: 'Mon compte' },
             ].map((item) => (
               <Link
                 key={item.href}

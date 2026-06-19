@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { PricingTier } from '@/data/products';
+import { useCart } from '@/contexts/CartContext';
 
 interface Props {
   pricingTiers: PricingTier[];
@@ -10,14 +11,19 @@ interface Props {
   paperTypes: string[];
   finishes: string[];
   productName: string;
+  productId: string;
+  productSlug: string;
+  productEmoji: string;
 }
 
-export default function ProductForm({ pricingTiers, formats, paperTypes, finishes, productName }: Props) {
+export default function ProductForm({ pricingTiers, formats, paperTypes, finishes, productName, productId, productSlug, productEmoji }: Props) {
+  const { addItem } = useCart();
   const defaultTier = pricingTiers.find((t) => t.isPopular) ?? pricingTiers[1] ?? pricingTiers[0];
   const [selectedFormat, setSelectedFormat] = useState(formats[0]?.label ?? '');
   const [selectedQty, setSelectedQty] = useState(defaultTier?.quantity ?? pricingTiers[0]?.quantity);
   const [selectedPaper, setSelectedPaper] = useState(paperTypes[0] ?? '');
   const [selectedFinish, setSelectedFinish] = useState(finishes[0] ?? '');
+  const [added, setAdded] = useState(false);
 
   const currentTier = pricingTiers.find((t) => t.quantity === selectedQty) ?? pricingTiers[0];
   const baseTier = pricingTiers[0];
@@ -26,6 +32,23 @@ export default function ProductForm({ pricingTiers, formats, paperTypes, finishe
   const savings = Math.round((1 - currentUnitPrice / baseUnitPrice) * 100);
 
   const contactUrl = `/contact?produit=${encodeURIComponent(productName)}&format=${encodeURIComponent(selectedFormat)}&qty=${selectedQty}&papier=${encodeURIComponent(selectedPaper)}&finition=${encodeURIComponent(selectedFinish)}`;
+
+  const handleAddToCart = () => {
+    addItem({
+      productId,
+      productSlug,
+      productName,
+      productEmoji,
+      format: selectedFormat,
+      quantity: selectedQty,
+      paper: selectedPaper,
+      finish: selectedFinish,
+      unitPrice: currentUnitPrice,
+      totalPrice: currentTier.price,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2500);
+  };
 
   return (
     <div className="space-y-5">
@@ -148,10 +171,20 @@ export default function ProductForm({ pricingTiers, formats, paperTypes, finishe
         </p>
       </div>
 
-      {/* CTA */}
+      {/* CTA — Add to cart */}
+      <button
+        onClick={handleAddToCart}
+        className={`block w-full text-center font-bold text-lg py-4 rounded-xl transition-all shadow-lg ${
+          added
+            ? 'bg-palm text-white shadow-palm/30'
+            : 'bg-coral hover:bg-coral-dark text-white hover:shadow-xl'
+        }`}
+      >
+        {added ? '✓ Ajouté au panier !' : 'Ajouter au panier'}
+      </button>
       <Link
         href={contactUrl}
-        className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-lg py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
+        className="block w-full text-center border-2 border-gray-200 hover:border-ocean text-text font-semibold text-sm py-3 rounded-xl transition-colors hover:text-ocean"
       >
         Demander un devis gratuit
       </Link>
