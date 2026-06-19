@@ -20,6 +20,10 @@ export interface Product {
   featured: boolean;
   popular: boolean;
   emoji: string;
+  /** Realisaprint product ID — set once confirmed with supplier */
+  realisaprintProductId?: string;
+  /** Realisaprint stock/configuration ID */
+  realisaprintStock?: string;
 }
 
 export const categories = [

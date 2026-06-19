@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import ProductConfigurator from '@/components/ProductConfigurator';
 import { getProductBySlug, products } from '@/data/products';
+import { getPrescriptIframeUrl } from '@/lib/realisaprint';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -27,6 +29,16 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) notFound();
+
+  // Build Préscript iFrame URL server-side so credentials never reach the client
+  let prescriptUrl: string | null = null;
+  if (product.realisaprintProductId && product.realisaprintStock) {
+    try {
+      prescriptUrl = getPrescriptIframeUrl(product.realisaprintProductId, product.realisaprintStock);
+    } catch {
+      // credentials not set in this environment — fall back to static configurator
+    }
+  }
 
   return (
     <>
@@ -82,93 +94,16 @@ export default async function ProductPage({ params }: Props) {
                 <p className="text-xs text-text-lighter mt-1">TTC — hors frais de livraison</p>
               </div>
 
-              {/* Format selector */}
-              <div className="mb-5">
-                <label className="block text-sm font-semibold text-text mb-2">
-                  Format
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {product.formats.map((fmt, i) => (
-                    <label
-                      key={fmt.label}
-                      className={`flex flex-col gap-0.5 border-2 rounded-xl p-3 cursor-pointer transition-all ${
-                        i === 0 ? 'border-ocean bg-ocean/5' : 'border-gray-200 hover:border-ocean/50'
-                      }`}
-                    >
-                      <input type="radio" name="format" className="sr-only" defaultChecked={i === 0} />
-                      <span className="font-semibold text-sm">{fmt.label}</span>
-                      {fmt.dimensions && (
-                        <span className="text-xs text-text-lighter">{fmt.dimensions}</span>
-                      )}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quantity selector */}
-              <div className="mb-5">
-                <label className="block text-sm font-semibold text-text mb-2">
-                  Quantité
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {product.quantities.map((qty, i) => (
-                    <label
-                      key={qty}
-                      className={`border-2 rounded-xl px-4 py-2 cursor-pointer text-sm font-semibold transition-all ${
-                        i === 1 ? 'border-ocean bg-ocean/5 text-ocean' : 'border-gray-200 hover:border-ocean/50'
-                      }`}
-                    >
-                      <input type="radio" name="quantity" className="sr-only" defaultChecked={i === 1} />
-                      {qty.toLocaleString('fr-FR')} ex.
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Paper type */}
-              <div className="mb-5">
-                <label className="block text-sm font-semibold text-text mb-2">
-                  Support / Papier
-                </label>
-                <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
-                  {product.paperTypes.map((paper) => (
-                    <option key={paper}>{paper}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Finish */}
-              {product.finishes.length > 1 && (
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-text mb-2">
-                    Finition
-                  </label>
-                  <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
-                    {product.finishes.map((finish) => (
-                      <option key={finish}>{finish}</option>
-                    ))}
-                  </select>
-                </div>
+              {/* Configurator: Préscript iFrame if available, otherwise static form */}
+              {prescriptUrl ? (
+                <ProductConfigurator
+                  prescriptIframeUrl={prescriptUrl}
+                  defaultQuantity={product.quantities[1] ?? product.quantities[0]}
+                  productName={product.name}
+                />
+              ) : (
+                <StaticConfigurator product={product} />
               )}
-
-              {/* File upload */}
-              <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center mb-6 hover:border-ocean transition-colors cursor-pointer">
-                <span className="text-4xl block mb-2">📤</span>
-                <p className="font-semibold text-sm mb-1">Téléversez votre fichier</p>
-                <p className="text-xs text-text-light">PDF, AI, PSD, EPS — 300 dpi minimum</p>
-                <p className="text-xs text-text-lighter mt-1">Ou choisissez parmi nos modèles</p>
-              </div>
-
-              {/* CTA */}
-              <Link
-                href="/contact"
-                className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-lg py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
-              >
-                Demander un devis gratuit
-              </Link>
-              <p className="text-center text-xs text-text-lighter mt-3">
-                Notre équipe vous répond sous 24h
-              </p>
             </div>
           </div>
 
@@ -195,5 +130,89 @@ export default async function ProductPage({ params }: Props) {
       </main>
       <Footer />
     </>
+  );
+}
+
+function StaticConfigurator({ product }: { product: ReturnType<typeof getProductBySlug> & object }) {
+  return (
+    <div className="space-y-5">
+      {/* Format selector */}
+      <div>
+        <label className="block text-sm font-semibold text-text mb-2">Format</label>
+        <div className="grid grid-cols-2 gap-2">
+          {product.formats.map((fmt, i) => (
+            <label
+              key={fmt.label}
+              className={`flex flex-col gap-0.5 border-2 rounded-xl p-3 cursor-pointer transition-all ${
+                i === 0 ? 'border-ocean bg-ocean/5' : 'border-gray-200 hover:border-ocean/50'
+              }`}
+            >
+              <input type="radio" name="format" className="sr-only" defaultChecked={i === 0} />
+              <span className="font-semibold text-sm">{fmt.label}</span>
+              {fmt.dimensions && (
+                <span className="text-xs text-text-lighter">{fmt.dimensions}</span>
+              )}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Quantity selector */}
+      <div>
+        <label className="block text-sm font-semibold text-text mb-2">Quantité</label>
+        <div className="flex flex-wrap gap-2">
+          {product.quantities.map((qty, i) => (
+            <label
+              key={qty}
+              className={`border-2 rounded-xl px-4 py-2 cursor-pointer text-sm font-semibold transition-all ${
+                i === 1 ? 'border-ocean bg-ocean/5 text-ocean' : 'border-gray-200 hover:border-ocean/50'
+              }`}
+            >
+              <input type="radio" name="quantity" className="sr-only" defaultChecked={i === 1} />
+              {qty.toLocaleString('fr-FR')} ex.
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Paper type */}
+      <div>
+        <label className="block text-sm font-semibold text-text mb-2">Support / Papier</label>
+        <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
+          {product.paperTypes.map((paper) => (
+            <option key={paper}>{paper}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Finish */}
+      {product.finishes.length > 1 && (
+        <div>
+          <label className="block text-sm font-semibold text-text mb-2">Finition</label>
+          <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
+            {product.finishes.map((finish) => (
+              <option key={finish}>{finish}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* File upload */}
+      <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-ocean transition-colors cursor-pointer">
+        <span className="text-4xl block mb-2">📤</span>
+        <p className="font-semibold text-sm mb-1">Téléversez votre fichier</p>
+        <p className="text-xs text-text-light">PDF, AI, PSD, EPS — 300 dpi minimum</p>
+        <p className="text-xs text-text-lighter mt-1">Ou choisissez parmi nos modèles</p>
+      </div>
+
+      {/* CTA */}
+      <Link
+        href="/contact"
+        className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-lg py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
+      >
+        Demander un devis gratuit
+      </Link>
+      <p className="text-center text-xs text-text-lighter">Notre équipe vous répond sous 24h</p>
+    </div>
   );
 }
