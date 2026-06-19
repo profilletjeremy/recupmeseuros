@@ -1,37 +1,36 @@
-import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "RecupMesEuros — Découvrez vos économies fiscales oubliées",
-    template: "%s | RecupMesEuros",
+    default: 'KaribPrint — Imprimerie en ligne pour les Antilles et La Réunion',
+    template: '%s | KaribPrint',
   },
   description:
-    "Assistant gratuit d'aide à la déclaration d'impôts. Découvrez les réductions, crédits d'impôt et déductions que vous oubliez peut-être. Déclaration 2026 des revenus 2025.",
+    'Commandez vos impressions en ligne : cartes de visite, flyers, affiches, banderoles, roll-up. Livraison en Guadeloupe, Martinique, Guyane, La Réunion, Saint-Martin et Saint-Barthélemy.',
   keywords: [
-    "déclaration impôts",
-    "crédit impôt",
-    "réduction impôt",
-    "frais réels",
-    "emploi à domicile",
-    "dons associations",
-    "garde enfant",
-    "2042-RICI",
-    "déclaration 2026",
+    'imprimerie antilles',
+    'imprimerie guadeloupe',
+    'imprimerie martinique',
+    'imprimerie réunion',
+    'web to print',
+    'cartes de visite antilles',
+    'flyers guadeloupe',
+    'impression en ligne dom',
   ],
-  robots: "index, follow",
+  robots: 'index, follow',
   openGraph: {
-    title: "RecupMesEuros — Découvrez vos économies fiscales oubliées",
+    title: 'KaribPrint — Imprimerie en ligne pour les Antilles et La Réunion',
     description:
-      "Répondez à quelques questions. L'assistant vous indique les avantages fiscaux à vérifier et les cases concernées.",
-    type: "website",
-    locale: "fr_FR",
+      'Cartes de visite, flyers, affiches et plus — impression professionnelle livrée dans tous les DOM-COM.',
+    type: 'website',
+    locale: 'fr_FR',
   },
 };
 
@@ -42,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${geistSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans bg-white">{children}</body>
     </html>
   );
 }

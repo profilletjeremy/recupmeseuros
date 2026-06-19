@@ -1,19 +1,25 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #1e40af;
-  --color-primary-light: #3b82f6;
-  --color-primary-dark: #1e3a8a;
-  --color-secondary: #059669;
-  --color-secondary-light: #10b981;
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
-  --color-surface: #f8fafc;
-  --color-surface-dark: #f1f5f9;
-  --color-danger: #dc2626;
-  --color-text: #1e293b;
-  --color-text-light: #64748b;
-  --color-text-lighter: #94a3b8;
+  /* Caribbean color palette */
+  --color-ocean: #0077B6;
+  --color-ocean-light: #1499D6;
+  --color-ocean-dark: #005F8E;
+  --color-coral: #E94B3C;
+  --color-coral-light: #F06A5D;
+  --color-coral-dark: #C43A2D;
+  --color-sun: #F9C74F;
+  --color-palm: #43AA8B;
+  --color-sand: #FFF8F3;
+  --color-sand-dark: #F5E8DC;
+  --color-dark: #1A2332;
+
+  /* Text */
+  --color-text: #1A2332;
+  --color-text-light: #4A5568;
+  --color-text-lighter: #718096;
+
+  /* Font */
   --font-sans: var(--font-geist-sans);
 }
 
@@ -23,12 +29,21 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out;
 }
 
 /* Custom scrollbar */
