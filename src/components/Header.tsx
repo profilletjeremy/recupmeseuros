@@ -2,36 +2,48 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { categories } from '@/data/products';
+import { categories, products } from '@/data/products';
 import { territories } from '@/data/territories';
+
+const FEATURED_PRODUCTS = ['cartes-de-visite', 'flyers-tracts', 'affiches-posters', 'roll-up-kakemono'];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [territory, setTerritory] = useState('GP');
+  const [productsOpen, setProductsOpen] = useState(false);
 
   const currentTerritory = territories.find((t) => t.code === territory);
+  const featuredNav = products.filter((p) => FEATURED_PRODUCTS.includes(p.slug));
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       {/* Top bar */}
       <div className="bg-ocean text-white text-sm py-2">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <span className="hidden sm:block">
-            Livraison garantie en {currentTerritory?.deliveryDays ?? '5-7 jours ouvrés'}
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-4">
+          <span className="hidden sm:block text-xs">
+            🚚 Livraison garantie en {currentTerritory?.deliveryDays ?? '5–7 jours ouvrés'} vers {currentTerritory?.name ?? 'votre île'}
           </span>
-          <div className="flex items-center gap-2 ml-auto sm:ml-0">
-            <span className="opacity-80">Territoire :</span>
-            <select
-              className="bg-ocean-dark text-white text-sm rounded px-2 py-0.5 border border-white/30 cursor-pointer"
-              value={territory}
-              onChange={(e) => setTerritory(e.target.value)}
-            >
-              {territories.map((t) => (
-                <option key={t.code} value={t.code}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center gap-3 ml-auto sm:ml-0">
+            <Link href="/guide-fichiers" className="hidden md:inline text-xs text-white/80 hover:text-white transition-colors">
+              Guide fichiers
+            </Link>
+            <Link href="/faq" className="hidden md:inline text-xs text-white/80 hover:text-white transition-colors">
+              FAQ
+            </Link>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs opacity-80">Île :</span>
+              <select
+                className="bg-ocean-dark text-white text-xs rounded px-2 py-0.5 border border-white/30 cursor-pointer"
+                value={territory}
+                onChange={(e) => setTerritory(e.target.value)}
+              >
+                {territories.map((t) => (
+                  <option key={t.code} value={t.code}>
+                    {t.name} ({t.dept})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -39,7 +51,7 @@ export default function Header() {
       {/* Main nav */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-ocean">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-ocean flex-shrink-0">
           <span className="text-2xl">🌊</span>
           <span>
             Karib<span className="text-coral">Print</span>
@@ -48,38 +60,84 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-          <div className="group relative">
-            <button className="flex items-center gap-1 hover:text-ocean transition-colors py-1">
+          {/* Products mega menu */}
+          <div
+            className="relative"
+            onMouseEnter={() => setProductsOpen(true)}
+            onMouseLeave={() => setProductsOpen(false)}
+          >
+            <button
+              className="flex items-center gap-1 hover:text-ocean transition-colors py-1"
+              onClick={() => setProductsOpen(!productsOpen)}
+            >
               Produits
-              <svg className="w-4 h-4 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`w-4 h-4 transition-transform ${productsOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-              <div className="p-2">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.id}
-                    href={`/produits?categorie=${cat.id}`}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sand transition-colors text-sm"
-                  >
-                    <span>{cat.emoji}</span>
-                    <span>{cat.label}</span>
-                  </Link>
-                ))}
-                <div className="border-t border-gray-100 mt-1 pt-1">
-                  <Link
-                    href="/produits"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sand transition-colors text-sm font-semibold text-ocean"
-                  >
-                    Voir tous les produits →
-                  </Link>
+
+            {productsOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[560px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50">
+                <div className="p-5 grid grid-cols-2 gap-5">
+                  {/* Categories */}
+                  <div>
+                    <p className="text-xs font-bold text-text-lighter uppercase tracking-wider mb-3">Catégories</p>
+                    <div className="space-y-1">
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.id}
+                          href={`/produits?categorie=${cat.id}`}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-sand transition-colors"
+                          onClick={() => setProductsOpen(false)}
+                        >
+                          <span className="text-xl">{cat.emoji}</span>
+                          <span className="text-sm font-medium">{cat.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Popular products */}
+                  <div>
+                    <p className="text-xs font-bold text-text-lighter uppercase tracking-wider mb-3">Produits populaires</p>
+                    <div className="space-y-1">
+                      {featuredNav.map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/produits/${p.slug}`}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-sand transition-colors"
+                          onClick={() => setProductsOpen(false)}
+                        >
+                          <span className="text-xl">{p.emoji}</span>
+                          <div>
+                            <p className="text-sm font-medium">{p.name}</p>
+                            <p className="text-xs text-ocean">À partir de {p.priceFrom.toFixed(2).replace('.', ',')} €</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <Link
+                        href="/produits"
+                        className="flex items-center gap-1 text-sm font-semibold text-ocean hover:underline px-3"
+                        onClick={() => setProductsOpen(false)}
+                      >
+                        Voir tous les produits →
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
+
           <Link href="/livraison" className="hover:text-ocean transition-colors">
             Livraison
+          </Link>
+          <Link href="/guide-fichiers" className="hover:text-ocean transition-colors">
+            Guide fichiers
+          </Link>
+          <Link href="/faq" className="hover:text-ocean transition-colors">
+            FAQ
           </Link>
           <Link href="/contact" className="hover:text-ocean transition-colors">
             Contact
@@ -89,10 +147,10 @@ export default function Header() {
         {/* CTA */}
         <div className="flex items-center gap-3">
           <Link
-            href="/produits"
-            className="hidden md:inline-flex bg-coral text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-coral-dark transition-colors"
+            href="/contact"
+            className="hidden md:inline-flex items-center gap-1.5 bg-coral text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-coral-dark transition-colors"
           >
-            Commander
+            Devis gratuit
           </Link>
           {/* Mobile menu button */}
           <button
@@ -113,7 +171,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-1">
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-1 max-h-[80vh] overflow-y-auto">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider pb-2">Catégories</p>
           {categories.map((cat) => (
             <Link
@@ -127,28 +185,30 @@ export default function Header() {
             </Link>
           ))}
           <div className="border-t border-gray-100 pt-3 mt-3 space-y-1">
-            <Link
-              href="/livraison"
-              className="flex items-center px-3 py-2.5 rounded-lg hover:bg-sand text-sm font-medium"
-              onClick={() => setMenuOpen(false)}
-            >
-              Livraison
-            </Link>
+            {[
+              { href: '/produits', label: 'Tous les produits' },
+              { href: '/livraison', label: 'Livraison' },
+              { href: '/guide-fichiers', label: 'Guide fichiers' },
+              { href: '/faq', label: 'FAQ' },
+              { href: '/contact', label: 'Contact' },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center px-3 py-2.5 rounded-lg hover:bg-sand text-sm font-medium"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="pt-3 border-t border-gray-100">
             <Link
               href="/contact"
-              className="flex items-center px-3 py-2.5 rounded-lg hover:bg-sand text-sm font-medium"
-              onClick={() => setMenuOpen(false)}
-            >
-              Contact
-            </Link>
-          </div>
-          <div className="pt-3">
-            <Link
-              href="/produits"
               className="block w-full text-center bg-coral text-white font-semibold py-3 rounded-xl hover:bg-coral-dark transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Commander maintenant
+              Devis gratuit →
             </Link>
           </div>
         </div>

@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getFeaturedProducts, categories } from '@/data/products';
+import Testimonials from '@/components/Testimonials';
+import TrustBadges from '@/components/TrustBadges';
+import { getFeaturedProducts, getPopularProducts, categories } from '@/data/products';
 import { territories } from '@/data/territories';
 
 const HOW_IT_WORKS = [
@@ -9,52 +11,42 @@ const HOW_IT_WORKS = [
     step: '01',
     emoji: '🖼️',
     title: 'Choisissez votre produit',
-    text: 'Cartes de visite, flyers, affiches, banderoles... Sélectionnez le support qui correspond à votre besoin.',
+    text: 'Sélectionnez parmi nos 12 supports d\'impression. Cartes de visite, flyers, affiches, banderoles, roll-up et bien plus.',
   },
   {
     step: '02',
     emoji: '🎨',
-    title: 'Envoyez votre fichier',
-    text: 'Téléchargez votre fichier PDF, AI ou PSD prêt à l\'impression. Notre équipe vérifie la qualité.',
+    title: 'Configurez et demandez un devis',
+    text: 'Choisissez format, quantité et finition. Envoyez votre fichier ou décrivez votre projet. Devis gratuit sous 24h.',
   },
   {
     step: '03',
     emoji: '🚚',
     title: 'Recevez votre commande',
-    text: 'Votre impression est expédiée directement en Guadeloupe, Martinique, Guyane, La Réunion et plus.',
+    text: 'Impression en 48h, expédition aérienne vers votre île. Suivi en temps réel jusqu\'à votre porte.',
   },
 ];
 
-const ADVANTAGES = [
-  {
-    emoji: '🏝️',
-    title: 'Spécialiste Outre-mer',
-    text: 'Nous connaissons les contraintes logistiques des DOM-COM et adaptons nos services pour une livraison fiable dans tous les territoires.',
-  },
-  {
-    emoji: '✅',
-    title: 'Qualité professionnelle',
-    text: 'Impression offset et numérique haute résolution, papiers haut de gamme, couleurs fidèles à vos maquettes.',
-  },
-  {
-    emoji: '⚡',
-    title: 'Délais respectés',
-    text: 'Votre commande est imprimée en 2-3 jours ouvrés, puis expédiée vers votre île. Suivi en temps réel.',
-  },
-  {
-    emoji: '💬',
-    title: 'Conseil personnalisé',
-    text: 'Notre équipe vous accompagne dans le choix des supports, formats et finitions adaptés à votre projet.',
-  },
+const GUARANTEES = [
+  { icon: '🏆', title: 'Qualité garantie', desc: 'Impression professionnelle contrôlée avant expédition.' },
+  { icon: '✈️', title: 'Livraison express', desc: 'Expédition aérienne vers tous les DOM-COM.' },
+  { icon: '💬', title: 'Réponse sous 24h', desc: 'Devis et support dans les 24h ouvrées.' },
+  { icon: '♻️', title: 'Réimpression offerte', desc: 'En cas d\'erreur ou de dommage à la réception.' },
 ];
 
 export default function Home() {
   const featuredProducts = getFeaturedProducts();
+  const popularProducts = getPopularProducts();
 
   return (
     <>
       <Header />
       <main className="flex-1">
+
+        {/* Promo strip */}
+        <div className="bg-palm text-white text-sm py-2 text-center font-medium">
+          🎉 Devis gratuit sous 24h — Livraison express dans les 6 territoires d&apos;outre-mer
+        </div>
 
         {/* Hero */}
         <section
@@ -63,19 +55,12 @@ export default function Home() {
             background: 'linear-gradient(135deg, #0077B6 0%, #005F8E 40%, #003F5C 100%)',
           }}
         >
-          {/* Decorative circles */}
-          <div
-            className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-10"
-            style={{ background: '#F9C74F' }}
-          />
-          <div
-            className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full opacity-10"
-            style={{ background: '#E94B3C' }}
-          />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-10" style={{ background: '#F9C74F' }} />
+          <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full opacity-10" style={{ background: '#E94B3C' }} />
 
           <div className="relative max-w-6xl mx-auto px-4 text-center">
             <span className="inline-block bg-white/15 text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm">
-              🌊 Livraison dans 6 territoires d&apos;outre-mer
+              🌊 L&apos;imprimerie en ligne #1 pour les DOM-COM
             </span>
             <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
               Imprimez. Livrez.
@@ -94,19 +79,19 @@ export default function Home() {
                 Voir nos produits →
               </Link>
               <Link
-                href="#comment-ca-marche"
+                href="/contact"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-lg px-8 py-4 rounded-xl backdrop-blur-sm transition-all"
               >
-                Comment ça marche
+                Devis gratuit sous 24h
               </Link>
             </div>
 
             {/* Stats */}
             <div className="mt-14 grid grid-cols-3 gap-6 max-w-lg mx-auto">
               {[
-                { value: '500+', label: 'Produits' },
+                { value: '12+', label: 'Produits' },
                 { value: '6', label: 'Territoires' },
-                { value: '48h', label: 'Impression' },
+                { value: '24h', label: 'Devis' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <p className="text-3xl font-bold" style={{ color: '#F9C74F' }}>{stat.value}</p>
@@ -117,15 +102,22 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Trust badges horizontal */}
+        <section className="bg-white border-b border-gray-100">
+          <div className="max-w-6xl mx-auto px-4">
+            <TrustBadges variant="horizontal" />
+          </div>
+        </section>
+
         {/* Territory bar */}
         <section className="bg-sand-dark border-b border-sand-dark py-5">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
               <span className="text-sm font-semibold text-text-light">Nous livrons dans :</span>
               {territories.map((t) => (
                 <Link
                   key={t.code}
-                  href={`/livraison#${t.code.toLowerCase()}`}
+                  href={`/ile/${t.slug}`}
                   className="flex items-center gap-1.5 text-sm text-text-light hover:text-ocean font-medium transition-colors"
                 >
                   <span className="w-2 h-2 rounded-full bg-palm inline-block" />
@@ -143,7 +135,7 @@ export default function Home() {
               Tout ce qu&apos;il vous faut pour communiquer
             </h2>
             <p className="text-text-light text-center mb-10 max-w-xl mx-auto">
-              Des supports d&apos;impression professionnels pour tous vos besoins marketing et communication.
+              Des supports d&apos;impression professionnels pour tous vos besoins marketing.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((cat) => (
@@ -215,12 +207,16 @@ export default function Home() {
                   href={`/produits/${product.slug}`}
                   className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1"
                 >
-                  {/* Product image placeholder */}
                   <div
-                    className="h-44 flex items-center justify-center text-6xl"
+                    className="h-44 flex items-center justify-center text-6xl relative"
                     style={{ background: 'linear-gradient(135deg, #FFF8F3 0%, #F5E8DC 100%)' }}
                   >
                     {product.emoji}
+                    {product.popular && (
+                      <span className="absolute top-3 right-3 bg-coral text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Populaire
+                      </span>
+                    )}
                   </div>
                   <div className="p-4">
                     <span className="text-xs font-semibold text-coral uppercase tracking-wide">
@@ -234,45 +230,65 @@ export default function Home() {
                       <span className="font-bold text-ocean">
                         À partir de {product.priceFrom.toFixed(2).replace('.', ',')} €
                       </span>
-                      <span className="text-xs text-palm font-semibold">
-                        ✓ Livré aux Antilles
-                      </span>
+                      <span className="text-xs text-palm font-semibold">✓ DOM-COM</span>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-            <div className="text-center mt-8 sm:hidden">
-              <Link href="/produits" className="inline-flex items-center gap-1 text-ocean font-semibold hover:underline">
-                Voir tous les produits →
-              </Link>
-            </div>
           </div>
         </section>
 
-        {/* Advantages */}
-        <section className="py-16 bg-sand">
+        {/* Popular products strip */}
+        {popularProducts.length > 0 && popularProducts.some((p) => !p.featured) && (
+          <section className="py-10 bg-sand">
+            <div className="max-w-6xl mx-auto px-4">
+              <h2 className="text-xl font-bold mb-6">Également très populaires</h2>
+              <div className="flex flex-wrap gap-3">
+                {popularProducts.filter((p) => !p.featured).map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/produits/${product.slug}`}
+                    className="flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 hover:border-ocean/30 hover:shadow-sm transition-all"
+                  >
+                    <span className="text-2xl">{product.emoji}</span>
+                    <div>
+                      <p className="font-semibold text-sm">{product.name}</p>
+                      <p className="text-xs text-ocean">À partir de {product.priceFrom.toFixed(2).replace('.', ',')} €</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Guarantees */}
+        <section className="py-16 bg-white">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">
-              Pourquoi choisir KaribPrint ?
+              Nos garanties
             </h2>
-            <p className="text-text-light text-center mb-12 max-w-lg mx-auto">
-              La première imprimerie en ligne pensée pour les Antilles et La Réunion.
+            <p className="text-text-light text-center mb-10 max-w-lg mx-auto">
+              Nous nous engageons sur la qualité, les délais et votre satisfaction.
             </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {ADVANTAGES.map((adv) => (
-                <div key={adv.title} className="bg-white rounded-2xl p-6 shadow-sm">
-                  <span className="text-4xl mb-4 block">{adv.emoji}</span>
-                  <h3 className="font-bold mb-2">{adv.title}</h3>
-                  <p className="text-sm text-text-light leading-relaxed">{adv.text}</p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {GUARANTEES.map((g) => (
+                <div key={g.title} className="bg-sand rounded-2xl p-6 text-center border-b-4 border-ocean">
+                  <span className="text-4xl block mb-3">{g.icon}</span>
+                  <h3 className="font-bold mb-2">{g.title}</h3>
+                  <p className="text-sm text-text-light leading-relaxed">{g.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Testimonials */}
+        <Testimonials />
+
         {/* Territories section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-sand">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-3">
               6 territoires desservis
@@ -284,21 +300,22 @@ export default function Home() {
               {territories.map((t) => (
                 <Link
                   key={t.code}
-                  href={`/livraison#${t.code.toLowerCase()}`}
-                  className="group flex gap-4 items-start bg-sand rounded-2xl p-5 hover:bg-ocean hover:text-white transition-all duration-200"
+                  href={`/ile/${t.slug}`}
+                  className="group flex gap-4 items-start bg-white rounded-2xl p-5 border border-gray-100 hover:border-ocean/30 hover:shadow-lg transition-all"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-ocean group-hover:bg-white/20 flex items-center justify-center text-white font-bold flex-shrink-0 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-ocean text-white font-bold flex items-center justify-center text-sm flex-shrink-0">
                     {t.dept}
                   </div>
                   <div>
-                    <h3 className="font-bold group-hover:text-white transition-colors">{t.name}</h3>
-                    <p className="text-xs text-text-light group-hover:text-blue-200 transition-colors mt-0.5">
+                    <h3 className="font-bold group-hover:text-ocean transition-colors">{t.name}</h3>
+                    <p className="text-xs text-palm font-medium mt-0.5">
                       🚚 {t.deliveryDays}
                     </p>
-                    <p className="text-xs text-text-lighter group-hover:text-blue-300 transition-colors mt-1 line-clamp-1">
-                      {t.cities.slice(0, 3).join(', ')}
+                    <p className="text-xs text-text-lighter mt-1">
+                      {t.cities.slice(0, 3).join(' • ')}
                     </p>
                   </div>
+                  <span className="ml-auto text-ocean opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                 </Link>
               ))}
             </div>
@@ -315,16 +332,16 @@ export default function Home() {
               Prêt à booster votre communication ?
             </h2>
             <p className="text-red-100 mb-8 text-lg">
-              Commandez en ligne et recevez votre commande directement sur votre île.
+              Devis gratuit sous 24h. Qualité professionnelle livrée sur votre île.
             </p>
             <Link
-              href="/produits"
+              href="/contact"
               className="inline-flex items-center gap-2 bg-white text-coral font-bold text-lg px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5 hover:bg-sand"
             >
-              Découvrir tous nos produits →
+              Demander un devis gratuit →
             </Link>
             <p className="text-red-200 text-sm mt-5">
-              Livraison garantie • Qualité professionnelle • Service client réactif
+              Sans engagement • Réponse sous 24h • Qualité garantie
             </p>
           </div>
         </section>

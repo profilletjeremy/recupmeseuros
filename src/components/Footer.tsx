@@ -6,6 +6,25 @@ export default function Footer() {
 
   return (
     <footer className="bg-dark text-gray-300 mt-auto">
+      {/* Trust strip */}
+      <div className="border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+            {[
+              { icon: '🏆', label: 'Qualité garantie' },
+              { icon: '✈️', label: 'Livraison express DOM-COM' },
+              { icon: '💬', label: 'Réponse sous 24h' },
+              { icon: '♻️', label: 'Réimpression offerte si problème' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-2 text-sm text-gray-400">
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -19,7 +38,7 @@ export default function Footer() {
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               L&apos;imprimerie en ligne dédiée aux Antilles et à La Réunion. Qualité professionnelle,
-              livraison rapide dans tous les territoires d&apos;outre-mer.
+              livraison rapide dans tous les DOM-COM.
             </p>
             <div className="mt-5 flex gap-3">
               <a
@@ -71,7 +90,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               {territories.map((t) => (
                 <li key={t.code}>
-                  <Link href={`/livraison#${t.code.toLowerCase()}`} className="hover:text-white transition-colors">
+                  <Link href={`/ile/${t.slug}`} className="hover:text-white transition-colors">
                     {t.name} ({t.dept})
                   </Link>
                 </li>
@@ -85,6 +104,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 { href: '/livraison', label: 'Livraison & délais' },
+                { href: '/guide-fichiers', label: 'Guide de fichiers' },
+                { href: '/faq', label: 'FAQ' },
                 { href: '/contact', label: 'Nous contacter' },
                 { href: '/mentions-legales', label: 'Mentions légales' },
               ].map((item) => (

@@ -4,12 +4,30 @@ import Footer from '@/components/Footer';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact — Demandez un devis',
-  description:
-    'Contactez l\'équipe KaribPrint pour un devis d\'impression. Réponse garantie sous 24h.',
+  title: 'Contact — Demandez un devis — KaribPrint',
+  description: 'Contactez l\'équipe KaribPrint pour un devis d\'impression. Réponse garantie sous 24h ouvrées.',
 };
 
-export default function ContactPage() {
+interface Props {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function ContactPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const selectedTerritory = typeof params.territoire === 'string' ? params.territoire : '';
+  const selectedProduct = typeof params.produit === 'string' ? params.produit : '';
+  const configCode = typeof params.code === 'string' ? params.code : '';
+  const selectedQty = typeof params.qty === 'string' ? params.qty : '';
+  const selectedFormat = typeof params.format === 'string' ? params.format : '';
+  const selectedPaper = typeof params.papier === 'string' ? params.papier : '';
+  const selectedFinish = typeof params.finition === 'string' ? params.finition : '';
+
+  const hasConfig = Boolean(selectedProduct || configCode);
+
+  const defaultMessage = selectedProduct
+    ? `Bonjour,\n\nJe souhaite commander : ${selectedProduct}${selectedFormat ? ` — Format : ${selectedFormat}` : ''}${selectedQty ? ` — Quantité : ${selectedQty} exemplaires` : ''}${selectedPaper ? ` — Support : ${selectedPaper}` : ''}${selectedFinish ? ` — Finition : ${selectedFinish}` : ''}.${configCode ? `\n\nCode de configuration : ${configCode}` : ''}\n\nMerci de me contacter.`
+    : '';
+
   return (
     <>
       <Header />
@@ -24,8 +42,9 @@ export default function ContactPage() {
             </nav>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Contactez-nous</h1>
             <p className="text-text-light max-w-xl">
-              Demandez un devis, posez vos questions ou envoyez-nous votre fichier. Notre équipe
-              vous répond sous 24h ouvrées.
+              {hasConfig
+                ? `Votre configuration est prête ! Complétez vos coordonnées et nous vous revenons sous 24h.`
+                : 'Demandez un devis, posez vos questions ou envoyez-nous votre fichier. Notre équipe vous répond sous 24h ouvrées.'}
             </p>
           </div>
         </div>
@@ -60,18 +79,16 @@ export default function ContactPage() {
               <div className="bg-sand rounded-2xl p-5">
                 <h3 className="font-bold mb-3">Délai de réponse</h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-palm" />
-                    <span>Devis : sous 24h ouvrées</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-palm" />
-                    <span>Vérification fichier : 4h max</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-palm" />
-                    <span>Support technique : immédiat</span>
-                  </div>
+                  {[
+                    'Devis : sous 24h ouvrées',
+                    'Vérification fichier : 4h max',
+                    'Support technique : immédiat',
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-palm flex-shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -85,13 +102,28 @@ export default function ContactPage() {
                   ))}
                 </div>
                 <p className="text-xs text-text-light mt-3">
-                  Résolution minimum 300 dpi — Mode couleur CMJN recommandé — Fonds perdus 3mm
+                  Résolution minimum 300 dpi — Mode couleur CMJN — Fonds perdus 3mm
                 </p>
+                <Link href="/guide-fichiers" className="text-xs text-ocean font-semibold hover:underline mt-2 block">
+                  Guide de préparation →
+                </Link>
               </div>
             </div>
 
             {/* Contact form */}
             <div className="lg:col-span-2">
+              {hasConfig && (
+                <div className="bg-palm/10 border border-palm/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
+                  <span className="text-2xl">✅</span>
+                  <div>
+                    <p className="font-semibold text-palm text-sm">Votre configuration a été pré-remplie</p>
+                    <p className="text-xs text-text-light mt-0.5">
+                      Produit : {selectedProduct}{selectedQty && ` — Quantité : ${selectedQty} ex.`}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
                 <h2 className="text-xl font-bold mb-6">Envoyer un message / Demander un devis</h2>
                 <form className="space-y-5">
@@ -139,6 +171,7 @@ export default function ContactPage() {
                     <label className="block text-sm font-semibold mb-1.5">Territoire de livraison *</label>
                     <select
                       required
+                      defaultValue={selectedTerritory}
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
                     >
                       <option value="">-- Sélectionnez votre île --</option>
@@ -155,6 +188,7 @@ export default function ContactPage() {
                     <label className="block text-sm font-semibold mb-1.5">Produit souhaité *</label>
                     <select
                       required
+                      defaultValue={selectedProduct}
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
                     >
                       <option value="">-- Sélectionnez un produit --</option>
@@ -173,14 +207,21 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-1.5">Votre message / détails du projet *</label>
+                    <label className="block text-sm font-semibold mb-1.5">
+                      Votre message / détails du projet *
+                    </label>
                     <textarea
                       required
                       rows={5}
-                      placeholder="Décrivez votre projet : quantité souhaitée, format, délai, format de fichier disponible..."
+                      defaultValue={defaultMessage}
+                      placeholder="Décrivez votre projet : quantité souhaitée, format, délai, fichier disponible..."
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors resize-y"
                     />
                   </div>
+
+                  {configCode && (
+                    <input type="hidden" name="code_realisaprint" value={configCode} />
+                  )}
 
                   <div className="flex items-start gap-3">
                     <input type="checkbox" id="rgpd" required className="mt-0.5 w-4 h-4 accent-ocean" />
@@ -196,6 +237,9 @@ export default function ContactPage() {
                   >
                     Envoyer ma demande de devis
                   </button>
+                  <p className="text-center text-xs text-text-lighter">
+                    Réponse garantie sous 24h ouvrées • Devis sans engagement
+                  </p>
                 </form>
               </div>
             </div>

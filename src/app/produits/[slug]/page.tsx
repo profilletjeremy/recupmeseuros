@@ -3,7 +3,10 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductConfigurator from '@/components/ProductConfigurator';
-import { getProductBySlug, products } from '@/data/products';
+import ProductForm from '@/components/ProductForm';
+import PricingTable from '@/components/PricingTable';
+import TrustBadges from '@/components/TrustBadges';
+import { getProductBySlug, getProductsByCategory, products } from '@/data/products';
 import { getPrescriptIframeUrl } from '@/lib/realisaprint';
 import type { Metadata } from 'next';
 
@@ -20,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = getProductBySlug(slug);
   if (!product) return {};
   return {
-    title: `${product.name} — Livraison Antilles & Réunion`,
-    description: product.description,
+    title: `${product.name} — Livraison Antilles & Réunion — KaribPrint`,
+    description: `${product.description}. À partir de ${product.priceFrom.toFixed(2).replace('.', ',')}€. Livraison en Guadeloupe, Martinique, Guyane, La Réunion, Saint-Martin et Saint-Barthélemy.`,
   };
 }
 
@@ -30,15 +33,26 @@ export default async function ProductPage({ params }: Props) {
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  // Build Préscript iFrame URL server-side so credentials never reach the client
+  const related = getProductsByCategory(product.category)
+    .filter((p) => p.slug !== slug)
+    .slice(0, 3);
+
   let prescriptUrl: string | null = null;
   if (product.realisaprintProductId && product.realisaprintStock) {
     try {
       prescriptUrl = getPrescriptIframeUrl(product.realisaprintProductId, product.realisaprintStock);
     } catch {
-      // credentials not set in this environment — fall back to static configurator
+      // credentials not set in this environment
     }
   }
+
+  const INCLUDED = [
+    'Vérification du fichier sous 4h',
+    'Impression quadrichromie haute résolution',
+    'Emballage protecteur pour le transport aérien',
+    'Suivi de commande par email',
+    'Garantie qualité — réimpression si nécessaire',
+  ];
 
   return (
     <>
@@ -52,6 +66,10 @@ export default async function ProductPage({ params }: Props) {
               <span className="mx-2">/</span>
               <Link href="/produits" className="hover:text-ocean">Produits</Link>
               <span className="mx-2">/</span>
+              <Link href={`/produits?categorie=${product.category}`} className="hover:text-ocean">
+                {product.categoryLabel}
+              </Link>
+              <span className="mx-2">/</span>
               <span>{product.name}</span>
             </nav>
           </div>
@@ -59,21 +77,37 @@ export default async function ProductPage({ params }: Props) {
 
         <div className="max-w-7xl mx-auto px-4 py-10">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Product visual */}
-            <div>
+            {/* Product visual + included */}
+            <div className="space-y-5">
               <div
                 className="rounded-3xl h-80 flex items-center justify-center text-9xl shadow-inner"
                 style={{ background: 'linear-gradient(135deg, #FFF8F3 0%, #F5E8DC 100%)' }}
               >
                 {product.emoji}
               </div>
+
               {/* Delivery badge */}
-              <div className="mt-4 bg-palm/10 border border-palm/20 rounded-xl p-4 flex items-start gap-3">
+              <div className="bg-palm/10 border border-palm/20 rounded-xl p-4 flex items-start gap-3">
                 <span className="text-2xl">🚚</span>
                 <div>
-                  <p className="font-semibold text-palm text-sm">Livraison en Guadeloupe, Martinique, Guyane, La Réunion, Saint-Martin et Saint-Barthélemy</p>
+                  <p className="font-semibold text-palm text-sm">
+                    Livraison en Guadeloupe, Martinique, Guyane, La Réunion, Saint-Martin et Saint-Barthélemy
+                  </p>
                   <p className="text-text-light text-xs mt-0.5">{product.deliveryDays} après impression</p>
                 </div>
+              </div>
+
+              {/* What's included */}
+              <div className="bg-sand rounded-2xl p-5">
+                <h3 className="font-bold mb-3 text-sm">Inclus dans votre commande</h3>
+                <ul className="space-y-2">
+                  {INCLUDED.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-text-light">
+                      <span className="text-palm mt-0.5 flex-shrink-0">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -85,16 +119,22 @@ export default async function ProductPage({ params }: Props) {
               <h1 className="text-3xl md:text-4xl font-bold mt-2 mb-4">{product.name}</h1>
               <p className="text-text-light leading-relaxed mb-6">{product.longDescription}</p>
 
-              {/* Price */}
-              <div className="bg-sand rounded-2xl p-5 mb-6">
-                <p className="text-sm text-text-light mb-1">À partir de</p>
-                <p className="text-4xl font-bold text-ocean">
-                  {product.priceFrom.toFixed(2).replace('.', ',')} €
-                </p>
-                <p className="text-xs text-text-lighter mt-1">TTC — hors frais de livraison</p>
+              {/* Price from */}
+              <div className="bg-sand rounded-2xl p-5 mb-6 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-text-light mb-1">À partir de</p>
+                  <p className="text-4xl font-bold text-ocean">
+                    {product.priceFrom.toFixed(2).replace('.', ',')} €
+                  </p>
+                  <p className="text-xs text-text-lighter mt-1">TTC — hors frais de livraison</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-text-lighter mb-1">Plus de commandes =</p>
+                  <p className="text-sm font-bold text-palm">Plus d&apos;économies ↓</p>
+                </div>
               </div>
 
-              {/* Configurator: Préscript iFrame if available, otherwise static form */}
+              {/* Configurator */}
               {prescriptUrl ? (
                 <ProductConfigurator
                   prescriptIframeUrl={prescriptUrl}
@@ -102,14 +142,25 @@ export default async function ProductPage({ params }: Props) {
                   productName={product.name}
                 />
               ) : (
-                <StaticConfigurator product={product} />
+                <ProductForm
+                  pricingTiers={product.pricingTiers}
+                  formats={product.formats}
+                  paperTypes={product.paperTypes}
+                  finishes={product.finishes}
+                  productName={product.name}
+                />
               )}
             </div>
           </div>
 
-          {/* Product specs */}
+          {/* Pricing table */}
           <div className="mt-16 border-t border-gray-100 pt-10">
-            <h2 className="text-2xl font-bold mb-6">Caractéristiques</h2>
+            <PricingTable tiers={product.pricingTiers} productName={product.name} />
+          </div>
+
+          {/* Product specs */}
+          <div className="mt-10 border-t border-gray-100 pt-10">
+            <h2 className="text-2xl font-bold mb-6">Caractéristiques techniques</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { label: 'Formats disponibles', value: product.formats.map((f) => f.label).join(', ') },
@@ -126,93 +177,62 @@ export default async function ProductPage({ params }: Props) {
               ))}
             </div>
           </div>
+
+          {/* File guide CTA */}
+          <div className="mt-8 bg-ocean/5 border border-ocean/20 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <span className="text-3xl">📋</span>
+            <div className="flex-1">
+              <p className="font-bold text-sm">Comment préparer votre fichier ?</p>
+              <p className="text-sm text-text-light mt-0.5">
+                Format PDF, résolution 300 dpi, mode CMJN, fonds perdus 3mm.
+              </p>
+            </div>
+            <Link
+              href="/guide-fichiers"
+              className="flex-shrink-0 bg-ocean text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-ocean-dark transition-colors"
+            >
+              Guide complet →
+            </Link>
+          </div>
+
+          {/* Trust badges */}
+          <div className="mt-10 border-t border-gray-100 pt-10">
+            <h2 className="text-xl font-bold mb-6 text-center">Nos engagements</h2>
+            <TrustBadges />
+          </div>
+
+          {/* Related products */}
+          {related.length > 0 && (
+            <div className="mt-10 border-t border-gray-100 pt-10">
+              <h2 className="text-xl font-bold mb-6">Vous pourriez aussi aimer</h2>
+              <div className="grid sm:grid-cols-3 gap-5">
+                {related.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/produits/${p.slug}`}
+                    className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <div
+                      className="h-32 flex items-center justify-center text-5xl"
+                      style={{ background: 'linear-gradient(135deg, #FFF8F3 0%, #F5E8DC 100%)' }}
+                    >
+                      {p.emoji}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-sm group-hover:text-ocean transition-colors">{p.name}</h3>
+                      <p className="text-xs text-text-light mt-1 line-clamp-2">{p.description}</p>
+                      <p className="text-ocean font-bold text-sm mt-2">
+                        À partir de {p.priceFrom.toFixed(2).replace('.', ',')} €
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
     </>
-  );
-}
-
-function StaticConfigurator({ product }: { product: ReturnType<typeof getProductBySlug> & object }) {
-  return (
-    <div className="space-y-5">
-      {/* Format selector */}
-      <div>
-        <label className="block text-sm font-semibold text-text mb-2">Format</label>
-        <div className="grid grid-cols-2 gap-2">
-          {product.formats.map((fmt, i) => (
-            <label
-              key={fmt.label}
-              className={`flex flex-col gap-0.5 border-2 rounded-xl p-3 cursor-pointer transition-all ${
-                i === 0 ? 'border-ocean bg-ocean/5' : 'border-gray-200 hover:border-ocean/50'
-              }`}
-            >
-              <input type="radio" name="format" className="sr-only" defaultChecked={i === 0} />
-              <span className="font-semibold text-sm">{fmt.label}</span>
-              {fmt.dimensions && (
-                <span className="text-xs text-text-lighter">{fmt.dimensions}</span>
-              )}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Quantity selector */}
-      <div>
-        <label className="block text-sm font-semibold text-text mb-2">Quantité</label>
-        <div className="flex flex-wrap gap-2">
-          {product.quantities.map((qty, i) => (
-            <label
-              key={qty}
-              className={`border-2 rounded-xl px-4 py-2 cursor-pointer text-sm font-semibold transition-all ${
-                i === 1 ? 'border-ocean bg-ocean/5 text-ocean' : 'border-gray-200 hover:border-ocean/50'
-              }`}
-            >
-              <input type="radio" name="quantity" className="sr-only" defaultChecked={i === 1} />
-              {qty.toLocaleString('fr-FR')} ex.
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Paper type */}
-      <div>
-        <label className="block text-sm font-semibold text-text mb-2">Support / Papier</label>
-        <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
-          {product.paperTypes.map((paper) => (
-            <option key={paper}>{paper}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Finish */}
-      {product.finishes.length > 1 && (
-        <div>
-          <label className="block text-sm font-semibold text-text mb-2">Finition</label>
-          <select className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors">
-            {product.finishes.map((finish) => (
-              <option key={finish}>{finish}</option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* File upload */}
-      <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-ocean transition-colors cursor-pointer">
-        <span className="text-4xl block mb-2">📤</span>
-        <p className="font-semibold text-sm mb-1">Téléversez votre fichier</p>
-        <p className="text-xs text-text-light">PDF, AI, PSD, EPS — 300 dpi minimum</p>
-        <p className="text-xs text-text-lighter mt-1">Ou choisissez parmi nos modèles</p>
-      </div>
-
-      {/* CTA */}
-      <Link
-        href="/contact"
-        className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-lg py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
-      >
-        Demander un devis gratuit
-      </Link>
-      <p className="text-center text-xs text-text-lighter">Notre équipe vous répond sous 24h</p>
-    </div>
   );
 }

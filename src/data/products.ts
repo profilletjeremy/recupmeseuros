@@ -3,6 +3,13 @@ export interface ProductFormat {
   dimensions: string;
 }
 
+export interface PricingTier {
+  quantity: number;
+  price: number;
+  isPopular?: boolean;
+  isBestValue?: boolean;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -13,6 +20,7 @@ export interface Product {
   longDescription: string;
   priceFrom: number;
   quantities: number[];
+  pricingTiers: PricingTier[];
   formats: ProductFormat[];
   paperTypes: string[];
   finishes: string[];
@@ -46,6 +54,13 @@ export const products: Product[] = [
     longDescription: 'Faites une première impression mémorable avec nos cartes de visite haut de gamme. Disponibles en finition brillante, matte ou soft-touch, elles reflètent le professionnalisme de votre entreprise. Impression recto-verso possible.',
     priceFrom: 14.90,
     quantities: [100, 250, 500, 1000, 2000],
+    pricingTiers: [
+      { quantity: 100, price: 14.90 },
+      { quantity: 250, price: 24.90, isPopular: true },
+      { quantity: 500, price: 34.90 },
+      { quantity: 1000, price: 49.90, isBestValue: true },
+      { quantity: 2000, price: 79.90 },
+    ],
     formats: [
       { label: 'Standard', dimensions: '85 × 54 mm' },
       { label: 'Carré', dimensions: '55 × 55 mm' },
@@ -68,6 +83,13 @@ export const products: Product[] = [
     longDescription: 'Les flyers sont l\'outil de communication le plus efficace pour toucher rapidement votre audience locale. Impression quadrichromie haute résolution recto-verso sur papier couché. Parfaits pour promouvoir vos offres, événements et services.',
     priceFrom: 24.90,
     quantities: [250, 500, 1000, 2500, 5000],
+    pricingTiers: [
+      { quantity: 250, price: 24.90 },
+      { quantity: 500, price: 34.90, isPopular: true },
+      { quantity: 1000, price: 49.90 },
+      { quantity: 2500, price: 89.90, isBestValue: true },
+      { quantity: 5000, price: 149.90 },
+    ],
     formats: [
       { label: 'A6', dimensions: '105 × 148 mm' },
       { label: 'A5', dimensions: '148 × 210 mm' },
@@ -91,6 +113,14 @@ export const products: Product[] = [
     longDescription: 'Donnez de la visibilité à votre communication avec nos affiches haut de gamme. Impression numérique haute résolution sur papier photo satiné ou mat. Idéales pour la décoration intérieure, les vitrines commerciales et les événements.',
     priceFrom: 12.90,
     quantities: [1, 5, 10, 25, 50, 100],
+    pricingTiers: [
+      { quantity: 1, price: 12.90 },
+      { quantity: 5, price: 39.90 },
+      { quantity: 10, price: 64.90, isPopular: true },
+      { quantity: 25, price: 119.90, isBestValue: true },
+      { quantity: 50, price: 199.90 },
+      { quantity: 100, price: 329.90 },
+    ],
     formats: [
       { label: 'A4', dimensions: '210 × 297 mm' },
       { label: 'A3', dimensions: '297 × 420 mm' },
@@ -115,6 +145,12 @@ export const products: Product[] = [
     longDescription: 'Nos banderoles en PVC 440g/m² sont conçues pour résister aux conditions climatiques tropicales. Oeillets de fixation inclus. Impression UV haute résolution pour des couleurs éclatantes même en plein soleil. Idéales pour les événements, commerces et annonces publicitaires.',
     priceFrom: 35.90,
     quantities: [1, 2, 5, 10],
+    pricingTiers: [
+      { quantity: 1, price: 35.90 },
+      { quantity: 2, price: 59.90, isPopular: true },
+      { quantity: 5, price: 119.90, isBestValue: true },
+      { quantity: 10, price: 199.90 },
+    ],
     formats: [
       { label: '1 × 0,5 m', dimensions: '1000 × 500 mm' },
       { label: '1,5 × 0,5 m', dimensions: '1500 × 500 mm' },
@@ -139,6 +175,12 @@ export const products: Product[] = [
     longDescription: 'Nos roll-ups (kakémonos) offrent un support de communication élégant et pratique pour vos salons, conférences et points de vente. La structure en aluminium est légère et solide. Le visuel en bâche polyester se range facilement dans la cassette de protection fournie.',
     priceFrom: 79.90,
     quantities: [1, 2, 5, 10],
+    pricingTiers: [
+      { quantity: 1, price: 79.90 },
+      { quantity: 2, price: 139.90, isPopular: true },
+      { quantity: 5, price: 299.90, isBestValue: true },
+      { quantity: 10, price: 499.90 },
+    ],
     formats: [
       { label: '60 × 160 cm', dimensions: '600 × 1600 mm' },
       { label: '85 × 200 cm', dimensions: '850 × 2000 mm' },
@@ -161,6 +203,12 @@ export const products: Product[] = [
     longDescription: 'Présentez votre entreprise, vos produits ou vos services avec élégance grâce à nos brochures et dépliants. Disponibles en format 2 volets, 3 volets ou brochure agrafée multi-pages. Impression quadrichromie sur papier couché de qualité.',
     priceFrom: 29.90,
     quantities: [100, 250, 500, 1000],
+    pricingTiers: [
+      { quantity: 100, price: 29.90 },
+      { quantity: 250, price: 59.90, isPopular: true },
+      { quantity: 500, price: 99.90 },
+      { quantity: 1000, price: 169.90, isBestValue: true },
+    ],
     formats: [
       { label: 'Dépliant A4 → 2 volets A5', dimensions: '420 × 297 mm plié en 2' },
       { label: 'Dépliant A4 → 3 volets DL', dimensions: '420 × 297 mm plié en 3' },
@@ -184,6 +232,12 @@ export const products: Product[] = [
     longDescription: 'Renforcez l\'image professionnelle de votre entreprise avec une papeterie cohérente et personnalisée. Entêtes de lettre, enveloppes à fenêtre, chemises cartonnées et tampons encreurs — tout ce qu\'il faut pour une correspondance commerciale impeccable.',
     priceFrom: 19.90,
     quantities: [100, 250, 500, 1000],
+    pricingTiers: [
+      { quantity: 100, price: 19.90 },
+      { quantity: 250, price: 39.90, isPopular: true },
+      { quantity: 500, price: 64.90 },
+      { quantity: 1000, price: 109.90, isBestValue: true },
+    ],
     formats: [
       { label: 'En-tête A4', dimensions: '210 × 297 mm' },
       { label: 'Enveloppe DL', dimensions: '110 × 220 mm' },
@@ -207,6 +261,13 @@ export const products: Product[] = [
     longDescription: 'Nos autocollants et stickers sont imprimés sur vinyle ou papier adhésif de haute qualité, résistants à l\'humidité tropicale et aux UV. Découpe carrée, ronde, ovale ou à la forme de votre visuel. Idéaux pour vos produits, packaging et décorations.',
     priceFrom: 19.90,
     quantities: [100, 250, 500, 1000, 2000],
+    pricingTiers: [
+      { quantity: 100, price: 19.90 },
+      { quantity: 250, price: 34.90 },
+      { quantity: 500, price: 54.90, isPopular: true },
+      { quantity: 1000, price: 89.90, isBestValue: true },
+      { quantity: 2000, price: 149.90 },
+    ],
     formats: [
       { label: 'Carré 5×5 cm', dimensions: '50 × 50 mm' },
       { label: 'Rond Ø 5 cm', dimensions: 'Ø 50 mm' },
@@ -230,6 +291,12 @@ export const products: Product[] = [
     longDescription: 'Communiquez avec style grâce à nos cartes postales personnalisées. Impression recto-verso quadrichromie sur papier couché épais 350g/m². Idéales pour les offres promotionnelles, invitations, remerciements ou souvenirs touristiques des Antilles.',
     priceFrom: 29.90,
     quantities: [100, 250, 500, 1000],
+    pricingTiers: [
+      { quantity: 100, price: 29.90 },
+      { quantity: 250, price: 54.90, isPopular: true },
+      { quantity: 500, price: 89.90 },
+      { quantity: 1000, price: 149.90, isBestValue: true },
+    ],
     formats: [
       { label: 'A6', dimensions: '105 × 148 mm' },
       { label: 'A5', dimensions: '148 × 210 mm' },
@@ -251,6 +318,12 @@ export const products: Product[] = [
     longDescription: 'Offrez à vos clients un cadeau utile avec votre calendrier personnalisé. Présent toute l\'année dans les bureaux et domiciles, c\'est un support de communication à fort rendement. Disponible en format mural, bureau ou chevalet, en version 13 feuillets ou 7 feuillets.',
     priceFrom: 89.90,
     quantities: [50, 100, 250, 500],
+    pricingTiers: [
+      { quantity: 50, price: 89.90 },
+      { quantity: 100, price: 149.90, isPopular: true },
+      { quantity: 250, price: 299.90, isBestValue: true },
+      { quantity: 500, price: 499.90 },
+    ],
     formats: [
       { label: 'Mural 13 feuillets A3', dimensions: '297 × 420 mm' },
       { label: 'Mural 7 feuillets A3', dimensions: '297 × 420 mm' },
@@ -273,6 +346,13 @@ export const products: Product[] = [
     longDescription: 'Habiller votre équipe ou récompenser vos clients avec des t-shirts personnalisés de qualité. Impression numérique directe (DTG) ou sérigraphie selon les quantités. Disponible en différentes couleurs et tailles. 100% coton peigné.',
     priceFrom: 12.90,
     quantities: [10, 25, 50, 100, 250],
+    pricingTiers: [
+      { quantity: 10, price: 129.00 },
+      { quantity: 25, price: 287.50, isPopular: true },
+      { quantity: 50, price: 545.00 },
+      { quantity: 100, price: 990.00, isBestValue: true },
+      { quantity: 250, price: 2225.00 },
+    ],
     formats: [
       { label: 'S', dimensions: '' },
       { label: 'M', dimensions: '' },
@@ -297,6 +377,12 @@ export const products: Product[] = [
     longDescription: 'Des mugs céramique 330ml de qualité professionnelle, imprimés en sublimation pour des couleurs vives et durables. Résistants au lave-vaisselle. Idéaux comme cadeaux d\'entreprise ou de promotion. Emballage individuel disponible.',
     priceFrom: 8.90,
     quantities: [25, 50, 100, 250],
+    pricingTiers: [
+      { quantity: 25, price: 222.50 },
+      { quantity: 50, price: 410.00, isPopular: true },
+      { quantity: 100, price: 750.00, isBestValue: true },
+      { quantity: 250, price: 1725.00 },
+    ],
     formats: [
       { label: 'Mug classique 330ml', dimensions: 'Ø 82 mm × H 93 mm' },
       { label: 'Mug magic (thermo)', dimensions: 'Ø 82 mm × H 93 mm' },
