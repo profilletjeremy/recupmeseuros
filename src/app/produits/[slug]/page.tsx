@@ -6,6 +6,7 @@ import ProductConfigurator from '@/components/ProductConfigurator';
 import ProductForm from '@/components/ProductForm';
 import PricingTable from '@/components/PricingTable';
 import TrustBadges from '@/components/TrustBadges';
+import ProductVisual from '@/components/ProductVisual';
 import { getProductBySlug, getProductsByCategory, products } from '@/data/products';
 import { getPrescriptIframeUrl } from '@/lib/realisaprint';
 import type { Metadata } from 'next';
@@ -78,32 +79,39 @@ export default async function ProductPage({ params }: Props) {
         <div className="max-w-7xl mx-auto px-4 py-10">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Product visual + included */}
-            <div className="space-y-5">
-              <div
-                className="rounded-3xl h-80 flex items-center justify-center text-9xl shadow-inner"
-                style={{ background: 'linear-gradient(135deg, #FFF8F3 0%, #F5E8DC 100%)' }}
-              >
-                {product.emoji}
+            <div className="space-y-4">
+              {/* Product visual mockup */}
+              <ProductVisual slug={product.slug} category={product.category} className="rounded-3xl h-80 shadow-inner" />
+
+              {/* Urgency/availability badge */}
+              <div className="flex items-center gap-3 bg-palm/10 border border-palm/20 rounded-xl px-4 py-3">
+                <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-palm animate-pulse" />
+                <p className="text-sm font-semibold text-palm">
+                  Stock disponible — impression sous 48h
+                </p>
               </div>
 
               {/* Delivery badge */}
-              <div className="bg-palm/10 border border-palm/20 rounded-xl p-4 flex items-start gap-3">
-                <span className="text-2xl">🚚</span>
+              <div className="bg-ocean/5 border border-ocean/15 rounded-xl p-4 flex items-start gap-3">
+                <span className="text-2xl">✈️</span>
                 <div>
-                  <p className="font-semibold text-palm text-sm">
-                    Livraison en Guadeloupe, Martinique, Guyane, La Réunion, Saint-Martin et Saint-Barthélemy
+                  <p className="font-semibold text-ocean text-sm">
+                    Livraison aérienne DOM-COM
                   </p>
-                  <p className="text-text-light text-xs mt-0.5">{product.deliveryDays} après impression</p>
+                  <p className="text-text-light text-xs mt-0.5">Guadeloupe • Martinique • Guyane • La Réunion • Saint-Martin • Saint-Barthélemy</p>
+                  <p className="text-xs font-medium text-palm mt-1">🕐 {product.deliveryDays} après impression</p>
                 </div>
               </div>
 
               {/* What's included */}
               <div className="bg-sand rounded-2xl p-5">
-                <h3 className="font-bold mb-3 text-sm">Inclus dans votre commande</h3>
+                <h3 className="font-bold mb-3 text-sm flex items-center gap-2">
+                  <span className="text-palm">✓</span> Inclus dans votre commande
+                </h3>
                 <ul className="space-y-2">
                   {INCLUDED.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-text-light">
-                      <span className="text-palm mt-0.5 flex-shrink-0">✓</span>
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-text-light">
+                      <span className="text-palm mt-0.5 flex-shrink-0 font-bold">✓</span>
                       {item}
                     </li>
                   ))}
@@ -210,14 +218,9 @@ export default async function ProductPage({ params }: Props) {
                   <Link
                     key={p.id}
                     href={`/produits/${p.slug}`}
-                    className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-0.5"
+                    className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg hover:border-ocean/20 transition-all hover:-translate-y-1"
                   >
-                    <div
-                      className="h-32 flex items-center justify-center text-5xl"
-                      style={{ background: 'linear-gradient(135deg, #FFF8F3 0%, #F5E8DC 100%)' }}
-                    >
-                      {p.emoji}
-                    </div>
+                    <ProductVisual slug={p.slug} category={p.category} className="h-32" />
                     <div className="p-4">
                       <h3 className="font-bold text-sm group-hover:text-ocean transition-colors">{p.name}</h3>
                       <p className="text-xs text-text-light mt-1 line-clamp-2">{p.description}</p>
