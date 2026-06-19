@@ -1,0 +1,35 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - claude/caribbean-web-to-print-0722gb
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npx vercel --token "$VERCEL_TOKEN" \
+            --yes \
+            --prod \
+            -e REALISAPRINT_SHOP_ID=${{ secrets.REALISAPRINT_SHOP_ID }} \
+            -e REALISAPRINT_API_KEY=${{ secrets.REALISAPRINT_API_KEY }} \
+            2>&1 | tee /tmp/vercel-output.txt
+          cat /tmp/vercel-output.txt
+          grep -o 'https://[^ ]*\.vercel\.app' /tmp/vercel-output.txt | tail -1 || true
