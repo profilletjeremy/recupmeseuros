@@ -62,6 +62,8 @@ function ProduitsGrid() {
 
   useEffect(() => {
     const cat = searchParams.get('categorie');
+    // Intentional sync of the active filter from the URL query param.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (cat) setActive(cat);
   }, [searchParams]);
 

@@ -103,6 +103,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: 'HYDRATE', items: JSON.parse(stored) });
       }
     } catch {}
+    // Intentional one-time sync from localStorage on mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true);
   }, []);
 
@@ -113,7 +115,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.items, hydrated]);
 
-  const totalItems = state.items.reduce((sum, i) => sum + 1, 0);
+  const totalItems = state.items.length;
   const totalPrice = state.items.reduce((sum, i) => sum + i.totalPrice, 0);
 
   const addItem = (item: Omit<CartItem, 'cartId'>) => {

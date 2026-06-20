@@ -7,12 +7,12 @@ import { products } from '@/data/products';
 import { useCart } from '@/contexts/CartContext';
 
 const NAV_ITEMS = [
-  { label: 'Carte de visite', href: '/produits/cartes-de-visite' },
-  { label: 'Flyer', href: '/produits/flyers-tracts' },
-  { label: 'Brochure', href: '/produits/brochures-depliants' },
-  { label: 'Affiche', href: '/produits/affiches-posters' },
-  { label: 'Banderole', href: '/produits/banderoles', badge: 'NEW' },
-  { label: 'Roll-up', href: '/produits/roll-up-kakemono' },
+  { label: 'Carte de visite', href: '/produits/carte-de-visite' },
+  { label: 'Flyer', href: '/produits?categorie=communication' },
+  { label: 'Brochure', href: '/produits/brochure' },
+  { label: 'Affiche', href: '/produits/affiche' },
+  { label: 'Banderole', href: '/produits/bache', badge: 'NEW' },
+  { label: 'Roll-up', href: '/produits?categorie=evenementiel' },
   { label: 'Panneau rigide', href: '/produits?categorie=affichage' },
   { label: 'Signalétique', href: '/produits?categorie=evenementiel' },
   { label: 'PLV Stand', href: '/produits?categorie=evenementiel' },

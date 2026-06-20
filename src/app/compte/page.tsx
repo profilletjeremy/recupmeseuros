@@ -41,9 +41,12 @@ export default function ComptePage() {
     const stored = localStorage.getItem('karibprint_user');
     if (stored) {
       const user = JSON.parse(stored);
+      // Intentional sync from localStorage on mount (client-only session restore).
+      /* eslint-disable react-hooks/set-state-in-effect */
       setIsLoggedIn(true);
       setUserName(user.name ?? user.email);
       setTab('commandes');
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
     const storedOrders = localStorage.getItem('karibprint_orders');
     if (storedOrders) {

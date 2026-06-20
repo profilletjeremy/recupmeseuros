@@ -67,12 +67,12 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Nos produits</h3>
             <ul className="space-y-2 text-sm">
               {[
-                { href: '/produits/cartes-de-visite', label: 'Cartes de visite' },
-                { href: '/produits/flyers-tracts', label: 'Flyers & Tracts' },
-                { href: '/produits/affiches-posters', label: 'Affiches & Posters' },
-                { href: '/produits/banderoles', label: 'Banderoles' },
-                { href: '/produits/roll-up-kakemono', label: 'Roll-up / Kakémono' },
-                { href: '/produits/brochures-depliants', label: 'Brochures & Dépliants' },
+                { href: '/produits/carte-de-visite', label: 'Cartes de visite' },
+                { href: '/produits?categorie=communication', label: 'Flyers & Tracts' },
+                { href: '/produits/affiche', label: 'Affiches & Posters' },
+                { href: '/produits/bache', label: 'Banderoles' },
+                { href: '/produits?categorie=evenementiel', label: 'Roll-up / Kakémono' },
+                { href: '/produits/brochure', label: 'Brochures & Dépliants' },
                 { href: '/produits', label: 'Voir tous →' },
               ].map((item) => (
                 <li key={item.href}>

@@ -9,18 +9,8 @@ interface Props {
   productName: string;
 }
 
-interface PriceResult {
-  price?: number;
-  price_ttc?: number;
-  currency?: string;
-  error?: string;
-}
-
-export default function ProductConfigurator({ prescriptIframeUrl, defaultQuantity, productName }: Props) {
+export default function ProductConfigurator({ prescriptIframeUrl, productName }: Props) {
   const [configCode, setConfigCode] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(String(defaultQuantity));
-  const [priceData, setPriceData] = useState<PriceResult | null>(null);
-  const [loadingPrice, setLoadingPrice] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -40,77 +30,23 @@ export default function ProductConfigurator({ prescriptIframeUrl, defaultQuantit
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  useEffect(() => {
-    if (!configCode) return;
-    setLoadingPrice(true);
-    fetch(`/api/realisaprint/price?code=${encodeURIComponent(configCode)}&quantity=${encodeURIComponent(quantity)}`)
-      .then((r) => r.json())
-      .then((data: PriceResult) => setPriceData(data))
-      .catch(() => setPriceData({ error: 'Erreur lors du calcul du prix' }))
-      .finally(() => setLoadingPrice(false));
-  }, [configCode, quantity]);
-
   const contactHref = configCode
-    ? `/contact?produit=${encodeURIComponent(productName)}&code=${encodeURIComponent(configCode)}&qty=${encodeURIComponent(quantity)}`
-    : '/contact';
+    ? `/contact?produit=${encodeURIComponent(productName)}&code=${encodeURIComponent(configCode)}`
+    : `/contact?produit=${encodeURIComponent(productName)}`;
 
   return (
     <div className="space-y-4">
-      {/* Préscript iFrame configurator */}
+      {/* Préscript iFrame configurator — handles options, visual preview and live pricing */}
       <div className="border border-gray-100 rounded-2xl overflow-hidden">
         <iframe
           ref={iframeRef}
           src={prescriptIframeUrl}
           className="w-full"
-          style={{ minHeight: 520, border: 'none' }}
+          style={{ minHeight: 720, border: 'none' }}
           title={`Configurateur ${productName}`}
           allow="same-origin"
         />
       </div>
-
-      {/* Quantity selector shown after configuration */}
-      {configCode && (
-        <div>
-          <label className="block text-sm font-semibold text-text mb-2">Quantité</label>
-          <div className="flex flex-wrap gap-2">
-            {['100', '250', '500', '1000', '2500'].map((q) => (
-              <button
-                key={q}
-                type="button"
-                onClick={() => setQuantity(q)}
-                className={`border-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                  quantity === q ? 'border-ocean bg-ocean/5 text-ocean' : 'border-gray-200 hover:border-ocean/50'
-                }`}
-              >
-                {parseInt(q).toLocaleString('fr-FR')} ex.
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Price display */}
-      {configCode && (
-        <div className="bg-sand rounded-2xl p-5">
-          {loadingPrice ? (
-            <p className="text-sm text-text-light">Calcul du prix en cours…</p>
-          ) : priceData?.error ? (
-            <p className="text-sm text-coral">{priceData.error}</p>
-          ) : priceData?.price_ttc ? (
-            <>
-              <p className="text-sm text-text-light mb-1">Prix total TTC</p>
-              <p className="text-4xl font-bold text-ocean">
-                {Number(priceData.price_ttc).toFixed(2).replace('.', ',')} €
-              </p>
-              <p className="text-xs text-text-lighter mt-1">Hors frais de livraison</p>
-            </>
-          ) : (
-            <p className="text-sm text-text-light">
-              Configuration enregistrée — demandez votre devis pour obtenir le prix.
-            </p>
-          )}
-        </div>
-      )}
 
       {/* CTA */}
       <Link
@@ -120,7 +56,7 @@ export default function ProductConfigurator({ prescriptIframeUrl, defaultQuantit
         {configCode ? 'Commander / Demander un devis' : 'Demander un devis gratuit'}
       </Link>
       <p className="text-center text-xs text-text-lighter">
-        Notre équipe vous répond sous 24h
+        Configurez vos options ci-dessus — le prix s&apos;affiche en direct. Notre équipe vous répond sous 24h.
       </p>
     </div>
   );

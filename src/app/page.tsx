@@ -143,11 +143,11 @@ export default function Home() {
             {/* Right — price highlight */}
             <div className="hidden md:flex flex-col items-center gap-4">
               <div className="bg-white rounded-2xl p-6 text-center shadow-2xl min-w-[200px]">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Dès seulement</p>
-                <p className="text-5xl font-black text-coral leading-none">9,90€</p>
-                <p className="text-sm text-gray-500 mt-1">le paquet de 100 flyers</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Configurez en ligne</p>
+                <p className="text-3xl font-black text-coral leading-none">Prix en direct</p>
+                <p className="text-sm text-gray-500 mt-1">tarifs usine, sans intermédiaire</p>
                 <Link
-                  href="/produits/flyers-tracts"
+                  href="/produits/carte-de-visite"
                   className="mt-4 block w-full text-center text-white font-bold py-2.5 rounded-lg text-sm transition-opacity hover:opacity-90"
                   style={{ background: '#43AA8B' }}
                 >
