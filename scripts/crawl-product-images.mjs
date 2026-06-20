@@ -37,6 +37,7 @@ const ORIGIN = 'https://www.realisaprint.com';
 const api_key_encoded = crypto.createHash('md5').update(api_key).digest('hex');
 const INTERVAL = Number(process.env.CRAWL_INTERVAL_MS || 15500);
 const LIMIT = process.env.CRAWL_LIMIT ? Number(process.env.CRAWL_LIMIT) : Infinity;
+const PERMISSIVE = !!process.env.CRAWL_PERMISSIVE;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -128,8 +129,15 @@ function extractImages(html) {
   const out = new Set();
   const push = (u) => { const a = absolutize(u); if (a) out.add(a); };
   for (const m of html.matchAll(/<img[^>]+(?:data-(?:src|original)|src)=["']([^"']+)["']/gi)) push(m[1]);
+  for (const m of html.matchAll(/<img[^>]+srcset=["']([^"']+)["']/gi)) {
+    for (const part of m[1].split(',')) { const u = part.trim().split(/\s+/)[0]; if (u) push(u); }
+  }
   for (const m of html.matchAll(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/gi)) push(m[1]);
   for (const m of html.matchAll(/background(?:-image)?\s*:\s*url\(["']?([^"')]+)["']?\)/gi)) push(m[1]);
+  // JSON-embedded image keys (JS variables, config payloads)
+  for (const m of html.matchAll(/"(?:src|url|image|thumbnail|visuel|preview|apercu)"\s*:\s*"([^"]+)"/gi)) push(m[1]);
+  // JS assignments like src = "..." or image: '...'
+  for (const m of html.matchAll(/\b(?:src|image)\s*[:=]\s*["']([^"']+\.(?:jpe?g|png|webp)[^"']*)["']/gi)) push(m[1]);
   return [...out];
 }
 
@@ -145,8 +153,10 @@ function score(url, slug) {
   return s;
 }
 
-function pickImage(candidates, slug) {
-  const ranked = candidates.map((u) => ({ u, s: score(u, slug) })).filter((c) => c.s > 0).sort((a, b) => b.s - a.s);
+function pickImage(candidates, slug, permissive = false) {
+  // In permissive mode accept any non-excluded image (score > -100); normal mode requires score > 0.
+  const threshold = permissive ? -100 : 0;
+  const ranked = candidates.map((u) => ({ u, s: score(u, slug) })).filter((c) => c.s > threshold).sort((a, b) => b.s - a.s);
   return ranked.length ? ranked[0].u : null;
 }
 
@@ -194,7 +204,7 @@ for (const [id, name] of entries) {
     let image = null;
     try {
       const html = await fetchPrescript(id, stock);
-      const best = pickImage(extractImages(html), slug);
+      const best = pickImage(extractImages(html), slug, PERMISSIVE);
       if (best) image = await downloadImage(best, `${IMG_DIR}/${slug}`);
     } catch (err) {
       console.warn(`  [${done}/${entries.length}] ${name}: image failed (${err.message})`);

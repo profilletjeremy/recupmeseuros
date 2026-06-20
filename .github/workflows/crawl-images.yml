@@ -13,6 +13,10 @@ on:
         description: 'Max number of products to crawl (blank = all)'
         required: false
         default: ''
+      permissive:
+        description: 'Accept any non-excluded image (use for products that returned nothing on first pass)'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -44,6 +48,7 @@ jobs:
           REALISAPRINT_SHOP_ID: '251'
           REALISAPRINT_API_KEY: ${{ secrets.REALISAPRINT_API_KEY }}
           CRAWL_LIMIT: ${{ github.event.inputs.limit }}
+          CRAWL_PERMISSIVE: ${{ github.event.inputs.permissive }}
 
       - name: Commit captured images
         run: |
