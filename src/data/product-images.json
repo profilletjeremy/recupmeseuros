@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T02:35:28.398Z",
+  "generatedAt": "2026-06-20T03:16:27.012Z",
   "products": {
     "20": {
       "slug": "carnet-autocopiant",
@@ -47,6 +47,420 @@
       "name": "Toile de peintre",
       "stock": "196",
       "image": "/product-previews/toile-de-peintre.webp"
+    },
+    "97": {
+      "slug": "adhesif-lettrage",
+      "name": "Adhésif lettrage",
+      "stock": "214",
+      "image": "/product-previews/adhesif-lettrage.webp"
+    },
+    "116": {
+      "slug": "impression-unitaire",
+      "name": "Impression unitaire",
+      "stock": "658",
+      "image": "/product-previews/impression-unitaire.jpg"
+    },
+    "120": {
+      "slug": "note-adhesive",
+      "name": "Note adhésive",
+      "stock": "664",
+      "image": "/product-previews/note-adhesive.webp"
+    },
+    "131": {
+      "slug": "drapeau",
+      "name": "Drapeau",
+      "stock": "673",
+      "image": "/product-previews/drapeau.webp"
+    },
+    "136": {
+      "slug": "billet-ticket",
+      "name": "Billet ticket",
+      "stock": "682",
+      "image": "/product-previews/billet-ticket.webp"
+    },
+    "137": {
+      "slug": "ruban-adhesif-rubalise",
+      "name": "Ruban adhésif rubalise",
+      "stock": "689",
+      "image": "/product-previews/ruban-adhesif-rubalise.webp"
+    },
+    "144": {
+      "slug": "papier-entete",
+      "name": "Papier entête",
+      "stock": "697",
+      "image": "/product-previews/papier-entete.webp"
+    },
+    "153": {
+      "slug": "set-de-table",
+      "name": "Set de table",
+      "stock": "711",
+      "image": "/product-previews/set-de-table.webp"
+    },
+    "160": {
+      "slug": "beachflag-arche",
+      "name": "Beachflag - Arche",
+      "stock": "717",
+      "image": "/product-previews/beachflag-arche.webp"
+    },
+    "161": {
+      "slug": "pochette-administrative",
+      "name": "Pochette administrative",
+      "stock": "719"
+    },
+    "162": {
+      "slug": "etiquettes-rouleau",
+      "name": "Etiquettes rouleau",
+      "stock": "723",
+      "image": "/product-previews/etiquettes-rouleau.webp"
+    },
+    "173": {
+      "slug": "pochette-rabat",
+      "name": "Pochette rabat",
+      "stock": "730",
+      "image": "/product-previews/pochette-rabat.webp"
+    },
+    "193": {
+      "slug": "papier-cadeau",
+      "name": "Papier cadeau",
+      "stock": "754",
+      "image": "/product-previews/papier-cadeau.webp"
+    },
+    "195": {
+      "slug": "enseigne",
+      "name": "Enseigne",
+      "stock": "760",
+      "image": "/product-previews/enseigne.webp"
+    },
+    "211": {
+      "slug": "produits-electoraux",
+      "name": "Produits électoraux",
+      "stock": "764",
+      "image": "/product-previews/produits-electoraux.jpg"
+    },
+    "215": {
+      "slug": "tapis",
+      "name": "Tapis",
+      "stock": "766",
+      "image": "/product-previews/tapis.webp"
+    },
+    "222": {
+      "slug": "display",
+      "name": "Display",
+      "stock": "781",
+      "image": "/product-previews/display.webp"
+    },
+    "223": {
+      "slug": "akilux-forex-alupanel-tole-tablette-carton-plume-alveolaire",
+      "name": "Akilux® - Forex® - Alupanel® - Tole-Tablette - Carton Plume - Alvéolaire",
+      "stock": "793",
+      "image": "/product-previews/akilux-forex-alupanel-tole-tablette-carton-plume-alveolaire.jpg"
+    },
+    "224": {
+      "slug": "dispositifs-protection",
+      "name": "Dispositifs protection",
+      "stock": "785",
+      "image": "/product-previews/dispositifs-protection.jpg"
+    },
+    "226": {
+      "slug": "papier-peint",
+      "name": "Papier peint",
+      "stock": "804",
+      "image": "/product-previews/papier-peint.webp"
+    },
+    "231": {
+      "slug": "affiche",
+      "name": "Affiche",
+      "stock": "838",
+      "image": "/product-previews/affiche.webp"
+    },
+    "238": {
+      "slug": "coffret-bouteille",
+      "name": "Coffret bouteille",
+      "stock": "843",
+      "image": "/product-previews/coffret-bouteille.webp"
+    },
+    "239": {
+      "slug": "carte-musicale",
+      "name": "Carte musicale",
+      "stock": "844",
+      "image": "/product-previews/carte-musicale.webp"
+    },
+    "248": {
+      "slug": "gobelet",
+      "name": "Gobelet",
+      "stock": "855",
+      "image": "/product-previews/gobelet.webp"
+    },
+    "252": {
+      "slug": "autocollant-grand-format",
+      "name": "Autocollant Grand Format",
+      "stock": "874"
+    },
+    "253": {
+      "slug": "carte-pvc",
+      "name": "Carte PVC",
+      "stock": "888",
+      "image": "/product-previews/carte-pvc.webp"
+    },
+    "257": {
+      "slug": "enveloppe",
+      "name": "Enveloppe",
+      "stock": "881",
+      "image": "/product-previews/enveloppe.webp"
+    },
+    "258": {
+      "slug": "mug-bouteille",
+      "name": "Mug bouteille",
+      "stock": "880",
+      "image": "/product-previews/mug-bouteille.webp"
+    },
+    "264": {
+      "slug": "textile",
+      "name": "Textile",
+      "stock": "895"
+    },
+    "272": {
+      "slug": "ballon-de-baudruche",
+      "name": "Ballon de baudruche",
+      "stock": "970",
+      "image": "/product-previews/ballon-de-baudruche.webp"
+    },
+    "274": {
+      "slug": "puzzle",
+      "name": "Puzzle",
+      "stock": "971",
+      "image": "/product-previews/puzzle.webp"
+    },
+    "275": {
+      "slug": "friandises-publicitaires",
+      "name": "Friandises publicitaires",
+      "stock": "972",
+      "image": "/product-previews/friandises-publicitaires.webp"
+    },
+    "276": {
+      "slug": "boule-a-neige",
+      "name": "Boule à neige",
+      "stock": "973",
+      "image": "/product-previews/boule-a-neige.webp"
+    },
+    "278": {
+      "slug": "prosp-marque-page-postale-voeux-invitation-menu-decoupe",
+      "name": "Prosp-marque page-postale-voeux-invitation-menu-decoupe ",
+      "stock": "975",
+      "image": "/product-previews/prosp-marque-page-postale-voeux-invitation-menu-decoupe.webp"
+    },
+    "284": {
+      "slug": "textile-casquettes-sacs",
+      "name": "Textile - Casquettes - Sacs",
+      "stock": "943"
+    },
+    "287": {
+      "slug": "film-transfert",
+      "name": "Film transfert",
+      "stock": "1050",
+      "image": "/product-previews/film-transfert.webp"
+    },
+    "288": {
+      "slug": "sous-bock",
+      "name": "Sous bock ",
+      "stock": "1052",
+      "image": "/product-previews/sous-bock.webp"
+    },
+    "289": {
+      "slug": "brochure",
+      "name": "Brochure",
+      "stock": "668"
+    },
+    "291": {
+      "slug": "calendrier-remborde",
+      "name": "Calendrier rembordé ",
+      "stock": "1069",
+      "image": "/product-previews/calendrier-remborde.webp"
+    },
+    "293": {
+      "slug": "porte-cles",
+      "name": "Porte clés",
+      "stock": "1070",
+      "image": "/product-previews/porte-cles.webp"
+    },
+    "295": {
+      "slug": "chiffon-lunette",
+      "name": "Chiffon lunette",
+      "stock": "1072",
+      "image": "/product-previews/chiffon-lunette.jpg"
+    },
+    "297": {
+      "slug": "carte-de-visite",
+      "name": "Carte de visite",
+      "stock": "1073",
+      "image": "/product-previews/carte-de-visite.webp"
+    },
+    "299": {
+      "slug": "enseigne-drapeau",
+      "name": "Enseigne Drapeau ",
+      "stock": "1077",
+      "image": "/product-previews/enseigne-drapeau.webp"
+    },
+    "303": {
+      "slug": "totem-carton",
+      "name": "Totem Carton",
+      "stock": "1082",
+      "image": "/product-previews/totem-carton.webp"
+    },
+    "305": {
+      "slug": "structure-jonc",
+      "name": "Structure jonc",
+      "stock": "782",
+      "image": "/product-previews/structure-jonc.webp"
+    },
+    "310": {
+      "slug": "totem-rigide",
+      "name": "Totem rigide",
+      "stock": "1095",
+      "image": "/product-previews/totem-rigide.webp"
+    },
+    "311": {
+      "slug": "trophees",
+      "name": "Trophées",
+      "stock": "1101",
+      "image": "/product-previews/trophees.jpg"
+    },
+    "319": {
+      "slug": "calendrier-mural-chevalet",
+      "name": "Calendrier mural-chevalet",
+      "stock": "848",
+      "image": "/product-previews/calendrier-mural-chevalet.webp"
+    },
+    "322": {
+      "slug": "calendrier-encolle",
+      "name": "Calendrier encollé",
+      "stock": "1135",
+      "image": "/product-previews/calendrier-encolle.webp"
+    },
+    "329": {
+      "slug": "brochure-spirale",
+      "name": "Brochure spirale",
+      "stock": "1141"
+    },
+    "333": {
+      "slug": "parapluie",
+      "name": "Parapluie",
+      "stock": "1160"
+    },
+    "334": {
+      "slug": "dos-carre-colle",
+      "name": "Dos Carré Collé",
+      "stock": "1178",
+      "image": "/product-previews/dos-carre-colle.webp"
+    },
+    "335": {
+      "slug": "bloc-notes",
+      "name": "Bloc-notes",
+      "stock": "1127",
+      "image": "/product-previews/bloc-notes.webp"
+    },
+    "337": {
+      "slug": "presse-a-chaud",
+      "name": "Presse à chaud",
+      "stock": "1173",
+      "image": "/product-previews/presse-a-chaud.jpg"
+    },
+    "341": {
+      "slug": "barriere-vauban",
+      "name": "Barriere Vauban",
+      "stock": "1204"
+    },
+    "346": {
+      "slug": "film-transfert-dtf-uv-objet",
+      "name": "Film transfert DTF UV objet",
+      "stock": "1209",
+      "image": "/product-previews/film-transfert-dtf-uv-objet.webp"
+    },
+    "347": {
+      "slug": "barnum",
+      "name": "Barnum",
+      "stock": "1217",
+      "image": "/product-previews/barnum.webp"
+    },
+    "348": {
+      "slug": "serviettes-tongs",
+      "name": "Serviettes - Tongs",
+      "stock": "1210"
+    },
+    "351": {
+      "slug": "moquette",
+      "name": "Moquette",
+      "stock": "1221",
+      "image": "/product-previews/moquette.webp"
+    },
+    "353": {
+      "slug": "sacs-kraft",
+      "name": "Sacs Kraft",
+      "stock": "1222"
+    },
+    "354": {
+      "slug": "agenda",
+      "name": "Agenda",
+      "stock": "837",
+      "image": "/product-previews/agenda.webp"
+    },
+    "356": {
+      "slug": "badge-bouton",
+      "name": "Badge bouton",
+      "stock": "7",
+      "image": "/product-previews/badge-bouton.webp"
+    },
+    "357": {
+      "slug": "bache",
+      "name": "Bache",
+      "stock": "1256",
+      "image": "/product-previews/bache.webp"
+    },
+    "359": {
+      "slug": "presentoirs-comptoir",
+      "name": "Présentoirs Comptoir",
+      "stock": "1242",
+      "image": "/product-previews/presentoirs-comptoir.webp"
+    },
+    "364": {
+      "slug": "produits-encapsules",
+      "name": "Produits encapsulés",
+      "stock": "1263",
+      "image": "/product-previews/produits-encapsules.webp"
+    },
+    "369": {
+      "slug": "depliant",
+      "name": "Dépliant",
+      "stock": "1266"
+    },
+    "370": {
+      "slug": "sticker",
+      "name": "Sticker",
+      "stock": "1270",
+      "image": "/product-previews/sticker.webp"
+    },
+    "402": {
+      "slug": "tatouage",
+      "name": "Tatouage",
+      "stock": "1276",
+      "image": "/product-previews/tatouage.webp"
+    },
+    "409": {
+      "slug": "ecusson",
+      "name": "Ecusson",
+      "stock": "1278"
+    },
+    "423": {
+      "slug": "guirlande",
+      "name": "Guirlande ",
+      "stock": "1290",
+      "image": "/product-previews/guirlande.webp"
+    },
+    "432": {
+      "slug": "sac-en-papier",
+      "name": "Sac en papier",
+      "stock": "1296",
+      "image": "/product-previews/sac-en-papier.webp"
     }
   }
 }
