@@ -2,7 +2,7 @@ name: Deploy KaribPrint to GitHub Pages
 
 on:
   push:
-    branches: [claude/caribbean-web-to-print-0722gb]
+    branches: [main, claude/caribbean-web-to-print-0722gb]
   workflow_dispatch:
 
 permissions:
