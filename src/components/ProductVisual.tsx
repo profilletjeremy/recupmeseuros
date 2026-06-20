@@ -147,9 +147,13 @@ export default function ProductVisual({ slug, category, className = '', children
 
   // Real Préscript preview image takes priority over the SVG mockup.
   if (image) {
+    // next/image (unoptimized) does NOT prepend basePath, so public/ assets must
+    // be prefixed manually to resolve under the GitHub Pages subpath.
+    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+    const src = image.startsWith('/') ? `${base}${image}` : image;
     return (
       <div className={`relative overflow-hidden flex items-center justify-center bg-white ${className}`}>
-        <Image src={image} alt={slug} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-3" unoptimized />
+        <Image src={src} alt={slug} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-3" unoptimized />
         {children}
       </div>
     );
