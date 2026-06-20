@@ -1,0 +1,29 @@
+name: Audit Realisaprint products
+
+# Manually-triggered diagnostic: dumps the full product list returned by the
+# Realisaprint API and diffs it against the committed crawl map so we can see
+# exactly which products (if any) are missing. Read the result in the job logs.
+# shop_id is provided at dispatch time (never committed to git).
+
+on:
+  workflow_dispatch:
+    inputs:
+      shop_id:
+        description: 'Realisaprint shop id'
+        required: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Audit products
+        run: node scripts/audit-products.mjs
+        env:
+          REALISAPRINT_SHOP_ID: ${{ github.event.inputs.shop_id }}
+          REALISAPRINT_API_KEY: ${{ secrets.REALISAPRINT_API_KEY }}
