@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T13:25:49.356Z",
+  "generatedAt": "2026-06-20T19:01:40.790Z",
   "products": {
     "20": {
       "slug": "carnet-autocopiant",
@@ -34,7 +34,8 @@
     "79": {
       "slug": "tampon",
       "name": "Tampon",
-      "stock": "144"
+      "stock": "144",
+      "image": "/product-previews/tampon.webp"
     },
     "88": {
       "slug": "tapis-de-souris",
@@ -105,7 +106,8 @@
     "161": {
       "slug": "pochette-administrative",
       "name": "Pochette administrative",
-      "stock": "719"
+      "stock": "719",
+      "image": "/product-previews/pochette-administrative.png"
     },
     "162": {
       "slug": "etiquettes-rouleau",
@@ -345,7 +347,8 @@
     "333": {
       "slug": "parapluie",
       "name": "Parapluie",
-      "stock": "1160"
+      "stock": "1160",
+      "image": "/product-previews/parapluie.jpg"
     },
     "334": {
       "slug": "dos-carre-colle",
@@ -385,7 +388,8 @@
     "348": {
       "slug": "serviettes-tongs",
       "name": "Serviettes - Tongs",
-      "stock": "1210"
+      "stock": "1210",
+      "image": "/product-previews/serviettes-tongs.webp"
     },
     "351": {
       "slug": "moquette",
