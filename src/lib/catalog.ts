@@ -13,6 +13,8 @@ export interface CatalogProduct {
   categoryLabel: string;
   emoji: string;
   configurations: CatalogConfiguration[];
+  /** basePath-relative path to a real Préscript preview image, when captured at build time. */
+  image?: string;
 }
 
 const catalog = catalogJson as {

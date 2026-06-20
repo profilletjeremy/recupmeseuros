@@ -70,6 +70,7 @@ export default function Home() {
         category: p.category,
         categoryLabel: p.categoryLabel,
         emoji: p.emoji,
+        image: p.image,
         priceFrom: undefined as number | undefined,
         badge: PRODUCT_BADGES[i % PRODUCT_BADGES.length],
         badgeColor: BADGE_COLORS[i % BADGE_COLORS.length],
@@ -77,7 +78,7 @@ export default function Home() {
       }))
     : getFeaturedProducts().slice(0, 8).map((p, i) => ({
         id: p.id, slug: p.slug, name: p.name, category: p.category,
-        categoryLabel: p.categoryLabel, emoji: p.emoji, priceFrom: p.priceFrom,
+        categoryLabel: p.categoryLabel, emoji: p.emoji, image: undefined as string | undefined, priceFrom: p.priceFrom,
         badge: PRODUCT_BADGES[i % PRODUCT_BADGES.length],
         badgeColor: BADGE_COLORS[i % BADGE_COLORS.length],
         feature: PRODUCT_FEATURES[i % PRODUCT_FEATURES.length],
@@ -86,14 +87,14 @@ export default function Home() {
   const moreProducts = useCatalog
     ? catalogProducts.slice(8, 16).map((p, i) => ({
         id: p.id, slug: p.slug, name: p.name, category: p.category,
-        categoryLabel: p.categoryLabel, emoji: p.emoji, priceFrom: undefined as number | undefined,
+        categoryLabel: p.categoryLabel, emoji: p.emoji, image: p.image, priceFrom: undefined as number | undefined,
         badge: PRODUCT_BADGES[(i + 8) % PRODUCT_BADGES.length],
         badgeColor: BADGE_COLORS[(i + 8) % BADGE_COLORS.length],
         feature: PRODUCT_FEATURES[(i + 8) % PRODUCT_FEATURES.length],
       }))
     : getPopularProducts().slice(0, 8).map((p, i) => ({
         id: p.id, slug: p.slug, name: p.name, category: p.category,
-        categoryLabel: p.categoryLabel, emoji: p.emoji, priceFrom: p.priceFrom,
+        categoryLabel: p.categoryLabel, emoji: p.emoji, image: undefined as string | undefined, priceFrom: p.priceFrom,
         badge: PRODUCT_BADGES[(i + 8) % PRODUCT_BADGES.length],
         badgeColor: BADGE_COLORS[(i + 8) % BADGE_COLORS.length],
         feature: PRODUCT_FEATURES[(i + 8) % PRODUCT_FEATURES.length],
@@ -202,7 +203,7 @@ export default function Home() {
                 >
                   {/* Product visual */}
                   <div className="relative">
-                    <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-48 w-full" />
+                    <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} image={product.image} className="h-48 w-full" />
                     <span
                       className="absolute top-3 left-3 text-white text-[10px] font-black px-2.5 py-1 rounded"
                       style={{ background: product.badgeColor }}
@@ -264,7 +265,7 @@ export default function Home() {
                     style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
                   >
                     <div className="relative">
-                      <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-48 w-full" />
+                      <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} image={product.image} className="h-48 w-full" />
                       <span
                         className="absolute top-3 left-3 text-white text-[10px] font-black px-2.5 py-1 rounded"
                         style={{ background: product.badgeColor }}

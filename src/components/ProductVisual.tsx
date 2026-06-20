@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface Props {
   slug: string;
@@ -6,6 +7,8 @@ interface Props {
   className?: string;
   children?: React.ReactNode;
   emoji?: string;
+  /** Real product preview image (basePath-relative). When set, it replaces the SVG mockup. */
+  image?: string;
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; accent: string; light: string }> = {
@@ -139,8 +142,18 @@ const PRODUCT_EMOJIS: Record<string, string> = {
   'mugs-personnalises': '☕',
 };
 
-export default function ProductVisual({ slug, category, className = '', children, emoji }: Props) {
+export default function ProductVisual({ slug, category, className = '', children, emoji, image }: Props) {
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.communication;
+
+  // Real Préscript preview image takes priority over the SVG mockup.
+  if (image) {
+    return (
+      <div className={`relative overflow-hidden flex items-center justify-center bg-white ${className}`}>
+        <Image src={image} alt={slug} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-3" unoptimized />
+        {children}
+      </div>
+    );
+  }
 
   let inner: React.ReactNode;
   switch (slug) {

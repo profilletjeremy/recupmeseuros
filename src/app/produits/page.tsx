@@ -16,6 +16,7 @@ interface GridProduct {
   category: string;
   categoryLabel: string;
   emoji: string;
+  image?: string;
   description: string;
   priceFrom?: number;
   deliveryDays?: string;
@@ -32,6 +33,7 @@ function toGridProducts(): GridProduct[] {
       category: p.category,
       categoryLabel: p.categoryLabel,
       emoji: p.emoji,
+      image: p.image,
       description: `Impression ${p.name.toLowerCase()} de qualité professionnelle, livrée par avion dans tous les DOM-COM.`,
     }));
   }
@@ -152,7 +154,7 @@ function ProduitsGrid() {
             >
               {/* Visual */}
               <div className="relative">
-                <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-44 w-full" />
+                <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} image={product.image} className="h-44 w-full" />
                 <span
                   className="absolute top-3 left-3 text-white text-[10px] font-black px-2 py-0.5 rounded"
                   style={{ background: badgeColor }}

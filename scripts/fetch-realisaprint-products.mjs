@@ -2,14 +2,23 @@
 /**
  * Fetches the Realisaprint product catalog + configurations and saves
  * them to src/data/realisaprint-catalog.json for use at build time.
+ *
+ * Also attempts to retrieve a real product preview image from the
+ * Préscript configurator for each product and downloads it into
+ * public/product-previews/<slug>.<ext>. When an image is captured, its
+ * path is stored on the catalog product as `image`; otherwise the UI
+ * falls back to the SVG mockups.
  */
 
 import { writeFileSync, mkdirSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, '../src/data/realisaprint-catalog.json');
+const IMG_DIR = resolve(__dirname, '../public/product-previews');
+const IMG_PUBLIC_PREFIX = '/product-previews';
 
 const shop_id = process.env.REALISAPRINT_SHOP_ID;
 const api_key = process.env.REALISAPRINT_API_KEY;
@@ -20,6 +29,8 @@ if (!shop_id || !api_key) {
 }
 
 const BASE = 'https://www.realisaprint.com/api/';
+const ORIGIN = 'https://www.realisaprint.com';
+const api_key_encoded = crypto.createHash('md5').update(api_key).digest('hex');
 
 async function rpPost(endpoint, params = {}) {
   const body = new URLSearchParams({ shop_id, api_key, ...params });
@@ -88,7 +99,6 @@ const EMOJI_MAP = [
   [/akilux|forex|alupanel|alvéolaire/i, '🪟'],
   [/impression unitaire/i, '🖨️'],
   [/dispositif|protection/i, '🛡️'],
-  [/set de table/i, '🍽️'],
 ];
 
 function categorize(name) {
@@ -116,14 +126,85 @@ function parseConfigurations(raw) {
     }).filter(Boolean);
   }
   if (typeof raw === 'object') {
-    // Could be { "id1": "name1", ... } or { configurations: [...] }
     if (raw.configurations) return parseConfigurations(raw.configurations);
     return Object.entries(raw).map(([id, name]) => ({ id, name: String(name) }));
   }
   return [];
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Image discovery ─────────────────────────────────────────────────────────
+
+function absolutize(url) {
+  if (!url) return null;
+  url = url.trim().replace(/&amp;/g, '&');
+  if (url.startsWith('data:')) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('//')) return 'https:' + url;
+  if (url.startsWith('/')) return ORIGIN + url;
+  return ORIGIN + '/' + url;
+}
+
+const IMG_EXCLUDE = /logo|sprite|icon|favicon|pixel|blank|spacer|placeholder|flag-|drapeau-fr|loader|spinner/i;
+const IMG_EXT = /\.(jpe?g|png|webp)(\?|$)/i;
+
+function extractImageCandidates(html) {
+  const candidates = new Set();
+  const push = (u) => { const a = absolutize(u); if (a) candidates.add(a); };
+
+  // og:image / twitter:image
+  for (const m of html.matchAll(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/gi)) push(m[1]);
+  // <img src>
+  for (const m of html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)) push(m[1]);
+  // data-src / lazy loading
+  for (const m of html.matchAll(/<img[^>]+data-(?:src|original)=["']([^"']+)["']/gi)) push(m[1]);
+  // css background-image url(...)
+  for (const m of html.matchAll(/background(?:-image)?\s*:\s*url\(["']?([^"')]+)["']?\)/gi)) push(m[1]);
+
+  return [...candidates];
+}
+
+function scoreCandidate(url) {
+  let score = 0;
+  if (IMG_EXCLUDE.test(url)) return -100;
+  if (!IMG_EXT.test(url)) score -= 5;
+  if (/og[-_]?image|preview|visuel|product|produit|apercu|thumb|upload|media|template|model/i.test(url)) score += 10;
+  if (/realisaprint/i.test(url)) score += 3;
+  if (/\.(jpe?g|png|webp)/i.test(url)) score += 3;
+  return score;
+}
+
+function pickBestImage(candidates) {
+  const ranked = candidates
+    .map((u) => ({ u, s: scoreCandidate(u) }))
+    .filter((c) => c.s > -50)
+    .sort((a, b) => b.s - a.s);
+  return ranked.length ? ranked[0].u : null;
+}
+
+async function fetchPrescriptHtml(productId, stock) {
+  const params = new URLSearchParams({
+    shop_id, api_key_encoded, product: productId, stock, margin: '1', country: 'GP',
+  });
+  const url = `${BASE}get_prescript?iframe&${params.toString()}`;
+  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (catalog-builder)' } });
+  if (!res.ok) throw new Error(`prescript HTTP ${res.status}`);
+  return res.text();
+}
+
+async function downloadImage(url, destBase) {
+  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (catalog-builder)' } });
+  if (!res.ok) throw new Error(`img HTTP ${res.status}`);
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.startsWith('image/')) throw new Error(`not an image (${ct})`);
+  const ext = ct.includes('png') ? 'png' : ct.includes('webp') ? 'webp' : 'jpg';
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length < 1024) throw new Error(`too small (${buf.length}b)`);
+  const dest = `${destBase}.${ext}`;
+  writeFileSync(dest, buf);
+  return `${IMG_PUBLIC_PREFIX}/${dest.split('/').pop()}`;
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
 
 console.log('Fetching Realisaprint product catalog…');
 
@@ -139,7 +220,11 @@ const rawProducts = productsResponse?.products ?? {};
 const productEntries = Object.entries(rawProducts);
 console.log(`Got ${productEntries.length} products`);
 
+mkdirSync(IMG_DIR, { recursive: true });
 const catalog = { fetchedAt: new Date().toISOString(), products: {} };
+
+let imageCount = 0;
+let diagBudget = 3; // verbose diagnostics for first few products
 
 for (const [id, name] of productEntries) {
   const slug = slugify(String(name));
@@ -149,15 +234,38 @@ for (const [id, name] of productEntries) {
   let configurations = [];
   try {
     const raw = await rpPost('configurations', { product: id });
-    console.log(`  [${id}] ${name} → configs: ${JSON.stringify(raw).slice(0, 150)}`);
     configurations = parseConfigurations(raw);
   } catch (err) {
     console.warn(`  ⚠ No configs for ${id} (${name}): ${err.message}`);
   }
 
-  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations };
+  // Try to capture a real preview image from the Préscript configurator.
+  let image = null;
+  const stock = configurations[0]?.id;
+  if (stock) {
+    try {
+      const html = await fetchPrescriptHtml(id, stock);
+      const candidates = extractImageCandidates(html);
+      const best = pickBestImage(candidates);
+      if (diagBudget > 0) {
+        console.log(`  🔎 [${id}] ${name}: prescript html=${html.length}b, candidates=${candidates.length}`);
+        console.log(`     top candidates: ${candidates.slice(0, 5).join(' | ') || '(none)'}`);
+        console.log(`     picked: ${best || '(none)'}`);
+        diagBudget--;
+      }
+      if (best) {
+        image = await downloadImage(best, `${IMG_DIR}/${slug}`);
+        imageCount++;
+        console.log(`  ✓ image for ${slug}: ${image}`);
+      }
+    } catch (err) {
+      console.warn(`  ⚠ No preview image for ${id} (${name}): ${err.message}`);
+    }
+  }
+
+  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations, ...(image ? { image } : {}) };
 }
 
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(catalog, null, 2), 'utf-8');
-console.log(`✓ Catalog saved: ${Object.keys(catalog.products).length} products`);
+console.log(`✓ Catalog saved: ${Object.keys(catalog.products).length} products, ${imageCount} with preview images`);
