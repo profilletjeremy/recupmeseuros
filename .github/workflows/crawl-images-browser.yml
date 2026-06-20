@@ -1,0 +1,54 @@
+name: Crawl product images (browser)
+
+# Fallback crawl that renders each remaining product's Préscript configurator in
+# a real headless Chromium and downloads the preview image from inside the page
+# context (correct session/referer → no HTTP 403). Only touches products that
+# still have a stock id but no image. Commits the results back to the branch.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crawl-images-browser
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Crawl product images (browser)
+        run: node scripts/crawl-images-browser.mjs
+        env:
+          REALISAPRINT_SHOP_ID: '251'
+          REALISAPRINT_API_KEY: ${{ secrets.REALISAPRINT_API_KEY }}
+
+      - name: Commit captured images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/product-previews src/data/product-images.json
+          if git diff --staged --quiet; then
+            echo "No new images to commit."
+          else
+            git commit -m "chore: capture remaining product images (browser crawl)"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

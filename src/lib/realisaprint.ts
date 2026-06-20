@@ -100,9 +100,9 @@ export async function getIsoCountries() {
  * The raw api_key is never sent to the client.
  *
  * `margin` is the reseller markup applied by Préscript on top of the raw API price:
- * displayed price = base price × (1 + margin). margin=0 shows the raw API price; the
- * previous margin=1 doubled every price. Override with REALISAPRINT_MARGIN to apply a
- * real reseller margin (e.g. '0.3' for +30%) without a code change.
+ * displayed price = base price × (1 + margin). This is a dropshipping store, so the
+ * default is margin=1 (×2) — the reseller margin. Override with REALISAPRINT_MARGIN
+ * (e.g. '0' for raw API price, '0.5' for +50%) without a code change.
  */
 export function getPrescriptIframeUrl(
   realisaprintProductId: string,
@@ -111,7 +111,7 @@ export function getPrescriptIframeUrl(
 ): string {
   const { shop_id, api_key } = credentials();
   const api_key_encoded = crypto.createHash('md5').update(api_key).digest('hex');
-  const margin = process.env.REALISAPRINT_MARGIN ?? '0';
+  const margin = process.env.REALISAPRINT_MARGIN ?? '1';
   const params = new URLSearchParams({
     shop_id,
     api_key_encoded,

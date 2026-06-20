@@ -145,7 +145,7 @@ export default function Home() {
               <div className="bg-white rounded-2xl p-6 text-center shadow-2xl min-w-[200px]">
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Configurez en ligne</p>
                 <p className="text-3xl font-black text-coral leading-none">Prix en direct</p>
-                <p className="text-sm text-gray-500 mt-1">tarifs usine, sans intermédiaire</p>
+                <p className="text-sm text-gray-500 mt-1">devis instantané, livré aux Antilles</p>
                 <Link
                   href="/produits/carte-de-visite"
                   className="mt-4 block w-full text-center text-white font-bold py-2.5 rounded-lg text-sm transition-opacity hover:opacity-90"
