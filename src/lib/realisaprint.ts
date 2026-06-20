@@ -98,6 +98,11 @@ export async function getIsoCountries() {
  * Builds the Préscript iFrame URL for the product configurator.
  * The api_key_encoded is the MD5 hash of the API key — safe to include in client-visible URLs.
  * The raw api_key is never sent to the client.
+ *
+ * `margin` is the reseller markup applied by Préscript on top of the raw API price:
+ * displayed price = base price × (1 + margin). margin=0 shows the raw API price; the
+ * previous margin=1 doubled every price. Override with REALISAPRINT_MARGIN to apply a
+ * real reseller margin (e.g. '0.3' for +30%) without a code change.
  */
 export function getPrescriptIframeUrl(
   realisaprintProductId: string,
@@ -106,12 +111,13 @@ export function getPrescriptIframeUrl(
 ): string {
   const { shop_id, api_key } = credentials();
   const api_key_encoded = crypto.createHash('md5').update(api_key).digest('hex');
+  const margin = process.env.REALISAPRINT_MARGIN ?? '0';
   const params = new URLSearchParams({
     shop_id,
     api_key_encoded,
     product: realisaprintProductId,
     stock: realisaprintStock,
-    margin: '1',
+    margin,
     country,
   });
   return `${BASE_URL}get_prescript?iframe&${params.toString()}`;

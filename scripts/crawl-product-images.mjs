@@ -72,7 +72,7 @@ async function apiPost(endpoint, params = {}) {
 
 async function fetchPrescript(productId, stock) {
   await paced();
-  const params = new URLSearchParams({ shop_id, api_key_encoded, product: productId, stock, margin: '1', country: 'GP' });
+  const params = new URLSearchParams({ shop_id, api_key_encoded, product: productId, stock, margin: '0', country: 'GP' });
   const url = `${BASE}get_prescript?iframe&${params.toString()}`;
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': ORIGIN + '/' } });
