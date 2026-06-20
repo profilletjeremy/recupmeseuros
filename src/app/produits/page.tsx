@@ -9,7 +9,6 @@ import ProductVisual from '@/components/ProductVisual';
 import { products as staticProducts, categories } from '@/data/products';
 import { getCatalogProducts, hasCatalog, type CatalogProduct } from '@/lib/catalog';
 
-// Unified shape used in the grid
 interface GridProduct {
   id: string;
   slug: string;
@@ -51,6 +50,9 @@ function toGridProducts(): GridProduct[] {
   }));
 }
 
+const BADGE_LABELS = ['NOUVEAU !', 'BEST-SELLER !', 'EN TENDANCE !', 'PRIX FOU !'];
+const BADGE_COLORS = ['#43AA8B', '#F47920', '#0077B6', '#E94B3C'];
+
 function ProduitsGrid() {
   const searchParams = useSearchParams();
   const [active, setActive] = useState<string>('all');
@@ -85,97 +87,107 @@ function ProduitsGrid() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActive('all')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              active === 'all'
-                ? 'bg-ocean text-white shadow-md'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-ocean hover:text-ocean'
-            }`}
-          >
-            Tout ({allProducts.length})
-          </button>
-          {categories.filter((cat) => activeCategoryIds.has(cat.id)).map((cat) => {
-            const count = allProducts.filter((p) => p.category === cat.id).length;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActive(cat.id)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  active === cat.id
-                    ? 'bg-ocean text-white shadow-md'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:border-ocean hover:text-ocean'
-                }`}
-              >
-                <span>{cat.emoji}</span>
-                <span>{cat.label}</span>
-                <span className="opacity-60">({count})</span>
-              </button>
-            );
-          })}
+      {/* Filter bar — Realisaprint style */}
+      <div className="bg-white border-b border-gray-100 py-3">
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setActive('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+                active === 'all'
+                  ? 'text-white border-coral'
+                  : 'bg-white border-gray-200 text-gray-600 hover:border-coral hover:text-coral'
+              }`}
+              style={active === 'all' ? { background: '#E94B3C' } : {}}
+            >
+              Tous ({allProducts.length})
+            </button>
+            {categories.filter((cat) => activeCategoryIds.has(cat.id)).map((cat) => {
+              const count = allProducts.filter((p) => p.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActive(cat.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+                    active === cat.id
+                      ? 'text-white border-coral'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-coral hover:text-coral'
+                  }`}
+                  style={active === cat.id ? { background: '#E94B3C' } : {}}
+                >
+                  <span>{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                  <span className="opacity-70">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+          {!useCatalog && (
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as typeof sort)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 text-gray-600 focus:outline-none focus:border-coral transition-colors flex-shrink-0"
+            >
+              <option value="default">Popularité</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+            </select>
+          )}
         </div>
-        {!useCatalog && (
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as typeof sort)}
-            className="px-4 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 focus:outline-none focus:border-ocean transition-colors flex-shrink-0"
-          >
-            <option value="default">Popularité</option>
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-          </select>
-        )}
       </div>
 
-      <p className="text-sm text-gray-400 mb-6">{filtered.length} produit{filtered.length > 1 ? 's' : ''}</p>
+      <p className="text-sm text-gray-400 my-4">{filtered.length} produit{filtered.length > 1 ? 's' : ''} trouvé{filtered.length > 1 ? 's' : ''}</p>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {filtered.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-ocean/20 transition-all duration-300 hover:-translate-y-1 flex flex-col group"
-          >
-            <Link href={`/produits/${product.slug}`} className="block">
-              <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-44 relative">
-                {product.popular && (
-                  <div className="absolute top-3 left-3 bg-coral text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
-                    Best-seller
-                  </div>
-                )}
-              </ProductVisual>
-            </Link>
-            <div className="p-4 flex flex-col flex-1">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{product.categoryLabel}</p>
-              <Link href={`/produits/${product.slug}`}>
-                <h2 className="font-black text-gray-900 mt-1 mb-1 group-hover:text-ocean transition-colors text-sm leading-snug">{product.name}</h2>
-              </Link>
-              <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed flex-1">{product.description}</p>
-              <div className="flex items-end justify-between mb-3">
-                <div>
-                  {product.priceFrom ? (
-                    <>
-                      <p className="text-[10px] text-gray-400">À partir de</p>
-                      <p className="font-black text-ocean text-xl leading-tight">{product.priceFrom.toFixed(2).replace('.', ',')} €</p>
-                    </>
-                  ) : (
-                    <p className="text-xs font-semibold text-ocean">Prix selon configuration</p>
-                  )}
-                </div>
-                {product.deliveryDays && (
-                  <p className="text-[10px] text-gray-400">{product.deliveryDays}</p>
-                )}
+      {/* Product grid — Realisaprint style */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filtered.map((product, i) => {
+          const badgeLabel = product.popular ? 'BEST-SELLER !' : BADGE_LABELS[i % BADGE_LABELS.length];
+          const badgeColor = product.popular ? '#F47920' : BADGE_COLORS[i % BADGE_COLORS.length];
+          return (
+            <Link
+              key={product.id}
+              href={`/produits/${product.slug}`}
+              className="group bg-white rounded-lg border border-gray-100 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col"
+              style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
+            >
+              {/* Visual */}
+              <div className="relative">
+                <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-44 w-full" />
+                <span
+                  className="absolute top-3 left-3 text-white text-[10px] font-black px-2 py-0.5 rounded"
+                  style={{ background: badgeColor }}
+                >
+                  {badgeLabel}
+                </span>
               </div>
-              <Link
-                href={`/produits/${product.slug}`}
-                className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
-              >
-                {useCatalog ? 'Configurer →' : 'Commander →'}
-              </Link>
-            </div>
-          </div>
-        ))}
+              {/* Content */}
+              <div className="p-4 flex flex-col flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#999' }}>{product.categoryLabel}</p>
+                <h2 className="font-bold text-gray-900 text-sm leading-snug mb-2 group-hover:text-coral transition-colors">{product.name}</h2>
+                {product.priceFrom ? (
+                  <p className="text-sm text-gray-600 mb-3">
+                    dès <span className="font-black text-gray-900 text-lg">{product.priceFrom.toFixed(2).replace('.', ',')}€</span>{' '}
+                    <span className="text-gray-400 text-xs">l&apos;unité</span>
+                  </p>
+                ) : (
+                  <p className="text-xs font-bold mb-3" style={{ color: '#0077B6' }}>Prix selon configuration</p>
+                )}
+                <div className="flex items-center gap-1.5 mb-3 mt-auto">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#43AA8B' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-xs text-gray-500">Livraison DOM-COM incluse</span>
+                </div>
+                <button
+                  className="block w-full text-center text-white font-bold text-sm py-2.5 rounded-lg transition-opacity hover:opacity-90"
+                  style={{ background: '#E94B3C' }}
+                >
+                  {useCatalog ? 'Configurer →' : 'Commander →'}
+                </button>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </>
   );
@@ -186,24 +198,26 @@ export default function ProduitsPage() {
     <>
       <Header />
       <main className="flex-1 bg-gray-50">
+        {/* Page header */}
         <div className="bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            <nav className="text-xs text-gray-400 mb-3 flex items-center gap-1.5">
-              <Link href="/" className="hover:text-ocean transition-colors">Accueil</Link>
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <nav className="text-xs text-gray-400 mb-2 flex items-center gap-1.5">
+              <Link href="/" className="hover:text-coral transition-colors">Accueil</Link>
               <span>/</span>
-              <span className="text-gray-700">Produits</span>
+              <span className="text-gray-600">Produits</span>
             </nav>
             <h1 className="text-2xl md:text-3xl font-black text-gray-900 mb-1">Nos produits d&apos;impression</h1>
             <p className="text-gray-500 text-sm">Impression professionnelle livrée par avion dans tous les DOM-COM</p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <Suspense fallback={<div className="text-sm text-gray-400 py-4">Chargement…</div>}>
             <ProduitsGrid />
           </Suspense>
 
-          <div className="mt-14 bg-white rounded-3xl p-8 text-center border border-gray-100 shadow-sm">
+          {/* Custom quote CTA */}
+          <div className="mt-12 bg-white rounded-xl p-8 text-center border border-gray-100" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
             <p className="text-2xl mb-3">🖨️</p>
             <h3 className="text-lg font-black text-gray-900 mb-2">Vous ne trouvez pas ce qu&apos;il vous faut ?</h3>
             <p className="text-gray-500 text-sm mb-5 max-w-md mx-auto">
@@ -211,7 +225,8 @@ export default function ProduitsPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 bg-coral text-white font-bold px-7 py-3.5 rounded-xl hover:bg-coral-dark transition-colors shadow-md"
+              className="inline-flex items-center gap-2 text-white font-bold px-7 py-3.5 rounded-lg transition-opacity hover:opacity-90 shadow-md"
+              style={{ background: '#E94B3C' }}
             >
               Demander un devis personnalisé →
             </Link>
