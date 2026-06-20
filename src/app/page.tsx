@@ -3,7 +3,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Testimonials from '@/components/Testimonials';
 import ProductVisual from '@/components/ProductVisual';
-import { getFeaturedProducts, getPopularProducts, categories, products } from '@/data/products';
+import { getFeaturedProducts, getPopularProducts, categories, products as staticProducts } from '@/data/products';
+import { getCatalogProducts, hasCatalog } from '@/lib/catalog';
 
 const BENEFITS = [
   {
@@ -58,9 +59,24 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 export default function Home() {
-  const featuredProducts = getFeaturedProducts();
-  const popularProducts = getPopularProducts();
-  const allProducts = products;
+  const useCatalog = hasCatalog();
+  const catalogProducts = useCatalog ? getCatalogProducts() : [];
+
+  const displayProducts = useCatalog
+    ? catalogProducts.slice(0, 8).map((p) => ({
+        id: p.id, slug: p.slug, name: p.name, category: p.category,
+        categoryLabel: p.categoryLabel, emoji: p.emoji,
+        description: `Impression ${p.name.toLowerCase()} de qualité professionnelle.`,
+        priceFrom: undefined as number | undefined,
+        popular: false, featured: false,
+      }))
+    : getFeaturedProducts();
+
+  const heroProducts = useCatalog ? displayProducts.slice(0, 4) : getFeaturedProducts().slice(0, 4);
+  const popularProducts = useCatalog ? [] : getPopularProducts();
+  const allProducts = useCatalog ? catalogProducts : staticProducts;
+
+  const categoryCount = (catId: string) => allProducts.filter((p) => p.category === catId).length;
 
   return (
     <>
@@ -108,16 +124,20 @@ export default function Home() {
 
             {/* Right — product mosaic */}
             <div className="hidden lg:grid grid-cols-2 gap-3">
-              {featuredProducts.slice(0, 4).map((p) => (
+              {heroProducts.map((p) => (
                 <Link
                   key={p.id}
                   href={`/produits/${p.slug}`}
                   className="group rounded-2xl overflow-hidden border border-gray-100 hover:border-ocean/30 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white"
                 >
-                  <ProductVisual slug={p.slug} category={p.category} className="h-36" />
+                  <ProductVisual slug={p.slug} category={p.category} emoji={'emoji' in p ? (p as {emoji?: string}).emoji : undefined} className="h-36" />
                   <div className="p-3 bg-white">
                     <p className="font-bold text-sm text-gray-800 group-hover:text-ocean transition-colors truncate">{p.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">À partir de <span className="text-ocean font-bold">{p.priceFrom.toFixed(2).replace('.', ',')} €</span></p>
+                    {p.priceFrom ? (
+                      <p className="text-xs text-gray-400 mt-0.5">À partir de <span className="text-ocean font-bold">{p.priceFrom.toFixed(2).replace('.', ',')} €</span></p>
+                    ) : (
+                      <p className="text-xs text-ocean font-semibold mt-0.5">Configurer →</p>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -153,7 +173,7 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((cat) => {
-                const count = allProducts.filter((p) => p.category === cat.id).length;
+                const count = categoryCount(cat.id);
                 const color = CATEGORY_IMAGES[cat.id] ?? '#0077B6';
                 return (
                   <Link
@@ -192,10 +212,10 @@ export default function Home() {
               </Link>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {featuredProducts.map((product) => (
+              {displayProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-ocean/20 transition-all duration-300 hover:-translate-y-1 flex flex-col group">
                   <Link href={`/produits/${product.slug}`}>
-                    <ProductVisual slug={product.slug} category={product.category} className="h-48 relative">
+                    <ProductVisual slug={product.slug} category={product.category} emoji={'emoji' in product ? (product as {emoji?: string}).emoji : undefined} className="h-48 relative">
                       {product.popular && (
                         <div className="absolute top-3 left-3 bg-coral text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
                           Best-seller
@@ -210,25 +230,29 @@ export default function Home() {
                     </Link>
                     <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed flex-1">{product.description}</p>
                     <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <p className="text-[10px] text-gray-400">À partir de</p>
-                        <p className="font-black text-ocean text-xl leading-tight">{product.priceFrom.toFixed(2).replace('.', ',')} €</p>
-                      </div>
+                      {product.priceFrom ? (
+                        <div>
+                          <p className="text-[10px] text-gray-400">À partir de</p>
+                          <p className="font-black text-ocean text-xl leading-tight">{product.priceFrom.toFixed(2).replace('.', ',')} €</p>
+                        </div>
+                      ) : (
+                        <p className="text-xs font-semibold text-ocean">Prix selon configuration</p>
+                      )}
                       <span className="text-[10px] text-palm font-bold bg-green-50 border border-green-100 px-2 py-1 rounded-lg">✈️ DOM-COM</span>
                     </div>
                     <Link
                       href={`/produits/${product.slug}`}
                       className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
                     >
-                      Commander →
+                      {product.priceFrom ? 'Commander →' : 'Configurer →'}
                     </Link>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Other products strip */}
-            {popularProducts.filter((p) => !p.featured).length > 0 && (
+            {/* Other products strip — static only */}
+            {!useCatalog && popularProducts.filter((p) => !p.featured).length > 0 && (
               <div className="mt-8 flex flex-wrap gap-3">
                 {popularProducts.filter((p) => !p.featured).map((product) => (
                   <Link
