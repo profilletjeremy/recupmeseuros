@@ -6,19 +6,65 @@ import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductVisual from '@/components/ProductVisual';
-import { products, categories } from '@/data/products';
+import { products as staticProducts, categories } from '@/data/products';
+import { getCatalogProducts, hasCatalog, type CatalogProduct } from '@/lib/catalog';
+
+// Unified shape used in the grid
+interface GridProduct {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  categoryLabel: string;
+  emoji: string;
+  description: string;
+  priceFrom?: number;
+  deliveryDays?: string;
+  popular?: boolean;
+  featured?: boolean;
+}
+
+function toGridProducts(): GridProduct[] {
+  if (hasCatalog()) {
+    return getCatalogProducts().map((p: CatalogProduct) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      category: p.category,
+      categoryLabel: p.categoryLabel,
+      emoji: p.emoji,
+      description: `Impression ${p.name.toLowerCase()} de qualité professionnelle, livrée par avion dans tous les DOM-COM.`,
+    }));
+  }
+  return staticProducts.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    category: p.category,
+    categoryLabel: p.categoryLabel,
+    emoji: p.emoji,
+    description: p.description,
+    priceFrom: p.priceFrom,
+    deliveryDays: p.deliveryDays,
+    popular: p.popular,
+    featured: p.featured,
+  }));
+}
 
 function ProduitsGrid() {
   const searchParams = useSearchParams();
   const [active, setActive] = useState<string>('all');
-  const [sort, setSort] = useState<'popular' | 'price-asc' | 'price-desc'>('popular');
+  const [sort, setSort] = useState<'default' | 'price-asc' | 'price-desc'>('default');
 
   useEffect(() => {
     const cat = searchParams.get('categorie');
     if (cat) setActive(cat);
   }, [searchParams]);
 
-  const filtered = products
+  const allProducts = toGridProducts();
+  const useCatalog = hasCatalog();
+
+  const filtered = allProducts
     .filter((p) => active === 'all' || p.category === active)
     .filter((p) => {
       const q = searchParams.get('q');
@@ -27,10 +73,15 @@ function ProduitsGrid() {
     })
     .slice()
     .sort((a, b) => {
-      if (sort === 'price-asc') return a.priceFrom - b.priceFrom;
-      if (sort === 'price-desc') return b.priceFrom - a.priceFrom;
-      return (b.popular ? 1 : 0) - (a.popular ? 1 : 0) || (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+      if (!useCatalog) {
+        if (sort === 'price-asc') return (a.priceFrom ?? 0) - (b.priceFrom ?? 0);
+        if (sort === 'price-desc') return (b.priceFrom ?? 0) - (a.priceFrom ?? 0);
+        return (b.popular ? 1 : 0) - (a.popular ? 1 : 0) || (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+      }
+      return a.name.localeCompare(b.name, 'fr');
     });
+
+  const activeCategoryIds = new Set(allProducts.map((p) => p.category));
 
   return (
     <>
@@ -44,10 +95,10 @@ function ProduitsGrid() {
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-ocean hover:text-ocean'
             }`}
           >
-            Tout ({products.length})
+            Tout ({allProducts.length})
           </button>
-          {categories.map((cat) => {
-            const count = products.filter((p) => p.category === cat.id).length;
+          {categories.filter((cat) => activeCategoryIds.has(cat.id)).map((cat) => {
+            const count = allProducts.filter((p) => p.category === cat.id).length;
             return (
               <button
                 key={cat.id}
@@ -65,15 +116,17 @@ function ProduitsGrid() {
             );
           })}
         </div>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as typeof sort)}
-          className="px-4 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 focus:outline-none focus:border-ocean transition-colors flex-shrink-0"
-        >
-          <option value="popular">Popularité</option>
-          <option value="price-asc">Prix croissant</option>
-          <option value="price-desc">Prix décroissant</option>
-        </select>
+        {!useCatalog && (
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="px-4 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 focus:outline-none focus:border-ocean transition-colors flex-shrink-0"
+          >
+            <option value="default">Popularité</option>
+            <option value="price-asc">Prix croissant</option>
+            <option value="price-desc">Prix décroissant</option>
+          </select>
+        )}
       </div>
 
       <p className="text-sm text-gray-400 mb-6">{filtered.length} produit{filtered.length > 1 ? 's' : ''}</p>
@@ -85,7 +138,7 @@ function ProduitsGrid() {
             className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-xl hover:border-ocean/20 transition-all duration-300 hover:-translate-y-1 flex flex-col group"
           >
             <Link href={`/produits/${product.slug}`} className="block">
-              <ProductVisual slug={product.slug} category={product.category} className="h-44 relative">
+              <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="h-44 relative">
                 {product.popular && (
                   <div className="absolute top-3 left-3 bg-coral text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
                     Best-seller
@@ -101,16 +154,24 @@ function ProduitsGrid() {
               <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed flex-1">{product.description}</p>
               <div className="flex items-end justify-between mb-3">
                 <div>
-                  <p className="text-[10px] text-gray-400">À partir de</p>
-                  <p className="font-black text-ocean text-xl leading-tight">{product.priceFrom.toFixed(2).replace('.', ',')} €</p>
+                  {product.priceFrom ? (
+                    <>
+                      <p className="text-[10px] text-gray-400">À partir de</p>
+                      <p className="font-black text-ocean text-xl leading-tight">{product.priceFrom.toFixed(2).replace('.', ',')} €</p>
+                    </>
+                  ) : (
+                    <p className="text-xs font-semibold text-ocean">Prix selon configuration</p>
+                  )}
                 </div>
-                <p className="text-[10px] text-gray-400">{product.deliveryDays}</p>
+                {product.deliveryDays && (
+                  <p className="text-[10px] text-gray-400">{product.deliveryDays}</p>
+                )}
               </div>
               <Link
                 href={`/produits/${product.slug}`}
                 className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
               >
-                Commander →
+                {useCatalog ? 'Configurer →' : 'Commander →'}
               </Link>
             </div>
           </div>

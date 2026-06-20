@@ -5,6 +5,7 @@ interface Props {
   category: string;
   className?: string;
   children?: React.ReactNode;
+  emoji?: string;
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; accent: string; light: string }> = {
@@ -138,7 +139,7 @@ const PRODUCT_EMOJIS: Record<string, string> = {
   'mugs-personnalises': '☕',
 };
 
-export default function ProductVisual({ slug, category, className = '', children }: Props) {
+export default function ProductVisual({ slug, category, className = '', children, emoji }: Props) {
   const colors = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.communication;
 
   let inner: React.ReactNode;
@@ -162,7 +163,7 @@ export default function ProductVisual({ slug, category, className = '', children
       inner = <BrochureMockup accent={colors.accent} />;
       break;
     default:
-      inner = <GenericMockup accent={colors.accent} light={colors.light} emoji={PRODUCT_EMOJIS[slug] ?? '📦'} />;
+      inner = <GenericMockup accent={colors.accent} light={colors.light} emoji={emoji ?? PRODUCT_EMOJIS[slug] ?? '🖨️'} />;
   }
 
   return (
