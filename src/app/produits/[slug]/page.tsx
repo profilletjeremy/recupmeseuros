@@ -86,7 +86,7 @@ function CatalogProductPage({ product }: { product: CatalogProduct }) {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Left: visual + badges */}
             <div className="space-y-4">
-              <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} className="rounded-3xl h-80 shadow-inner" />
+              <ProductVisual slug={product.slug} category={product.category} emoji={product.emoji} image={product.image} className="rounded-3xl h-80 shadow-inner" />
 
               <div className="flex items-center gap-3 bg-palm/10 border border-palm/20 rounded-xl px-4 py-3">
                 <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-palm animate-pulse" />
