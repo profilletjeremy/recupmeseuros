@@ -125,7 +125,9 @@ export default function Header() {
                     <span className="text-xl">{p.emoji}</span>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-gray-800">{p.name}</p>
-                      <p className="text-xs text-coral font-medium">dès {p.priceFrom.toFixed(2).replace('.', ',')} € l&apos;unité</p>
+                      {p.priceFrom != null && (
+                        <p className="text-xs text-coral font-medium">dès {p.priceFrom.toFixed(2).replace('.', ',')} € l&apos;unité</p>
+                      )}
                     </div>
                   </Link>
                 ))}

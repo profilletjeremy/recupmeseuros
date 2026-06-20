@@ -46,9 +46,9 @@ export default function MentionsLegales() {
           <section>
             <h2 className="text-xl font-bold text-ocean mb-4">Hébergement</h2>
             <div className="text-sm text-text-light space-y-1">
-              <p><strong>Vercel Inc.</strong></p>
-              <p>440 N Barranca Ave #4133, Covina, CA 91723, États-Unis</p>
-              <p>Site : vercel.com</p>
+              <p><strong>GitHub, Inc.</strong></p>
+              <p>88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis</p>
+              <p>Service : GitHub Pages — github.com</p>
             </div>
           </section>
 

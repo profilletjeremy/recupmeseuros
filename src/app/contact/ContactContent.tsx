@@ -116,12 +116,22 @@ export default function ContactContent() {
 
             <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
               <h2 className="text-xl font-bold mb-6">Envoyer un message / Demander un devis</h2>
-              <form className="space-y-5">
+              <form
+                action="https://formsubmit.co/contact@karibprint.fr"
+                method="POST"
+                className="space-y-5"
+              >
+                {/* FormSubmit hidden config */}
+                <input type="hidden" name="_subject" value="Nouvelle demande de devis — KaribPrint" />
+                <input type="hidden" name="_captcha" value="false" />
+                <input type="hidden" name="_template" value="table" />
+
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold mb-1.5">Prénom *</label>
                     <input
                       type="text"
+                      name="prenom"
                       required
                       placeholder="Jean"
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
@@ -131,6 +141,7 @@ export default function ContactContent() {
                     <label className="block text-sm font-semibold mb-1.5">Nom *</label>
                     <input
                       type="text"
+                      name="nom"
                       required
                       placeholder="Dupont"
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
@@ -142,6 +153,7 @@ export default function ContactContent() {
                   <label className="block text-sm font-semibold mb-1.5">Email *</label>
                   <input
                     type="email"
+                    name="email"
                     required
                     placeholder="jean.dupont@exemple.fr"
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
@@ -152,6 +164,7 @@ export default function ContactContent() {
                   <label className="block text-sm font-semibold mb-1.5">Entreprise (optionnel)</label>
                   <input
                     type="text"
+                    name="entreprise"
                     placeholder="Mon Entreprise SAS"
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
                   />
@@ -160,23 +173,25 @@ export default function ContactContent() {
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Territoire de livraison *</label>
                   <select
+                    name="territoire"
                     required
                     defaultValue={selectedTerritory}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
                   >
                     <option value="">-- Sélectionnez votre île --</option>
-                    <option value="GP">Guadeloupe (971)</option>
-                    <option value="MQ">Martinique (972)</option>
-                    <option value="GF">Guyane (973)</option>
-                    <option value="RE">La Réunion (974)</option>
-                    <option value="MF">Saint-Martin (978)</option>
-                    <option value="BL">Saint-Barthélemy (977)</option>
+                    <option value="Guadeloupe (971)">Guadeloupe (971)</option>
+                    <option value="Martinique (972)">Martinique (972)</option>
+                    <option value="Guyane (973)">Guyane (973)</option>
+                    <option value="La Réunion (974)">La Réunion (974)</option>
+                    <option value="Saint-Martin (978)">Saint-Martin (978)</option>
+                    <option value="Saint-Barthélemy (977)">Saint-Barthélemy (977)</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">Produit souhaité *</label>
                   <select
+                    name="produit"
                     required
                     defaultValue={selectedProduct}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ocean transition-colors"
@@ -201,6 +216,7 @@ export default function ContactContent() {
                     Votre message / détails du projet *
                   </label>
                   <textarea
+                    name="message"
                     required
                     rows={5}
                     defaultValue={defaultMessage}
