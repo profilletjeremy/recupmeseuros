@@ -18,8 +18,8 @@ const shop_id = process.env.REALISAPRINT_SHOP_ID;
 const api_key = process.env.REALISAPRINT_API_KEY;
 
 if (!shop_id || !api_key) {
-  console.error('Missing REALISAPRINT_SHOP_ID or REALISAPRINT_API_KEY');
-  process.exit(1);
+  console.warn('⚠ Missing REALISAPRINT_SHOP_ID or REALISAPRINT_API_KEY — skipping API fetch, using existing product data.');
+  process.exit(0);
 }
 
 async function call(fn, extra = {}) {
