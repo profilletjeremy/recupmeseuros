@@ -70,8 +70,7 @@ export async function createOrder(
     email: string;
   }
 ) {
-  return rpPost({
-    function: 'create_order',
+  return rpPost('create_order', {
     code,
     qty: quantity,
     firstname: address.firstname,
@@ -88,11 +87,11 @@ export async function createOrder(
 }
 
 export async function getOrder(orderId: string) {
-  return rpPost({ function: 'get_order', order: orderId });
+  return rpPost('get_order', { order: orderId });
 }
 
 export async function getIsoCountries() {
-  return rpPost({ function: 'get_iso_countries' });
+  return rpPost('get_iso_countries');
 }
 
 /**
