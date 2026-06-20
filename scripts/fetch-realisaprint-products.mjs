@@ -223,8 +223,41 @@ console.log(`Got ${productEntries.length} products`);
 mkdirSync(IMG_DIR, { recursive: true });
 const catalog = { fetchedAt: new Date().toISOString(), products: {} };
 
+// ── One-time image-source probe ──────────────────────────────────────────────
+// The Préscript iframe renders client-side, so HTTP fetch may return an empty
+// stub. Probe several endpoint variants once, dumping raw bodies, so we can see
+// what is actually fetchable before committing to a strategy.
+async function probeImageSources(sampleId, sampleStock, sampleName) {
+  const sampleSlug = slugify(String(sampleName));
+  console.log(`\n===== IMAGE PROBE for [${sampleId}] ${sampleName} (stock ${sampleStock}) =====`);
+
+  const tries = [
+    ['get_prescript?iframe (POST-style url)', `${BASE}get_prescript?iframe&shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`],
+    ['get_prescript (no iframe)', `${BASE}get_prescript?shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`],
+    ['public product page (slug.html)', `${ORIGIN}/${sampleSlug}.html`],
+    ['public product page (impression-slug.html)', `${ORIGIN}/impression-${sampleSlug}.html`],
+    ['site homepage', `${ORIGIN}/`],
+  ];
+
+  for (const [label, url] of tries) {
+    try {
+      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': ORIGIN + '/' } });
+      const body = await res.text();
+      const candidates = extractImageCandidates(body);
+      console.log(`  • ${label}`);
+      console.log(`    -> ${url}`);
+      console.log(`    status=${res.status} ct=${res.headers.get('content-type')} bytes=${body.length}`);
+      console.log(`    body[0:200]=${JSON.stringify(body.slice(0, 200))}`);
+      console.log(`    imageCandidates(${candidates.length}): ${candidates.slice(0, 6).join(' | ') || '(none)'}`);
+    } catch (err) {
+      console.log(`  • ${label} -> ${url}\n    ERROR ${err.message}`);
+    }
+  }
+  console.log('===== END IMAGE PROBE =====\n');
+}
+
 let imageCount = 0;
-let diagBudget = 3; // verbose diagnostics for first few products
+let probed = false;
 
 for (const [id, name] of productEntries) {
   const slug = slugify(String(name));
@@ -239,31 +272,14 @@ for (const [id, name] of productEntries) {
     console.warn(`  ⚠ No configs for ${id} (${name}): ${err.message}`);
   }
 
-  // Try to capture a real preview image from the Préscript configurator.
-  let image = null;
+  // Run the image-source probe once, on the first product that has a stock.
   const stock = configurations[0]?.id;
-  if (stock) {
-    try {
-      const html = await fetchPrescriptHtml(id, stock);
-      const candidates = extractImageCandidates(html);
-      const best = pickBestImage(candidates);
-      if (diagBudget > 0) {
-        console.log(`  🔎 [${id}] ${name}: prescript html=${html.length}b, candidates=${candidates.length}`);
-        console.log(`     top candidates: ${candidates.slice(0, 5).join(' | ') || '(none)'}`);
-        console.log(`     picked: ${best || '(none)'}`);
-        diagBudget--;
-      }
-      if (best) {
-        image = await downloadImage(best, `${IMG_DIR}/${slug}`);
-        imageCount++;
-        console.log(`  ✓ image for ${slug}: ${image}`);
-      }
-    } catch (err) {
-      console.warn(`  ⚠ No preview image for ${id} (${name}): ${err.message}`);
-    }
+  if (!probed && stock) {
+    probed = true;
+    try { await probeImageSources(id, stock, name); } catch (err) { console.warn('probe failed:', err.message); }
   }
 
-  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations, ...(image ? { image } : {}) };
+  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations };
 }
 
 mkdirSync(dirname(OUT), { recursive: true });
