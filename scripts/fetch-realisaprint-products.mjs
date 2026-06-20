@@ -126,8 +126,16 @@ function parseConfigurations(raw) {
     }).filter(Boolean);
   }
   if (typeof raw === 'object') {
+    // The API wraps the list under `configurations` or `stocks`.
     if (raw.configurations) return parseConfigurations(raw.configurations);
-    return Object.entries(raw).map(([id, name]) => ({ id, name: String(name) }));
+    if (raw.stocks) return parseConfigurations(raw.stocks);
+    return Object.entries(raw).map(([id, name]) => {
+      // Nested object value → descend (e.g. { "<id>": { name: ... } }).
+      if (name && typeof name === 'object') {
+        return { id: String(name.id ?? id), name: String(name.name ?? name.label ?? name.nom ?? id) };
+      }
+      return { id, name: String(name) };
+    });
   }
   return [];
 }
@@ -228,29 +236,33 @@ const catalog = { fetchedAt: new Date().toISOString(), products: {} };
 // stub. Probe several endpoint variants once, dumping raw bodies, so we can see
 // what is actually fetchable before committing to a strategy.
 async function probeImageSources(sampleId, sampleStock, sampleName) {
-  const sampleSlug = slugify(String(sampleName));
   console.log(`\n===== IMAGE PROBE for [${sampleId}] ${sampleName} (stock ${sampleStock}) =====`);
 
-  const tries = [
-    ['get_prescript?iframe (POST-style url)', `${BASE}get_prescript?iframe&shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`],
-    ['get_prescript (no iframe)', `${BASE}get_prescript?shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`],
-    ['public product page (slug.html)', `${ORIGIN}/${sampleSlug}.html`],
-    ['public product page (impression-slug.html)', `${ORIGIN}/impression-${sampleSlug}.html`],
-    ['site homepage', `${ORIGIN}/`],
-  ];
+  // 1. Dump the raw configurations response so we understand its true shape.
+  try {
+    const rawCfg = await rpPost('configurations', { product: sampleId });
+    console.log(`  rawConfigurations=${JSON.stringify(rawCfg).slice(0, 600)}`);
+  } catch (err) {
+    console.log(`  rawConfigurations ERROR ${err.message}`);
+  }
 
-  for (const [label, url] of tries) {
+  // 2. Try the Préscript iframe with the (now corrected) stock id, both GET and POST.
+  const iframeUrl = `${BASE}get_prescript?iframe&shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`;
+  const variants = [
+    ['get_prescript?iframe GET', iframeUrl, 'GET'],
+    ['get_prescript?iframe POST', iframeUrl, 'POST'],
+  ];
+  for (const [label, url, method] of variants) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': ORIGIN + '/' } });
+      const res = await fetch(url, { method, headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': ORIGIN + '/' } });
       const body = await res.text();
       const candidates = extractImageCandidates(body);
       console.log(`  • ${label}`);
-      console.log(`    -> ${url}`);
       console.log(`    status=${res.status} ct=${res.headers.get('content-type')} bytes=${body.length}`);
-      console.log(`    body[0:200]=${JSON.stringify(body.slice(0, 200))}`);
-      console.log(`    imageCandidates(${candidates.length}): ${candidates.slice(0, 6).join(' | ') || '(none)'}`);
+      console.log(`    body[0:300]=${JSON.stringify(body.slice(0, 300))}`);
+      console.log(`    imageCandidates(${candidates.length}): ${candidates.slice(0, 8).join(' | ') || '(none)'}`);
     } catch (err) {
-      console.log(`  • ${label} -> ${url}\n    ERROR ${err.message}`);
+      console.log(`  • ${label} ERROR ${err.message}`);
     }
   }
   console.log('===== END IMAGE PROBE =====\n');
