@@ -29,21 +29,44 @@ async function call(fn, extra = {}) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
+  console.log(`HTTP ${res.status} — response length: ${text.length} chars`);
+  console.log('Raw response:', text.slice(0, 2000) || '(empty)');
+  if (!res.ok) {
+    console.warn(`HTTP error ${res.status} — skipping`);
+    return null;
+  }
+  if (!text.trim()) {
+    console.warn('Empty response from API — skipping');
+    return null;
+  }
   try {
     return JSON.parse(text);
   } catch {
-    throw new Error(`Non-JSON response: ${text.slice(0, 200)}`);
+    console.warn(`Non-JSON response — skipping`);
+    return null;
   }
 }
 
-console.log('Fetching products from Realisaprint API...');
+console.log('Fetching products from Realisaprint API (function=products)...');
 const data = await call('products');
 
-console.log('Raw API response:');
+if (!data) {
+  console.log('No data returned — trying function=getProducts...');
+  const data2 = await call('getProducts');
+  if (!data2) {
+    console.log('No data from either call. Skipping.');
+    process.exit(0);
+  }
+  mkdirSync(dirname(OUT), { recursive: true });
+  writeFileSync(OUT, JSON.stringify(data2, null, 2));
+  console.log(`Saved to ${OUT}`);
+  process.exit(0);
+}
+
+console.log('Full API response:');
 console.log(JSON.stringify(data, null, 2));
 
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(data, null, 2));
-console.log(`\nSaved to ${OUT}`);
+console.log(`Saved to ${OUT}`);
