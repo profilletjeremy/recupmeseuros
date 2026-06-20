@@ -171,32 +171,53 @@ function extractImageCandidates(html) {
   return [...candidates];
 }
 
-function scoreCandidate(url) {
+function scoreCandidate(url, slug = '') {
   let score = 0;
   if (IMG_EXCLUDE.test(url)) return -100;
   if (!IMG_EXT.test(url)) score -= 5;
-  if (/og[-_]?image|preview|visuel|product|produit|apercu|thumb|upload|media|template|model/i.test(url)) score += 10;
-  if (/realisaprint/i.test(url)) score += 3;
-  if (/\.(jpe?g|png|webp)/i.test(url)) score += 3;
+  // The real product photos live on Realisaprint's media CDN.
+  if (/media\.obiprint\.com\/images\//i.test(url)) score += 30;
+  if (slug && url.toLowerCase().includes(slug.split('-')[0])) score += 8;
+  if (/preview|visuel|product|produit|apercu|impression|personnalise/i.test(url)) score += 6;
+  if (/charte|nouveau_site|icone|picto|ajax/i.test(url)) score -= 8;
+  if (/\.webp/i.test(url)) score += 4;
+  if (/\.(jpe?g|png)/i.test(url)) score += 2;
   return score;
 }
 
-function pickBestImage(candidates) {
+function pickBestImage(candidates, slug = '') {
   const ranked = candidates
-    .map((u) => ({ u, s: scoreCandidate(u) }))
-    .filter((c) => c.s > -50)
+    .map((u) => ({ u, s: scoreCandidate(u, slug) }))
+    .filter((c) => c.s > 0)
     .sort((a, b) => b.s - a.s);
   return ranked.length ? ranked[0].u : null;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Fetch text, retrying once if the API returns its 15-second rate-limit stub. */
+async function fetchWithRateLimit(url, opts = {}) {
+  let res = await fetch(url, opts);
+  let body = await res.text();
+  if (body.length < 300 && /15 secondes|toutes les \d+ secondes/i.test(body)) {
+    await sleep(16000);
+    res = await fetch(url, opts);
+    body = await res.text();
+  }
+  return { res, body };
 }
 
 async function fetchPrescriptHtml(productId, stock) {
   const params = new URLSearchParams({
     shop_id, api_key_encoded, product: productId, stock, margin: '1', country: 'GP',
   });
+  // The configurator HTML (with real product images) is served via GET ?iframe.
   const url = `${BASE}get_prescript?iframe&${params.toString()}`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (catalog-builder)' } });
+  const { res, body } = await fetchWithRateLimit(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (catalog-builder)', 'Referer': ORIGIN + '/' },
+  });
   if (!res.ok) throw new Error(`prescript HTTP ${res.status}`);
-  return res.text();
+  return body;
 }
 
 async function downloadImage(url, destBase) {
@@ -231,45 +252,8 @@ console.log(`Got ${productEntries.length} products`);
 mkdirSync(IMG_DIR, { recursive: true });
 const catalog = { fetchedAt: new Date().toISOString(), products: {} };
 
-// ── One-time image-source probe ──────────────────────────────────────────────
-// The Préscript iframe renders client-side, so HTTP fetch may return an empty
-// stub. Probe several endpoint variants once, dumping raw bodies, so we can see
-// what is actually fetchable before committing to a strategy.
-async function probeImageSources(sampleId, sampleStock, sampleName) {
-  console.log(`\n===== IMAGE PROBE for [${sampleId}] ${sampleName} (stock ${sampleStock}) =====`);
-
-  // 1. Dump the raw configurations response so we understand its true shape.
-  try {
-    const rawCfg = await rpPost('configurations', { product: sampleId });
-    console.log(`  rawConfigurations=${JSON.stringify(rawCfg).slice(0, 600)}`);
-  } catch (err) {
-    console.log(`  rawConfigurations ERROR ${err.message}`);
-  }
-
-  // 2. Try the Préscript iframe with the (now corrected) stock id, both GET and POST.
-  const iframeUrl = `${BASE}get_prescript?iframe&shop_id=${shop_id}&api_key_encoded=${api_key_encoded}&product=${sampleId}&stock=${sampleStock}&margin=1&country=GP`;
-  const variants = [
-    ['get_prescript?iframe GET', iframeUrl, 'GET'],
-    ['get_prescript?iframe POST', iframeUrl, 'POST'],
-  ];
-  for (const [label, url, method] of variants) {
-    try {
-      const res = await fetch(url, { method, headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': ORIGIN + '/' } });
-      const body = await res.text();
-      const candidates = extractImageCandidates(body);
-      console.log(`  • ${label}`);
-      console.log(`    status=${res.status} ct=${res.headers.get('content-type')} bytes=${body.length}`);
-      console.log(`    body[0:300]=${JSON.stringify(body.slice(0, 300))}`);
-      console.log(`    imageCandidates(${candidates.length}): ${candidates.slice(0, 8).join(' | ') || '(none)'}`);
-    } catch (err) {
-      console.log(`  • ${label} ERROR ${err.message}`);
-    }
-  }
-  console.log('===== END IMAGE PROBE =====\n');
-}
-
 let imageCount = 0;
-let probed = false;
+let diagBudget = 3;
 
 for (const [id, name] of productEntries) {
   const slug = slugify(String(name));
@@ -284,14 +268,30 @@ for (const [id, name] of productEntries) {
     console.warn(`  ⚠ No configs for ${id} (${name}): ${err.message}`);
   }
 
-  // Run the image-source probe once, on the first product that has a stock.
+  // Capture the real product image from the Préscript configurator HTML.
+  let image = null;
   const stock = configurations[0]?.id;
-  if (!probed && stock) {
-    probed = true;
-    try { await probeImageSources(id, stock, name); } catch (err) { console.warn('probe failed:', err.message); }
+  if (stock) {
+    try {
+      const html = await fetchPrescriptHtml(id, stock);
+      const candidates = extractImageCandidates(html);
+      const best = pickBestImage(candidates, slug);
+      if (diagBudget > 0) {
+        console.log(`  🔎 [${id}] ${name} (stock ${stock}): html=${html.length}b, candidates=${candidates.length}, picked=${best || '(none)'}`);
+        diagBudget--;
+      }
+      if (best) {
+        image = await downloadImage(best, `${IMG_DIR}/${slug}`);
+        imageCount++;
+        console.log(`  ✓ ${slug}: ${image}`);
+      }
+    } catch (err) {
+      console.warn(`  ⚠ No preview image for ${id} (${name}): ${err.message}`);
+    }
+    await sleep(300); // be gentle with the API rate limit
   }
 
-  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations };
+  catalog.products[id] = { id, name: String(name), slug, category, categoryLabel, emoji, configurations, ...(image ? { image } : {}) };
 }
 
 mkdirSync(dirname(OUT), { recursive: true });
