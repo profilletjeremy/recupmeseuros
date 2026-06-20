@@ -9,10 +9,11 @@ function credentials() {
   return { shop_id, api_key };
 }
 
-async function rpPost(params: Record<string, string>): Promise<unknown> {
+// Each function has its own endpoint: POST /api/<function>
+async function rpPost(endpoint: string, params: Record<string, string> = {}): Promise<unknown> {
   const { shop_id, api_key } = credentials();
   const body = new URLSearchParams({ shop_id, api_key, ...params });
-  const res = await fetch(BASE_URL, {
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
@@ -23,15 +24,15 @@ async function rpPost(params: Record<string, string>): Promise<unknown> {
 }
 
 export async function getProducts() {
-  return rpPost({ function: 'products' });
+  return rpPost('products');
 }
 
 export async function getConfigurations(productId: string) {
-  return rpPost({ function: 'configurations', product: productId });
+  return rpPost('configurations', { product: productId });
 }
 
 export async function showVariables(configurationId: string) {
-  return rpPost({ function: 'show_variables', configuration: configurationId });
+  return rpPost('show_variables', { configuration: configurationId });
 }
 
 export async function saveConfiguration(
@@ -42,15 +43,15 @@ export async function saveConfiguration(
   for (const [key, value] of Object.entries(variables)) {
     variableParams[`variables[${key}]`] = value;
   }
-  return rpPost({ function: 'save_configuration', configuration: configurationId, ...variableParams });
+  return rpPost('save_configuration', { configuration: configurationId, ...variableParams });
 }
 
 export async function getPrice(code: string, quantity: string) {
-  return rpPost({ function: 'get_price', code, qty: quantity });
+  return rpPost('get_price', { code, qty: quantity });
 }
 
 export async function getConfigDetails(code: string) {
-  return rpPost({ function: 'config_details', code });
+  return rpPost('config_details', { code });
 }
 
 export async function createOrder(

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Probes the Realisaprint API with multiple call conventions to discover
- * which one returns the product catalog for shop 251.
+ * Fetches the Realisaprint product catalog and saves it to src/data/realisaprint-products.json.
+ * The API expects POST requests to /api/<function> with shop_id and api_key in the form body.
  */
 
 import { writeFileSync, mkdirSync } from 'fs';
@@ -15,66 +15,37 @@ const shop_id = process.env.REALISAPRINT_SHOP_ID;
 const api_key = process.env.REALISAPRINT_API_KEY;
 
 if (!shop_id || !api_key) {
-  console.warn('Missing credentials — skipping.');
+  console.warn('Missing REALISAPRINT_SHOP_ID or REALISAPRINT_API_KEY — skipping product fetch.');
   process.exit(0);
 }
 
-async function probe(label, url, options = {}) {
-  console.log(`\n--- ${label} ---`);
-  console.log('URL:', url);
-  try {
-    const res = await fetch(url, options);
-    const text = await res.text();
-    console.log(`Status: ${res.status}, body length: ${text.length}`);
-    console.log('Body:', text.slice(0, 500) || '(empty)');
-    return { status: res.status, text };
-  } catch (e) {
-    console.log('Error:', e.message);
-    return null;
-  }
+const BASE = 'https://www.realisaprint.com/api/';
+
+async function rpPost(endpoint, params = {}) {
+  const body = new URLSearchParams({ shop_id, api_key, ...params });
+  const res = await fetch(`${BASE}${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status} from /api/${endpoint}`);
+  const text = await res.text();
+  if (!text.trim()) throw new Error(`Empty response from /api/${endpoint}`);
+  return JSON.parse(text);
 }
 
-const BASE = 'https://www.realisaprint.com/api/';
-const creds = { shop_id, api_key };
+console.log('Fetching Realisaprint product catalog…');
 
-// Try 1: POST to /api/ with function=products (form-encoded)
-await probe('POST /api/ function=products (form-encoded)', BASE, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: new URLSearchParams({ ...creds, function: 'products' }).toString(),
-});
+let products;
+try {
+  products = await rpPost('products');
+} catch (err) {
+  console.error('Failed to fetch products:', err.message);
+  process.exit(1);
+}
 
-// Try 2: GET to /api/?function=products
-await probe('GET /api/?function=products', `${BASE}?${new URLSearchParams({ ...creds, function: 'products' })}`);
+console.log('Products response:', JSON.stringify(products, null, 2).slice(0, 1000));
 
-// Try 3: GET to /api/products
-await probe('GET /api/products', `${BASE}products?${new URLSearchParams(creds)}`);
-
-// Try 4: POST to /api/ with action=products
-await probe('POST /api/ action=products', BASE, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: new URLSearchParams({ ...creds, action: 'products' }).toString(),
-});
-
-// Try 5: GET to /api/get_products
-await probe('GET /api/get_products', `${BASE}get_products?${new URLSearchParams(creds)}`);
-
-// Try 6: POST JSON body
-await probe('POST /api/ JSON body', BASE, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ ...creds, function: 'products' }),
-});
-
-// Try 7: the prescript URL pattern (GET /api/get_prescript)
-await probe('GET /api/get_prescript (without iframe)', `${BASE}get_prescript?${new URLSearchParams({ ...creds, function: 'products' })}`);
-
-// Try 8: base URL with no trailing slash
-await probe('POST https://www.realisaprint.com/api', 'https://www.realisaprint.com/api', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: new URLSearchParams({ ...creds, function: 'products' }).toString(),
-});
-
-console.log('\nAll probes done. Check output above to see which format returns data.');
+mkdirSync(dirname(OUT), { recursive: true });
+writeFileSync(OUT, JSON.stringify(products, null, 2), 'utf-8');
+console.log(`Saved to ${OUT}`);
