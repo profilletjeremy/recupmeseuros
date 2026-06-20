@@ -1,4 +1,52 @@
 {
-  "generatedAt": null,
-  "products": {}
+  "generatedAt": "2026-06-20T02:35:28.398Z",
+  "products": {
+    "20": {
+      "slug": "carnet-autocopiant",
+      "name": "Carnet Autocopiant",
+      "stock": "28",
+      "image": "/product-previews/carnet-autocopiant.webp"
+    },
+    "25": {
+      "slug": "cle-usb",
+      "name": "Clé USB",
+      "stock": "50",
+      "image": "/product-previews/cle-usb.webp"
+    },
+    "29": {
+      "slug": "liasse-autocopiante",
+      "name": "Liasse autocopiante",
+      "stock": "53",
+      "image": "/product-previews/liasse-autocopiante.webp"
+    },
+    "32": {
+      "slug": "bossing",
+      "name": "Bossing",
+      "stock": "56",
+      "image": "/product-previews/bossing.jpg"
+    },
+    "77": {
+      "slug": "sous-mains",
+      "name": "Sous-mains",
+      "stock": "140",
+      "image": "/product-previews/sous-mains.webp"
+    },
+    "79": {
+      "slug": "tampon",
+      "name": "Tampon",
+      "stock": "144"
+    },
+    "88": {
+      "slug": "tapis-de-souris",
+      "name": "Tapis de souris",
+      "stock": "193",
+      "image": "/product-previews/tapis-de-souris.webp"
+    },
+    "90": {
+      "slug": "toile-de-peintre",
+      "name": "Toile de peintre",
+      "stock": "196",
+      "image": "/product-previews/toile-de-peintre.webp"
+    }
+  }
 }
