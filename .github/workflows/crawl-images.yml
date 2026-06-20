@@ -1,0 +1,58 @@
+name: Crawl Realisaprint product images
+
+# Manually-triggered, slow crawl that captures a valid stock id + a real
+# product image for every Realisaprint product, then commits the results
+# (public/product-previews/ + src/data/product-images.json) back to the repo.
+# The Realisaprint API rate-limits to ~1 request / 15s, so this takes ~40 min;
+# it is intentionally decoupled from the per-deploy build.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max number of products to crawl (blank = all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crawl-images
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Crawl product images
+        run: node scripts/crawl-product-images.mjs
+        env:
+          REALISAPRINT_SHOP_ID: '251'
+          REALISAPRINT_API_KEY: ${{ secrets.REALISAPRINT_API_KEY }}
+          CRAWL_LIMIT: ${{ github.event.inputs.limit }}
+
+      - name: Commit captured images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/product-previews src/data/product-images.json
+          if git diff --staged --quiet; then
+            echo "No new images to commit."
+          else
+            git commit -m "chore: update Realisaprint product images (crawl)"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

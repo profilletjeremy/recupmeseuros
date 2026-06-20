@@ -39,6 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Build-time Realisaprint preview images (generated in CI)
-/public/product-previews/
