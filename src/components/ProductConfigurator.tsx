@@ -15,13 +15,11 @@ export default function ProductConfigurator({ prescriptIframeUrl, productName }:
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      // Realisaprint Préscript sends the liaison code via postMessage
       if (typeof event.data === 'string' && event.data.startsWith('code_liaison:')) {
         const code = event.data.replace('code_liaison:', '').trim();
         if (code) setConfigCode(code);
         return;
       }
-      // Also handle object-format messages
       if (event.data && typeof event.data === 'object' && event.data.code_liaison) {
         setConfigCode(String(event.data.code_liaison));
       }
@@ -35,29 +33,37 @@ export default function ProductConfigurator({ prescriptIframeUrl, productName }:
     : `/contact?produit=${encodeURIComponent(productName)}`;
 
   return (
-    <div className="space-y-4">
-      {/* Préscript iFrame configurator — handles options, visual preview and live pricing */}
-      <div className="border border-gray-100 rounded-2xl overflow-hidden">
-        <iframe
-          ref={iframeRef}
-          src={prescriptIframeUrl}
-          className="w-full"
-          style={{ minHeight: 720, border: 'none' }}
-          title={`Configurateur ${productName}`}
-          allow="same-origin"
-        />
-      </div>
+    <div>
+      {/* Préscript iframe — handles gallery, options, and live pricing */}
+      <iframe
+        ref={iframeRef}
+        src={prescriptIframeUrl}
+        className="w-full"
+        style={{ minHeight: 680, border: 'none', display: 'block' }}
+        title={`Configurateur ${productName}`}
+        allow="same-origin"
+      />
 
       {/* CTA */}
-      <Link
-        href={contactHref}
-        className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-lg py-4 rounded-xl transition-colors shadow-lg hover:shadow-xl"
-      >
-        {configCode ? 'Commander / Demander un devis' : 'Demander un devis gratuit'}
-      </Link>
-      <p className="text-center text-xs text-text-lighter">
-        Configurez vos options ci-dessus — le prix s&apos;affiche en direct. Notre équipe vous répond sous 24h.
-      </p>
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 space-y-2.5">
+        {configCode && (
+          <div className="flex items-center gap-2 bg-palm/10 border border-palm/20 rounded-xl px-4 py-2.5 text-sm">
+            <span className="w-2 h-2 rounded-full bg-palm flex-shrink-0" />
+            <p className="text-palm font-semibold text-xs">
+              Configuration enregistrée — code : <span className="font-black">{configCode}</span>
+            </p>
+          </div>
+        )}
+        <Link
+          href={contactHref}
+          className="block w-full text-center bg-coral hover:bg-coral-dark text-white font-bold text-base py-4 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+        >
+          {configCode ? '✓ Commander / Demander un devis' : 'Demander un devis gratuit →'}
+        </Link>
+        <p className="text-center text-[11px] text-gray-400">
+          Configurez vos options ci-dessus · Prix affiché en direct · Réponse sous 24h
+        </p>
+      </div>
     </div>
   );
 }
